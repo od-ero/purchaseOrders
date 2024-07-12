@@ -7,6 +7,7 @@
   Dashboard
 @endsection
 
+
 @section('content')
 
             <div class="row justify-content-center">
@@ -14,25 +15,24 @@
                     <div class="card shadow-lg border-0 rounded-lg mt-5">
                         <div class="card-header"><h3 class="text-center font-weight-light my-4">Create a user account</h3></div>
                         <div class="card-body">
-                            <form method="POST" action="{{ route('postRegister') }}">
+                            <form id="register_employee_form" >
                             @csrf
-                            <input class="form-control" id="inputPassword" name="moreUser" value="{{$multipleUser}}" type="text" placeholder="Enter user email"  required hidden />
                             <div class="row mb-3">
-                            <input class="form-control" id="inputId_password" name="password" value="123456890" type="password" placeholder="Enter user email" hidden required />
+                            
                                     <div class="col-md-4">
-                                        <div class="form-floating mb-3 mb-md-0">
-                                            <input class="form-control" id="inputfname" name="fName" type="text" placeholder="Enter user first name"  required />
-                                            <label for="inputPassword">First Name</label>
-                                            @if ($errors->has('fName'))
+                                        <div class="form-floating  mb-3 mb-md-0">
+                                            <input class="form-control" id="register_first_name" name="first_name" type="text" placeholder="Enter user first name"   />
+                                            <label for="inputPassword">First Name  &emsp; <strong class="text-danger" >*</strong></label>
+                                            @if ($errors->has('first_name'))
                                                 <div class="text-danger mt-2">
-                                                    {{ $errors->first('fName') }}
+                                                    {{ $errors->first('first_name') }}
                                                 </div>
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                        <div class="col-md-4">
                                     <div class="form-floating mb-3 mb-md-0">
-                                            <input class="form-control" id="inputMname" name="mName" type="text" placeholder="Enter other names" />
+                                            <input class="form-control" id="register_middle_name" name="middle_name" type="text" placeholder="Enter other names" />
                                             <label for="inputPassword">Middle Names</label>
                                             @if ($errors->has('mName'))
                                                 <div class="text-danger mt-2">
@@ -43,8 +43,8 @@
                                     </div>
                                     <div class="col-md-4">
                                     <div class="form-floating mb-3 mb-md-0">
-                                            <input class="form-control" id="inputLname" name="lName" type="text" placeholder="Enter your last name"  required />
-                                            <label for="inputPassword">Last Name</label>
+                                            <input class="form-control" id="register_last_name" name="last_name" type="text" placeholder="Enter your last name"   />
+                                            <label for="inputPassword">Last Name &emsp; <strong class="text-danger text-right" >*</strong></label>
                                             @if ($errors->has('lName'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('lName') }}
@@ -57,11 +57,22 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3 mb-md-0">
-                                            <input class="form-control" id="inputId_no" name="id_no" type="text" placeholder="Enter user id number"  required />
-                                            <label for="inputPassword">Id Number</label>
+                                            <input class="form-control" id="register_id_no" name="id_no" type="text" placeholder="Enter user id number"   />
+                                            <label for="inputPassword">Id Number &emsp; <strong class="text-danger text-right" >*</strong></label>
                                             @if ($errors->has('id_no'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('id_no') }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3 mb-md-0">
+                                            <input class="form-control" id="register_staff_no" name="staff_no" type="text" placeholder="Enter user staff number"   />
+                                            <label for="inputPassword">Staff Number &emsp; <strong class="text-danger text-right" >*</strong></label>
+                                            @if ($errors->has('staff_no'))
+                                                <div class="text-danger mt-2">
+                                                    {{ $errors->first('staff_no') }}
                                                 </div>
                                             @endif
                                         </div>
@@ -71,8 +82,8 @@
                                 <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" id="inputPhone" name="phone" type="tel" placeholder="Enter user phone No"  required />
-                                        <label for="inputPassword">Phone Number</label>
+                                        <input class="form-control" id="register_phone" name="phone" type="tel" placeholder="Enter user phone No"   />
+                                        <label for="inputPassword">Phone Number &emsp; <strong class="text-danger text-right" >*</strong></label>
                                         @if ($errors->has('phone'))
                                             <div class="text-danger mt-2">
                                                 {{ $errors->first('phone') }}
@@ -82,7 +93,7 @@
                                 </div>
                                 <div class="col-md-6">
                                         <div class="form-floating mb-3 mb-md-0">
-                                            <input class="form-control" id="inputSphone" name="sPhone" type="tel" placeholder="Enter user second phone No" />
+                                            <input class="form-control" id="register_second_phone" name="second_phone" type="tel" placeholder="Enter user second phone No" />
                                             <label for="inputPassword">Phone Number 2</label>
                                             @if ($errors->has('sPhone'))
                                                 <div class="text-danger mt-2">
@@ -95,8 +106,8 @@
                                 <div class="row mb-3">
                                 <div class="col-md-6">
                                             <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="inputId_no" name="email" type="email" placeholder="Enter user email"  required />
-                                                <label for="inputEmail">Email Address</label>
+                                                <input class="form-control" id="register_email" name="email" type="email" placeholder="Enter user email"   />
+                                                <label for="inputEmail">Email</label>
                                                 @if ($errors->has('email'))
                                                     <div class="text-danger mt-2">
                                                         {{ $errors->first('email') }}
@@ -106,8 +117,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3 mb-md-0">
-                                            <input class="form-control" id="inputIdphy_address" name="phy_address" type="text" placeholder="Enter user physical address"  required />
-                                            <label for="inputPassword">Physical Address</label>
+                                            <input class="form-control" id="register_phy_address" name="phy_address" type="text" placeholder="Enter user physical address"   />
+                                            <label for="inputPassword">Address</label>
                                             @if ($errors->has('phy_address'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('phy_address') }}
@@ -119,9 +130,9 @@
                                 <div class="row mb-3">
                                     
                                         <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <select class="form-control appselect2" id="inputrole" name="role_id" required>
-                                                    <option value="" disabled selected>Select employees role</option>
+                                            <div class="form-floating register_form_role mb-3 mb-md-0">
+                                                <select class="form-control appselect2" id="register_role_id" name="role_id" >
+                                                    <option value="" disabled selected>Select employee permission level &emsp; <strong class="text-danger text-right" >*</strong></option>
                                                     @foreach ($roles as $role)
                                                     <option value="{{$role['id']}}">{{$role['role_name']}}</option>
                                                     @endforeach
@@ -134,11 +145,23 @@
                                                 @endif
                                             </div>
                                         </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" id="register_password" name="password" type="password" placeholder="Enter user password" />
+                                                <label for="inputPassword">Password &emsp; <i>(> 3)</i>&emsp; <strong class="text-danger text-right" > *</strong></label>
+                                                @if ($errors->has('password'))
+                                                    <div class="text-danger mt-2">
+                                                        {{ $errors->first('password') }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                 </div>
+                                
                                 <div class="mt-4 mb-0 text-center">
-                                    <button type="submit" class="btn btn-primary">Save and View</button>
-                                        
-                                        <button type="submit" class="btn btn-secondary">Save and Add New</button>
+                                    <button type="submit" id="register_save_view" class="btn btn-primary  btn-submit">Save and View</button>  
+                                        <button type="submit" id="register_save_and_add_new" class="btn btn-secondary">Save and Add New</button>
                                    
                                 </div>
                             </form>
@@ -146,6 +169,11 @@
                     </div>
                 </div>
             </div>
+
+          
+       
+
+          
 @endsection
 
 

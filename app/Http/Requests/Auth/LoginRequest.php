@@ -27,8 +27,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required'],
-            'password' => ['required', 'string'],
+            'login_userid' => ['required', 'string',],
+            'login_password' => ['required', 'string',],
         ];
     }
 
@@ -40,14 +40,12 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-        
-          $encoded_data=$this->only('id', 'password');
           
-           $data= ["id" => base64_decode($this->id),
-           "password" => $this->password];
+           $data= ["id" => base64_decode($this->login_userid),
+           "password" => $this->login_password];
         if (! Auth::attempt($data, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-
+            //return response()->json(['status' => 'error', 'message' => 'Login reuest Authentication failed'], 401);
             throw ValidationException::withMessages([
                 'id' => trans('auth.failed'),
             ]);

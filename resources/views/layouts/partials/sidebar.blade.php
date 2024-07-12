@@ -15,8 +15,8 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link"  href="/users/register/neither">Add Employee</a>
-                                    <a class="nav-link" href="/display/users">View User</a>
+                                    <a class="nav-link"  href="/employee/register">Add Employee</a>
+                                    <a class="nav-link" href="/employee/view">View User</a>
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
@@ -33,8 +33,8 @@
                                     <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
                                                    
-                                            <a class="nav-link" href="/users/register/neither">Add and submit</a>
-                                            <a class="nav-link" href="{{route('mulregister')}}">Add and readd</a>
+                                            <a class="nav-link" href="#">Add and submit</a>
+                                            <a class="nav-link" href="#">Add and readd</a>
                                         </nav>
                                     </div>
                                     <a class="nav-link" href="/display/users">

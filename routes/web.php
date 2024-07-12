@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,9 +12,10 @@ Route::get('/', function () {
 Route::get('/livewire', function () {
     return view('livewirewelcome');
 });
+Route::post('/employees/login', [AuthenticatedSessionController::class, 'store'])->name('employee.login');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect('/admin/dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/admin/dashboard', function () {
@@ -24,15 +26,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/users/register/neither', [RegisteredUserController::class, 'create'])
+    Route::get('/employee/register', [RegisteredUserController::class, 'create'])
     ->name('register');
-    Route::get('/multiple/users/register', [RegisteredUserController::class, 'mulCreate'])
-    ->name('mulregister');
+    
 
-    Route::post('/register', [RegisteredUserController::class, 'store'])->name('postRegister');
+    Route::post('/employee/register', [RegisteredUserController::class, 'store'])->name('postRegister');
     Route::get('/display/users', function () {
         return view('admins.displayUsers');
     });
+
+    Route::get('/employee/view', [EmployeesController::class, 'index'])
+    ->name('employees.index');
+
 });
 
 require __DIR__.'/auth.php';

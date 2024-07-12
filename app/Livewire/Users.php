@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\Role;
+use DataTables;
 
 class Users extends Component
 {

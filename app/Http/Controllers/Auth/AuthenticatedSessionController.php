@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\User;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -23,14 +24,18 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {   
+    
+    public function store(LoginRequest $request): JsonResponse
+    { 
        
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('admins.dashboard', absolute: false));
+        try {
+            $request->authenticate();
+            $request->session()->regenerate();
+       
+            return response()->json(['status'=>'success', 'message' => 'login successfull']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid Username or Password']);
+        }
     }
 
     /**

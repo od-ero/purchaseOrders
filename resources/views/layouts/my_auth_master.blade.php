@@ -7,7 +7,7 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>{{ENV('APP_NAME')}} -@yield('subtitle')</title>
-        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
     <body class="bg-primary">
