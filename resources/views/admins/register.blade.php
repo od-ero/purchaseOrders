@@ -18,7 +18,11 @@
                             <form id="register_employee_form" >
                             @csrf
                             <div class="row mb-3">
-                            
+                                <div class="alert alert-danger print-error-msg" style="display:none">
+                                    <ul>
+                                            
+                                    </ul>
+                                </div>
                                     <div class="col-md-4">
                                         <div class="form-floating  mb-3 mb-md-0">
                                             <input class="form-control" id="register_first_name" name="first_name" type="text" placeholder="Enter user first name"   />
@@ -69,7 +73,7 @@
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3 mb-md-0">
                                             <input class="form-control" id="register_staff_no" name="staff_no" type="text" placeholder="Enter user staff number"   />
-                                            <label for="inputPassword">Staff Number &emsp; <strong class="text-danger text-right" >*</strong></label>
+                                            <label for="inputPassword">Staff Number </label>
                                             @if ($errors->has('staff_no'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('staff_no') }}

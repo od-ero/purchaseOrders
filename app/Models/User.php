@@ -22,13 +22,14 @@ class User extends Authenticatable
         'last_name',
         'middle_name' ,
         'id_no',
+        'staff_no',
         'role_id',
         'phone',
         'second_phone',
         'email',
         'phy_address',
        'login_access',
-       'special_acess',
+       'special_access',
        'password'
     ];
     protected $dates = ['deleted_at'];

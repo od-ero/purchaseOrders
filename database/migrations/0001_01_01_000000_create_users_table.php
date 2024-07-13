@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('middle_name')->nullable();
             $table->string('id_no')->unique();
-            $table->string('staff_no')->unique();
+            $table->string('staff_no')->unique()->nullable();
             $table->integer('role_id')->unsigned();
             $table->string('phone')->unique();
             $table->string('second_Phone')->unique()->nullable();

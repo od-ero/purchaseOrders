@@ -1,6 +1,6 @@
-@import '../bootstrap/bootstrap.min.css';
+@import '../bootstrap/bootstrap.min';
 @import '../fontawesome/font-awesome_6.4.2_css_all.min';
 @import '../select2/select2.min';
-@import '../alertifyjs/css/alertify.min.css';
+@import '../alertifyjs/css/alertify.min';
 @import '../datatable/dataTables.dataTables.min';
 @import './styles';

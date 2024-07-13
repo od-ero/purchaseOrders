@@ -1,18 +1,18 @@
 @extends('layouts.my_app')
 @section('subtitle')
-  Dashoard
+ Home
 @endsection
 
 @section('contentheader_title')
-  Dashboard
+ Home
 @endsection
 
 @section('content')
 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Dashboard</h1>
+                        <h1 class="mt-4">Home</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
+                            <li class="breadcrumb-item active">Home</li>
                         </ol>
                         <div class="row">
                             <div class="col-xl-3 col-md-6">

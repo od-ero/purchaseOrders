@@ -2,12 +2,12 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <div class="sb-sidenav-menu-heading">Quick Acess</div>
                             <a class="nav-link" href="{{route('admins.dashboard', absolute: false)}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Dashboard
+                               Home
                             </a>
-                            <div class="sb-sidenav-menu-heading">Interface</div>
+                           
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                Employees
@@ -16,7 +16,21 @@
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link"  href="/employee/register">Add Employee</a>
-                                    <a class="nav-link" href="/employee/view">View User</a>
+                                    <a class="nav-link" href="/employee/list-active">List Active Employees</a>
+                                    <a class="nav-link" href="/employee/list-deleted">List Deleted Employees</a>
+                                </nav>
+                            </div>
+
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseImports" aria-expanded="false" aria-controls="collapseImports">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                     Purchase Orders
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseImports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link"  href="{{route('orders.import')}}">Import Excel</a>
+                                    <a class="nav-link" href="/employee/list-active">List Active Employees</a>
+                                    <a class="nav-link" href="/employee/list-deleted">List Deleted Employees</a>
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
@@ -54,15 +68,15 @@
                                     </div>
                                 </nav>
                             </div> -->
-                            <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="charts.html">
+                            <!-- <div class="sb-sidenav-menu-heading">Addons</div> -->
+                            <!-- <a class="nav-link" href="charts.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Charts
                             </a>
                             <a class="nav-link" href="tables.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Tables
-                            </a>
+                            </a> -->
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">

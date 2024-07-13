@@ -79,6 +79,7 @@ if(login_password.length < 3){
                 alertify.error('Something went wrong');
             }
         });
+
     });
     
     
@@ -86,8 +87,7 @@ if(login_password.length < 3){
 
     $('button').on('click', function() {
         register_clicked_button = $(this).attr('id');
-        // Optionally, you can submit the form here
-        // $('#myForm').submit();
+        
     });
 
 
@@ -141,7 +141,7 @@ if(login_password.length < 3){
             var isValidMiddleName = validateInput("#register_middle_name", "Middle Name is required.", null, false);
             var isValidLastName = validateInput("#register_last_name", "Enter Last Name");
             var isValidIdNo = validateInput("#register_id_no", "Enter ID Number");
-            var isValidIdNo = validateInput("#register_staff_no", "Enter Staff Number");
+            var isValidStaffNo = validateInput("#register_staff_no", "Staff number is required.", null, false);
             var isValidPhone = validateInput("#register_phone", "Invalid Phone Number", validatePhone);
             var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
             var isValidPassword = validateInput("#register_password", "Check password", validatePassword);
@@ -152,7 +152,7 @@ if(login_password.length < 3){
           
             // If all fields are valid, submit the form or perform your desired action
             if (isValidFirstName && isValidMiddleName && isValidLastName && isValidIdNo && isValidPhone &&
-                isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidRoleId && isValidPassword) {
+                isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidRoleId && isValidPassword && isValidStaffNo) {
                 // All fields are valid, proceed with form submission or other actions
                 let formData = new FormData(this);
         
@@ -167,12 +167,14 @@ if(login_password.length < 3){
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
+                            console.log('success')
                             if(register_clicked_button=='register_save_view'){
                                 setTimeout(() => {
                                 alertify.set('notifier', 'position', 'top-center');
                                 alertify.success(response.message);
-                                window.location.href = "/employee/view";
-                            }, 1000);}
+                                window.location.href = "/employee/view/"+btoa(response.user_id);
+                            }, 1000);
+                        }
                             else{
                                 setTimeout(() => {
                                     alertify.set('notifier', 'position', 'top-center');
@@ -180,14 +182,10 @@ if(login_password.length < 3){
                                     window.location.href = "/employee/register";
                                 }, 1000);
                             }
-                        } else if (response.status === "error") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.alert(response.message, function(){
-                                    alertify.message('OK');
-                                });
-                            // setTimeout(() => {
-                            //     window.location.href = "/dashboard";
-                            // }, 1000);
+                        } 
+                        else if (response.status === "error") {
+                            printErrorMsg(response.message);
+                            
                         }
                     },
                     error: function(response) {
@@ -195,26 +193,404 @@ if(login_password.length < 3){
                         alertify.error('Something went wrong');
                     }
                 });
+
+                
             }
         });
-    
-    
 
+        $('#update_employee_form').submit(function(e) {
+            e.preventDefault();
+            function validateInput(selector, errorMessage, customValidation = null, required = true) {
+                var value = $(selector).val();
+                if(value){
+                    value=value.trim();
+                }
+                if ((required && !value) || (value && customValidation && !customValidation(value))) {
+                    $(selector).addClass('is-invalid');
+                    $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                    $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+
+                    $(selector).on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    return false;
+                } else {
+                    $(selector).removeClass('is-invalid');
+                    $(selector).next('.invalid-feedback').remove();
+                    return true;
+                }
+            }
+    
+            // Custom validation functions
+            function validatePhone(value) {
+                var phoneRegex = /^[0-9]{6,13}$/;
+                return phoneRegex.test(value);
+            }
+    
+            function validatePassword(value) {
+                return value.length >= 3;
+            }
+    
+            function validateEmail(value) {
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value);
+            }
+    
+            function validateRole(value) {
+                return value !== null && value !== '';
+            }
+    
+            // Validate each input field
+            var isValidFirstName = validateInput("#register_first_name", "Enter First Name");
+            var isValidMiddleName = validateInput("#register_middle_name", "Middle Name is required.", null, false);
+            var isValidLastName = validateInput("#register_last_name", "Enter Last Name");
+            var isValidIdNo = validateInput("#register_id_no", "Enter ID Number");
+            var isValidStaffNo = validateInput("#register_staff_no", "Staff number is required.", null, false);
+            var isValidPhone = validateInput("#register_phone", "Invalid Phone Number", validatePhone);
+            var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
+            var isValidSecondPhone = validateInput("#register_second_phone", "Second Phone Number is invalid.", validatePhone, false);
+            var isValidPhyAddress = validateInput("#register_phy_address", "Physical Address is required.", null, false);
+          
+            // If all fields are valid, submit the form or perform your desired action
+            if (isValidFirstName && isValidMiddleName && isValidLastName && isValidIdNo && isValidPhone &&
+                isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidStaffNo) {
+                // All fields are valid, proceed with form submission or other actions
+                let formData = new FormData(this);
+        
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    type: 'POST',
+                    url: '/employee/update',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === "success") {
+                                setTimeout(() => {
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                                window.location.reload();
+                            }, 1000);
+                        } 
+                        else if (response.status === "error") {
+                            printErrorMsg(response.message);
+                        }
+                    },
+                    error: function(response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Something went wrong');
+                    }
+                });
+
+                
+            }
+        });
+
+    
+    
+            var table = $('#active_employees_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "/employee/list-active",
+               
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    {data: 'full_name', name: 'full_name'},
+                    {data: 'details', name: 'details'},
+                    {data: 'role_name', name: 'role_name'},
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+                ]
+               
+          });
+
+          var table = $('#deleted_employees_table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "/employee/list-deleted",
+           
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                {data: 'full_name', name: 'full_name'},
+                {data: 'details', name: 'details'},
+                {data: 'role_name', name: 'role_name'},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
+            ]
+           
+      });
        
 
+          $('body').on('click', '#update_employees_details', function () {
+           
+            $('#update_employees_modal').modal('show');
+            var user_id = $(this).data('id');
+            var action_url= $('#action_url').val(); 
+           
+            $.get('/employee/update/'+user_id, function (data) {
+               
+                $('#update_employees_modal').modal('show');
+                $('#update_user_id').val(data.id);
+                $('#register_first_name').val(data.first_name);
+                $('#register_middle_name').val(data.middle_name);
+                $('#register_last_name').val(data.last_name);
+                $('#register_staff_no').val(data.staff_no);
+                $('#register_phone').val(data.phone);
+                $('#register_second_phone').val(data.second_phone);
+                $('#register_role_id').val(data.role_id);
+                $('#register_id_no').val(data.id_no);
+                $('#register_email').val(data.email);
+                $('#register_phy_address').val(data.phy_address);
+                
+            })
+           
+          });
+
+          function printErrorMsg (msg) {
+            $.each( msg, function( key, value ) {
+                if (isWordPresent(value, 'email')){
+                    $("#register_email").addClass('is-invalid');
+                    $("#register_email").next('.invalid-feedback').remove(); 
+                    $("#register_email").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_email").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    
+                }
+                else if (isWordPresent(value, 'phone')){
+                    $("#register_phone").addClass('is-invalid');
+                    $("#register_phone").next('.invalid-feedback').remove(); 
+                    $("#register_phone").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_phone").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                else if (isWordPresent(value, 'id')){
+                    $("#register_id_no").addClass('is-invalid');
+                    $("#register_id_no").next('.invalid-feedback').remove(); 
+                    $("#register_id_no").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_id_no").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                else if (isWordPresent(value, 'staff no')){
+                    $("#register_staff_no").addClass('is-invalid');
+                    $("#register_staff_no").next('.invalid-feedback').remove(); 
+                    $("#register_staff_no").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_staff_no").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                else if (isWordPresent(value, 'name')){
+                    $("#register_first_name").addClass('is-invalid');
+                    $("#register_first_name").next('.invalid-feedback').remove(); 
+                    $("#register_first_name").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_first_name").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    $("#register_last_name").addClass('is-invalid');
+                    $("#register_last_name").next('.invalid-feedback').remove(); 
+                    $("#register_last_name").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_last_name").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                else if (isWordPresent(value, 'password')){
+                    $("#register_password").addClass('is-invalid');
+                    $("#register_password").next('.invalid-feedback').remove(); 
+                    $("#register_password").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_password").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                
+               
+            });
+           
+          }
+
+         
+          $('#back_button').on('click',function(e){
+            e.preventDefault();
+            window.history.back();
+          });
+
+          $('#clear_error').on('click',function(e){
+            e.preventDefault();
+            
+            $(".print-error-msg").css('display','none');
+          });
+
+            $('#delete_user').on('click',function(e){
+                    e.preventDefault();
+                   
+                var user_id = $('#delete_user_id').val();
+                $.ajax({
+                    type: "get",
+                        url: "/employee/delete/"+user_id,
+                    success: function (response) {
+                        if (response.status === "success") {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success(response.message);
+                            setTimeout(() => {
+                            
+                        }, 5000);
+                        window.location.reload();
+                    } 
+                    else if (response.status === "error") {
+                        alertify.set('notifier', 'position', 'top-center');
+                            alertify.error(response.message);
+                        setTimeout(() => {
+                            
+                        }, 1000);
+                    }
+                    },
+                    error: function (response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('An error occurred please try again later');
+                    }
+                });
+
+          });
+
+          $('#activate_user').on('click',function(e){
+            e.preventDefault();
+           
+        var user_id = $('#activate_user_id').val();
+        $.ajax({
+            type: "get",
+                url: "/employee/activate/"+user_id,
+            success: function (response) {
+                if (response.status === "success") {
+                   
+                    setTimeout(() => {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.success(response.message);
+                }, 5000);
+                window.location.reload();
+            } 
+            else if (response.status === "error") {
+                setTimeout(() => {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(response.message);
+                }, 5000);
+                window.location.reload();
+            }
+            },
+            error: function (response) {
+                alertify.set('notifier', 'position', 'top-center');
+                    alertify.error('An error occurred please try again later');
+            }
+        });
+
+  });
 
 
+          $('body').on('click', '#delete_user_button',function(e){
+            e.preventDefault();
+            var user_id = $(this).data('id');
+
+          $('#delete_user_modal').modal('show');
+          $('#delete_user_id').val(user_id);
+        });
+
+        $('body').on('click', '#activate_user_button',function(e){
+            e.preventDefault();
+            var user_id = $(this).data('id');
+          $('#activate_user_modal').modal('show');
+          $('#activate_user_id').val(user_id);
+        });
 
 
+        function isWordPresent(sentence, word)
+        {
+            let s = sentence.split(" ");
+            for ( let temp=0;temp<s.length;temp++)
+            {
+                if (s[temp] == (word) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-
-
-
-
-
-
-
-
-
-
-});
+        
+            $('#import_and_view_form').submit(function(e) {
+                e.preventDefault(); // Prevent the default form submission
+        
+                var batch_name = $("#batch_name").val();
+                var file_upload = $("#file_name").val();
+        
+                // Validate batch name
+                if (batch_name.length < 1) {
+                    $("#batch_name").addClass('is-invalid');
+                    $("#batch_name").next('.invalid-feedback').remove(); // Remove existing error message
+                    $("#batch_name").after('<div class="invalid-feedback">Enter batch</div>');
+        
+                    $("#batch_name").off('keyup').on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    return false;
+                }
+        
+                // Validate file upload
+                if (file_upload.length < 1) {
+                    $("#file_name").addClass('is-invalid');
+                    $("#file_name").next('.invalid-feedback').remove(); // Remove existing error message
+                    $("#file_name").after('<div class="invalid-feedback">Select file</div>');
+        
+                    $("#file_name").off('keyup').on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    return false;
+                }
+        
+                // Validate file type
+                var allowedFiles = [".xlsx", ".xls", ".csv"];
+                var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+                if (!regex.test(file_upload.toLowerCase())) {
+                    $("#file_name").addClass('is-invalid');
+                    $("#file_name").next('.invalid-feedback').remove(); // Remove existing error message
+                    $("#file_name").after('<div class="invalid-feedback">Kindly enter a valid Excel file</div>');
+        
+                    $("#file_name").off('keyup').on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    return false;
+                }
+        
+                let formData = new FormData(this);
+        
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    type: 'POST',
+                    url: 'test',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === "success") {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success('Success');
+                        } else if (response.status === "error") {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Server error');
+                        }
+                    },
+                    error: function(response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Something went wrong');
+                    }
+                });
+            });
+        });
+        
