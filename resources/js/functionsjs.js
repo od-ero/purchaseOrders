@@ -63,7 +63,7 @@ if(login_password.length < 3){
                     setTimeout(() => {
                         alertify.set('notifier', 'position', 'top-center');
                         alertify.success(response.message);
-                        window.location.href = "/admin/dashboard";
+                        window.location.href = "/admin/home";
                     }, 1000);
                 } else if (response.status === "error") {
                    
@@ -543,8 +543,7 @@ if(login_password.length < 3){
                     $("#file_name").addClass('is-invalid');
                     $("#file_name").next('.invalid-feedback').remove(); // Remove existing error message
                     $("#file_name").after('<div class="invalid-feedback">Select file</div>');
-        
-                    $("#file_name").off('keyup').on('keyup', function() {
+                    $('#file_name').on('change', function() {
                         $(this).removeClass('is-invalid');
                         $(this).next('.invalid-feedback').remove();
                     });
@@ -573,7 +572,7 @@ if(login_password.length < 3){
                         'X-CSRF-TOKEN': "{{ csrf_token() }}"
                     },
                     type: 'POST',
-                    url: 'test',
+                    url: '/import-and-view',
                     data: formData,
                     contentType: false,
                     processData: false,
@@ -581,6 +580,56 @@ if(login_password.length < 3){
                         if (response.status === "success") {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.success('Success');
+                            window.location.href = '/import-and-view';
+                        } else if (response.status === "error") {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Server error');
+                        }
+                    },
+                    error: function(response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Something went wrong');
+                    }
+                });
+
+                
+            });
+
+            
+            $('#purchaseOrdersTable').DataTable();
+
+            $('#save_and_view').on('click', function() {
+                var tableData = [];
+                $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
+                    var rowData = {
+                        'order_id': $(tr).find('td.order-id').text(),
+                        'product_name': $(tr).find('td:eq(1)').text(),
+                        'quantity': $(tr).find('td:eq(2)').text(),
+                        'price': $(tr).find('td:eq(3)').text(),
+                        'description': $(tr).find('td:eq(4)').text(),
+                    };
+                    tableData.push(rowData);
+                });
+               
+                // Example AJAX submission
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '/save-and-view', // Adjust the route as needed
+                    data: {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'data': tableData
+                    },
+                    success: function(response) {
+                        
+                        if (response.status === "success") {
+                           
+                            window.location.href = "/saved/"+response.batch_id;
+                           
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success(response.message);
                         } else if (response.status === "error") {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.error('Server error');
@@ -592,5 +641,22 @@ if(login_password.length < 3){
                     }
                 });
             });
+
+            var table = $('#saved_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "/saved/"+$('#saved_batch_id').val(),
+               
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    {data: 'product_name', name: 'product_name'},
+                    {data: 'quantity', name: 'quantity'},
+                    {data: 'price_quantity', name: 'price_quantity'},
+                    {data: 'description', name: 'description'},
+                    
+                ]
+               
+          });
+    
         });
         

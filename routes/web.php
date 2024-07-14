@@ -54,14 +54,25 @@ Route::middleware('auth')->group(function () {
     ->name('registeredUser.delete');
     Route::get('/employee/activate/{id}', [RegisteredUserController::class, 'activate'])
     ->name('registeredUser.activate');
-    Route::post('/test', [OrdersController::class, 'import'])
+    Route::post('/import-and-view', [OrdersController::class, 'import'])
     ->name('orders.import');
-    Route::post('/import-and-view', [OrdersController::class, 'importAndView'])
-    ->name('orders.importAndView');
+    Route::post('/save-and-view', [OrdersController::class, 'importAndView'])
+    ->name('orders.saveAndView');
+    Route::get('/save-and-view', function () {
+        return view('orders.view');
+    })->name('view.table');
+    Route::get('/import', function () {
+        return view('orders.import');
+    })->name('import');
+    // Route::post('/import-and-save', [OrdersController::class, 'importAndView'])
+    // ->name('orders.importAndSave');
 
     Route::get('/import-and-view', function () {
-        return view('orders.import');
-    })->name('orders.import');
+        return view('orders.import_and_view');
+    })->name('orders.import_and_view_blade');
+
+    Route::get('/saved/{id}', [OrdersController::class, 'saved'])
+    ->name('orders.saved');
 
 });
 

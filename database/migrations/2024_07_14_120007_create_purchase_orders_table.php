@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('purchase_orders', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->integer('order_batch_id')->unsigned();
+            $table->foreign('order_batch_id')->references('id')->on('order_batches');
+            $table->string('product_name')->required();
+            $table->float('quantity')->unsigned()->required();
+            $table->float('price_quantity')->required();
+            $table->string('description');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

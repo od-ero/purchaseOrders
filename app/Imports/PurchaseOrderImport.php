@@ -1,39 +1,26 @@
 <?php
-
 namespace App\Imports;
 
-use App\Models\PurchaseOrder;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Illuminate\Support\Collection;
 
-class PurchaseOrderImport implements ToModel, WithHeadingRow ,WithValidation
+class PurchaseOrderImport implements ToCollection, WithHeadingRow, WithValidation
 {
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
-    //protected $product_batch_id;
-
-    // public function __construct($product_batch_id)
-    // {
-    //     $this->product_batch_id = $product_batch_id;
-       
-    // }
-
-    public function model(array $row)
-    {   
-          
-        return new PurchaseOrder([
-            //
-        ]);
+     * @param Collection $rows
+     */
+    public function collection(Collection $rows)
+    {
+        // Process or transform the rows if needed
+        return $rows;
     }
 
     public function rules(): array
     {
         return [
+            // Define your validation rules here
         ];
     }
 }
-

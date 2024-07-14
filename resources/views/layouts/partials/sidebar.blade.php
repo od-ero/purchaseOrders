@@ -28,7 +28,7 @@
                             </a>
                             <div class="collapse" id="collapseImports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link"  href="{{route('orders.import')}}">Import Excel</a>
+                                    <a class="nav-link"  href="{{route('import')}}">Import Excel</a>
                                     <a class="nav-link" href="/employee/list-active">List Active Employees</a>
                                     <a class="nav-link" href="/employee/list-deleted">List Deleted Employees</a>
                                 </nav>
