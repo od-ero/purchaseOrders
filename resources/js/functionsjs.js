@@ -607,6 +607,8 @@ if(login_password.length < 3){
                         'quantity': $(tr).find('td:eq(2)').text(),
                         'price': $(tr).find('td:eq(3)').text(),
                         'description': $(tr).find('td:eq(4)').text(),
+                        
+                        
                     };
                     tableData.push(rowData);
                 });
@@ -657,6 +659,51 @@ if(login_password.length < 3){
                 ]
                
           });
-    
+
+          function appendTotalRowPurchaseOrdersTable() {
+            const totalRow = `
+                <tr>
+                    <td class="no-border"></td> 
+                    <td class="no-border"></td> 
+                    <td class="no-border"></td> 
+                    <td class="no-border"></td> 
+                    <td><b>Total (KSH)</b></td> 
+                    <td><b id="total"></b></td>
+                </tr>
+            `;
+            $('#purchaseOrdersTable tbody').append(totalRow);
+        }
+
+        function updateTotalPurchaseOrdersTable() {
+            let total = 0;
+            $('.subtotal').each(function() {
+                total += parseFloat($(this).text()) || 0;
+            });
+            $('#total').text(total.toFixed(2));
+        }
+
+        function updateSubtotalPurchaseOrdersTable($row) {
+            const quantity = parseInt($row.find('.quantity').text()) || 0;
+            const price = parseFloat($row.find('.price').text()) || 0;
+            const subtotal = quantity * price;
+            $row.find('.subtotal').text(subtotal.toFixed(2));
+            updateTotalPurchaseOrdersTable();
+        }
+
+        $('#PurchaseOrdersTable').on('input', '.quantity, .price', function() {
+            const $this = $(this);
+            if ($this.hasClass('quantity')) {
+                $this.text($this.text().replace(/\D/g, '')); // Only allow digits
+            }
+            const $row = $this.closest('tr');
+            updateSubtotalPurchaseOrdersTable($row);
         });
+
+        // Append the total row
+        appendTotalRowPurchaseOrdersTable();
+
+        // Initialize total on page load
+        updateTotalPurchaseOrdersTable();
+    });
+    
         

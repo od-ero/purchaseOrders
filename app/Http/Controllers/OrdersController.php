@@ -29,8 +29,10 @@ class OrdersController extends Controller
             return $item->toArray();
         });
 
+       
+
         // Store the data in the session
-        $request->session()->put(['data'=>$transformedData, 'batch_name'=>$batch_name['batch_name']]);
+        $request->session()->put(['data'=>$transformedData, 'total_price'=>0, 'batch_name'=>$batch_name['batch_name']]);
 
         return response()->json(['status' => 'success']);
     } catch (\Exception $ex) {
@@ -40,19 +42,21 @@ class OrdersController extends Controller
 }
     
   public function importAndView(Request $request){
+    
     $batch_name= session('batch_name');
    $order_batches=OrderBatches::create([
                 'batche_name' => $batch_name
                   ]);
     $data = $request->input('data');
     foreach ($data as $row) {
+        if($row['product_name']){
         PurchaseOrder::create([
             'order_batch_id' => $order_batches['id'],
             'product_name' => $row['product_name'],
             'quantity' => $row['quantity'],
             'price_quantity' => $row['price'],
             'description' => $row['description']
-        ]);
+        ]);}
     }
     $encoded_batch_id= base64_encode($order_batches['id']);
     return response()->json(['status' => 'success', 'message' => 'Data submitted successfully!' , 'batch_id'=>$encoded_batch_id]);

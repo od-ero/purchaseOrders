@@ -8,8 +8,6 @@
 @endsection
 
 @section('content')
-@include('admins.updateUser');
-
 <div class="container-fluid px-4">
 <form>
     <input type="text" name="saved_batch_id" value="{{$encoded_batch_id}}" id="saved_batch_id" hidden>
@@ -23,7 +21,7 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                               List Active Employees
+                              Uploaded Orders
                             </div>
                             <div class="card-body">
             <table id="saved_table" class="table table-bordered data-table">
