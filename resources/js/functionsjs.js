@@ -599,20 +599,25 @@ if(login_password.length < 3){
             $('#purchaseOrdersTable').DataTable();
 
             $('#save_and_view').on('click', function() {
+                var batch_details = {
+                    'batch_name':$('#upload_and_view_batch_name').val(),
+                    'supplier_name':$('#upload_and_view_supplier_name').val(),
+                    'order_no':$('#upload_and_view_order_number').val(),
+                };
                 var tableData = [];
+                
                 $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
                     var rowData = {
-                        'order_id': $(tr).find('td.order-id').text(),
-                        'product_name': $(tr).find('td:eq(1)').text(),
-                        'quantity': $(tr).find('td:eq(2)').text(),
-                        'price': $(tr).find('td:eq(3)').text(),
-                        'description': $(tr).find('td:eq(4)').text(),
+                        
+                        'product_name': $(tr).find('#product_name').val(),
+                        'quantity': $(tr).find('#quantity').val(),
+                        'price': $(tr).find('#price').val(),
                         
                         
                     };
                     tableData.push(rowData);
                 });
-               
+              
                 // Example AJAX submission
                 $.ajax({
                     headers: {
@@ -622,7 +627,8 @@ if(login_password.length < 3){
                     url: '/save-and-view', // Adjust the route as needed
                     data: {
                         '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'data': tableData
+                        'data': tableData,
+                        'batch_details':batch_details
                     },
                     success: function(response) {
                         
@@ -643,32 +649,45 @@ if(login_password.length < 3){
                     }
                 });
             });
-
-            var table = $('#saved_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "/saved/"+$('#saved_batch_id').val(),
-               
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                    {data: 'product_name', name: 'product_name'},
-                    {data: 'quantity', name: 'quantity'},
-                    {data: 'price_quantity', name: 'price_quantity'},
-                    {data: 'description', name: 'description'},
-                    
-                ]
-               
-          });
-
+                var table = $('#saved_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "/saved/" + $('#saved_batch_id').val(),
+                        dataSrc: function(json) {
+                            // Append the 'Total' row to the data
+                            json.data.push({
+                                DT_RowClass: 'total-row',
+                                DT_RowIndex: '',
+                                sub_total: json.sub_total_sum,
+                                product_name: '', 
+                                quantity: '',
+                                price_quantity: 'Total (KSH):',
+                                
+                            });
+                            return json.data;
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                        { data: 'product_name', name: 'product_name' },
+                        { data: 'quantity', name: 'quantity' },
+                        { data: 'price_quantity', name: 'price_quantity' },
+                        { data: 'sub_total', name: 'sub_total' }, 
+                    ],
+                    initComplete: function() {
+                       
+                    }
+                });
+            
           function appendTotalRowPurchaseOrdersTable() {
             const totalRow = `
                 <tr>
                     <td class="no-border"></td> 
                     <td class="no-border"></td> 
                     <td class="no-border"></td> 
-                    <td class="no-border"></td> 
                     <td><b>Total (KSH)</b></td> 
-                    <td><b id="total"></b></td>
+                    <td><b id="total"><input type='text' id='total1' name='total1'></b></td>
                 </tr>
             `;
             $('#purchaseOrdersTable tbody').append(totalRow);
@@ -683,27 +702,130 @@ if(login_password.length < 3){
         }
 
         function updateSubtotalPurchaseOrdersTable($row) {
-            const quantity = parseInt($row.find('.quantity').text()) || 0;
-            const price = parseFloat($row.find('.price').text()) || 0;
+            const quantity = parseFloat($row.find('#quantity').val()) || 0;
+            const price = parseFloat($row.find('#price').val()) || 0;
+           
             const subtotal = quantity * price;
-            $row.find('.subtotal').text(subtotal.toFixed(2));
+            $row.find('.subtotal').text(subtotal.toFixed(0));
             updateTotalPurchaseOrdersTable();
         }
 
-        $('#PurchaseOrdersTable').on('input', '.quantity, .price', function() {
-            const $this = $(this);
-            if ($this.hasClass('quantity')) {
-                $this.text($this.text().replace(/\D/g, '')); // Only allow digits
-            }
-            const $row = $this.closest('tr');
-            updateSubtotalPurchaseOrdersTable($row);
-        });
-
-        // Append the total row
+       
         appendTotalRowPurchaseOrdersTable();
 
-        // Initialize total on page load
+        
         updateTotalPurchaseOrdersTable();
+
+
+       $('#purchaseOrdersTable').on('keyup', 'input', function () {
+        
+        var row = $(this).closest('tr');
+        var total = 0;
+        updateSubtotalPurchaseOrdersTable(row)
+        
+    });
+
+    $('#create_supplier_form').submit(function(e) {
+        e.preventDefault();
+
+        // Define validation function
+        function validateInput(selector, errorMessage, customValidation = null, required = true) {
+            var value = $(selector).val();
+            if(value){
+                value=value.trim();
+            }
+            if ((required && !value) || (value && customValidation && !customValidation(value))) {
+                $(selector).addClass('is-invalid');
+                $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+
+                $(selector).on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });
+                return false;
+            } else {
+                $(selector).removeClass('is-invalid');
+                $(selector).next('.invalid-feedback').remove();
+                return true;
+            }
+        }
+
+        // Custom validation functions
+        function validatePhone(value) {
+            var phoneRegex = /^[0-9]{6,13}$/;
+            return phoneRegex.test(value);
+        }
+
+        function validatePassword(value) {
+            return value.length >= 3;
+        }
+
+        function validateEmail(value) {
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(value);
+        }
+
+        function validateRole(value) {
+            return value !== null && value !== '';
+        }
+
+        // Validate each input field
+        var isValidName = validateInput("#create_supplier_name", "Enter Suppliers Name");
+        var isValidKra = validateInput("#create_supplier_kra", "Enter Suppliers KRA PIN", null, false);
+        var isValidPhone = validateInput("#create_supplier_phone", "Invalid Phone Number", validatePhone);
+        var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
+       
+        var isValidSecondPhone = validateInput("#create_supplier_second_phone", "Second Phone Number is invalid.", validatePhone, false);
+        var isValidPhyAddress = validateInput("#create_supplier_phy_address", "Physical Address is required.", null, false);
+      
+        // If all fields are valid, submit the form or perform your desired action
+        if (isValidName && isValidPhone && isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidKra) {
+            // All fields are valid, proceed with form submission or other actions
+            let formData = new FormData(this);
+    
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                type: 'POST',
+                url: '/employee/register',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status === "success") {
+                        console.log('success')
+                        if(register_clicked_button=='register_save_view'){
+                            setTimeout(() => {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success(response.message);
+                            window.location.href = "/employee/view/"+btoa(response.user_id);
+                        }, 1000);
+                    }
+                        else{
+                            setTimeout(() => {
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                                window.location.href = "/employee/register";
+                            }, 1000);
+                        }
+                    } 
+                    else if (response.status === "error") {
+                        printErrorMsg(response.message);
+                        
+                    }
+                },
+                error: function(response) {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error('Something went wrong');
+                }
+            });
+
+            
+        }
+    });
+
     });
     
         

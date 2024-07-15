@@ -29,8 +29,21 @@
                             <div class="collapse" id="collapseImports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link"  href="{{route('import')}}">Import Excel</a>
-                                    <a class="nav-link" href="/employee/list-active">List Active Employees</a>
-                                    <a class="nav-link" href="/employee/list-deleted">List Deleted Employees</a>
+                                    <a class="nav-link" href="/employee/list-active">List Imported Batch</a>
+                                    <a class="nav-link" href="/employee/list-deleted">List Sent Batch</a>
+                                </nav>
+                            </div>
+
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSuppliers" aria-expanded="false" aria-controls="collapseImports">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                    Suppliers
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseSuppliers" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link"  href="{{route('suppliers.create_supplier')}}">Add Supplier</a>
+                                    <a class="nav-link" href="/employee/list-active">List Active Suppliers</a>
+                                    <a class="nav-link" href="/employee/list-deleted">List Deleted Suppliers</a>
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

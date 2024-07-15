@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_batches', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('batch_name')->nullable();
             $table->string('supplier_name');
-            $table->integer('supplier_id')->nullable()->unsigned();
-            $table->string('order_no');
+            $table->string('supplier_kra_pin')->nullable();
+            $table->string('supplier_phone')->unique();
+            $table->string('supplier_second_Phone')->unique()->nullable();
+            $table->string('supplier_email');
+            $table->string('supplier_phy_address')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_batches');
+        Schema::dropIfExists('suppliers');
     }
 };

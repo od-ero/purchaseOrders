@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('purchase_orders', function (Blueprint $table) {
+        Schema::create('order_batch_items', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('order_batch_id')->unsigned();
             $table->foreign('order_batch_id')->references('id')->on('order_batches');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('purchase_orders');
+        Schema::dropIfExists('order_batch_items');
     }
 };

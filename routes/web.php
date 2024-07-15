@@ -73,8 +73,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/saved/{id}', [OrdersController::class, 'saved'])
     ->name('orders.saved');
-
 });
+
+Route::get('/create-supplier', function () {
+    return view('suppliers.create_supplier');
+})->name('suppliers.create_supplier');
 
 
 

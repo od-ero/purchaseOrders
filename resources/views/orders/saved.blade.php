@@ -24,14 +24,51 @@
                               Uploaded Orders
                             </div>
                             <div class="card-body">
+                            <div class="row mb-3">
+                               
+                               <div class="col-md-3">
+                                   <div class="form-floating  mb-3 mb-md-0">
+                                    
+                                       <input class="form-control" id="upload_and_view_batch_name" value="{{session('batch_details')[0]['batch_name']}}" name="batch_name" type="text" placeholder="Enter Batch Name"   />
+                                       <label for="inputBatchName">Batch Name  </label>
+                                       @if ($errors->has('supplier_name'))
+                                           <div class="text-danger mt-2">
+                                               {{ $errors->first('mName') }}
+                                           </div>
+                                       @endif
+                                   </div>
+                               </div>
+                                   <div class="col-md-6">
+                               <div class="form-floating mb-3 mb-md-0">
+                                       <input class="form-control" id="upload_and_view_supplier_name" name="supplier_name" type="text" value="{{ session('batch_details')[0]['supplier_name']}}" placeholder="Enter other names" />
+                                       <label for="inputPassword">Supplier &emsp; <strong class="text-danger text-right" >*</strong></label>
+                                       @if ($errors->has('supplier_name'))
+                                           <div class="text-danger mt-2">
+                                               {{ $errors->first('mName') }}
+                                           </div>
+                                       @endif
+                                   </div>
+                               </div>
+                               <div class="col-md-3">
+                               <div class="form-floating mb-3 mb-md-0">
+                                       <input class="form-control" id="upload_and_view_order_number" name="order_number" type="text" value="{{session('batch_details')[0]['order_no']}}" placeholder="Enter Your Order Number"   />
+                                       <label for="inputPassword">Order Number &emsp; <strong class="text-danger text-right" >*</strong></label>
+                                       @if ($errors->has('lName'))
+                                           <div class="text-danger mt-2">
+                                               {{ $errors->first('lName') }}
+                                           </div>
+                                       @endif
+                                   </div>
+                               </div>
+                           </div>                    
             <table id="saved_table" class="table table-bordered data-table">
                 <thead>
                 <tr>
-                    <th>Order ID</th>
+                    <th>#</th>
                     <th>Product Name</th>
                     <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Description</th>
+                    <th>Cost</th>
+                    <th>Subtotal</th>
                 </tr>
                 </thead>
                 <tbody>

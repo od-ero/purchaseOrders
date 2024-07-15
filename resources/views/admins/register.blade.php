@@ -18,11 +18,7 @@
                             <form id="register_employee_form" >
                             @csrf
                             <div class="row mb-3">
-                                <div class="alert alert-danger print-error-msg" style="display:none">
-                                    <ul>
-                                            
-                                    </ul>
-                                </div>
+                               
                                     <div class="col-md-4">
                                         <div class="form-floating  mb-3 mb-md-0">
                                             <input class="form-control" id="register_first_name" name="first_name" type="text" placeholder="Enter user first name"   />
@@ -56,7 +52,6 @@
                                             @endif
                                         </div>
                                     </div>
-                                    
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">

@@ -30,8 +30,8 @@ class AuthenticatedSessionController extends Controller
        
         try {
             $request->authenticate();
-            $request->session()->regenerate();
-       
+          $request->session()->regenerate();
+      
             return response()->json(['status'=>'success', 'message' => 'login successfull']);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Invalid Username or Password']);
