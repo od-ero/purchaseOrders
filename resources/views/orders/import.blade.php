@@ -26,7 +26,7 @@
                     </div>
                     <label for="file_name">Select Excel File <strong class="text-danger">*</strong></label>
                     <div class="form-floating login_form_password my-3">
-                        <input class="form-control" id="file_name" type="file"  accept=".xlsx ,.xls ,.csv" name="file_name" placeholder="Select file name" />
+                        <input class="form-control" id="file_name" type="file"  accept=".csv" name="file_name" placeholder="Select file name" />
                         
                         @if ($errors->has('file_name'))
                             <div class="text-danger mt-2">

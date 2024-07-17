@@ -22,7 +22,7 @@ class supplier extends Model
         'supplier_second_phone',
         'supplier_email',
         'supplier_phy_address',
-        'supplier_kra',
+        'supplier_kra_pin',
        
     ];
     protected $dates = ['deleted_at'];

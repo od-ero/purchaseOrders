@@ -5,6 +5,8 @@ use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\SuppliersController;
+use App\Models\supplier;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -67,17 +69,56 @@ Route::middleware('auth')->group(function () {
     // Route::post('/import-and-save', [OrdersController::class, 'importAndView'])
     // ->name('orders.importAndSave');
 
-    Route::get('/import-and-view', function () {
-        return view('orders.import_and_view');
-    })->name('orders.import_and_view_blade');
+   
+    Route::get('/import-and-view', [OrdersController::class, 'importView'])
+    ->name('orders.import_and_view_blade');
 
     Route::get('/saved/{id}', [OrdersController::class, 'saved'])
     ->name('orders.saved');
-});
 
-Route::get('/create-supplier', function () {
-    return view('suppliers.create_supplier');
-})->name('suppliers.create_supplier');
+    Route::get('/orders/pdf/{id}', [OrdersController::class, 'previewOrderasPdf'])
+    ->name('orders.previewOrderasPdf');
+
+    Route::get('/make-orders', [OrdersController::class, 'makeOrder'])
+    ->name('orders.makeOrder');
+    Route::post('/make-orders', [OrdersController::class, 'sendOrder'])
+    ->name('orders.sendOrder');
+
+    
+
+
+    Route::get('/create-supplier', function () {
+        return view('suppliers.create_supplier');
+    })->name('suppliers.create_supplier');
+    
+    Route::post('/supplier/create', [SuppliersController::class, 'createSupplier'])
+        ->name('suppliers.createSupplier');
+
+        Route::get('/suppliers/list-active', [SuppliersController::class, 'listActiveSuppliers'])
+        ->name('suppliers.listActiveSuppliers');
+
+        Route::get('/suppliers/list-deleted', [SuppliersController::class, 'listDeletedSuppliers'])
+        ->name('suppliers.listDeletedSuppliers');
+
+        Route::get('/suppliers/view/{id}', [suppliersController::class, 'viewSupplier'])
+        ->name('suppliers.viewSupplier');
+        
+        Route::get('/suppliers/update/{id}', [suppliersController::class, 'editSupplier'])
+        ->name('suppliers.editSupplier');
+
+        Route::post('/supplier/update', [suppliersController::class, 'updateSupplier'])
+        ->name('suppliers.updateSupplier');
+
+        Route::get('/supplier/delete/{id}', [suppliersController::class, 'deleteSupplier'])
+    ->name('suppliers.deleteSupplier');
+
+        Route::get('/supplier/activate/{id}', [suppliersController::class, 'activateSupplier'])
+    ->name('suppliers.activateSupplier');
+
+    
+
+
+});
 
 
 

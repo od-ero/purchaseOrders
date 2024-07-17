@@ -42,8 +42,8 @@
                             <div class="collapse" id="collapseSuppliers" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link"  href="{{route('suppliers.create_supplier')}}">Add Supplier</a>
-                                    <a class="nav-link" href="/employee/list-active">List Active Suppliers</a>
-                                    <a class="nav-link" href="/employee/list-deleted">List Deleted Suppliers</a>
+                                    <a class="nav-link" href="{{route('suppliers.listActiveSuppliers')}}">List Active Suppliers</a>
+                                    <a class="nav-link" href="{{route('suppliers.listDeletedSuppliers')}}">List Deleted Suppliers</a>
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

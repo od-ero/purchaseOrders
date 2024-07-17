@@ -1,26 +1,22 @@
-@extends('layouts.my_app')
-@section('subtitle')
-    Create Supplier
-@endsection
-
-@section('contentheader_title')
-  Create Supplier
-@endsection
+<!-- Button trigger modal -->
 
 
-@section('content')
-
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="card shadow-lg border-0 rounded-lg mt-5">
-                        <div class="card-header"><h3 class="text-center font-weight-light my-4">Create a Supplier</h3></div>
-                        <div class="card-body">
-                            <form id="create_supplier_form" >
+<!-- Modal -->
+<div class="modal fade" id="update_supplier_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Supplier</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form id="update_supplier_form" >
                             @csrf
+                            <input class="form-control" id="update_supplier_id" name="update_supplier_id" type="text" placeholder="Enter user first name"  hidden/>
                             <div class="row mb-3">
                                         <div class="form-floating  mb-3 mb-md-0">
                                             <input class="form-control" id="create_supplier_name" name="create_supplier_name" type="text" placeholder="Enter user first name"   />
-                                            <label for="inputPassword">Name </label>
+                                            <label for="inputPassword">Name &emsp; <strong class="text-danger" >*</strong></label>
                                             @if ($errors->has('first_name'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('first_name') }}
@@ -91,20 +87,56 @@
                                 </div>
                                 
                                 <div class="mt-4 mb-0 text-center">
-                                    <button type="submit" id="register_save_view" class="btn btn-primary  btn-submit">Save and View</button>  
-                                        <button type="submit" id="register_save_and_add_new" class="btn btn-secondary">Save and Add New</button>
+                                    <button type="submit" id="create_supplier_save_view" class="btn btn-primary  btn-submit">Save and View</button>  
+                                        <button type="submit" id="create_supplier_save_and_add_new" class="btn btn-secondary">Save and Add New</button>
                                    
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-          
-       
-
-          
-@endsection
+      </div>
+    </div>
+  </div>
+</div>
 
 
+
+<div class="modal fade" id="delete_supplier_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Supplier</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       Are you sure you want to delete this supplier?
+       <form >
+        <input type="text" id="delete_supplier_id" name="delete_supplier_id" hidden>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="delete_supplier" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="activate_supplier_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success">
+        <h5 class="modal-title" id="exampleModalLabel">Activate Supplier</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       Are you sure you want to active this Supplier?
+       <form >
+        <input type="text" id="activate_supplier_id" name="activate_supplier_id" hidden>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="activate_supplier" class="btn btn-success">Activate</button>
+      </div>
+    </div>
+  </div>
+</div>

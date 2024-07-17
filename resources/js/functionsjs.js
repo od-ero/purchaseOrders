@@ -521,22 +521,7 @@ if(login_password.length < 3){
         
             $('#import_and_view_form').submit(function(e) {
                 e.preventDefault(); // Prevent the default form submission
-        
-                var batch_name = $("#batch_name").val();
                 var file_upload = $("#file_name").val();
-        
-                // Validate batch name
-                if (batch_name.length < 1) {
-                    $("#batch_name").addClass('is-invalid');
-                    $("#batch_name").next('.invalid-feedback').remove(); // Remove existing error message
-                    $("#batch_name").after('<div class="invalid-feedback">Enter batch</div>');
-        
-                    $("#batch_name").off('keyup').on('keyup', function() {
-                        $(this).removeClass('is-invalid');
-                        $(this).next('.invalid-feedback').remove();
-                    });
-                    return false;
-                }
         
                 // Validate file upload
                 if (file_upload.length < 1) {
@@ -551,12 +536,12 @@ if(login_password.length < 3){
                 }
         
                 // Validate file type
-                var allowedFiles = [".xlsx", ".xls", ".csv"];
+                var allowedFiles = [".csv"];
                 var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
                 if (!regex.test(file_upload.toLowerCase())) {
                     $("#file_name").addClass('is-invalid');
                     $("#file_name").next('.invalid-feedback').remove(); // Remove existing error message
-                    $("#file_name").after('<div class="invalid-feedback">Kindly enter a valid Excel file</div>');
+                    $("#file_name").after('<div class="invalid-feedback">Kindly enter a valid CSV file</div>');
         
                     $("#file_name").off('keyup').on('keyup', function() {
                         $(this).removeClass('is-invalid');
@@ -601,7 +586,7 @@ if(login_password.length < 3){
             $('#save_and_view').on('click', function() {
                 var batch_details = {
                     'batch_name':$('#upload_and_view_batch_name').val(),
-                    'supplier_name':$('#upload_and_view_supplier_name').val(),
+                    'supplier_id':$('#upload_and_view_supplier_id').val(),
                     'order_no':$('#upload_and_view_order_number').val(),
                 };
                 var tableData = [];
@@ -634,7 +619,7 @@ if(login_password.length < 3){
                         
                         if (response.status === "success") {
                            
-                            window.location.href = "/saved/"+response.batch_id;
+                            window.location.href = "/orders/pdf/"+response.batch_id;
                            
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.success(response.message);
@@ -774,7 +759,7 @@ if(login_password.length < 3){
         var isValidName = validateInput("#create_supplier_name", "Enter Suppliers Name");
         var isValidKra = validateInput("#create_supplier_kra", "Enter Suppliers KRA PIN", null, false);
         var isValidPhone = validateInput("#create_supplier_phone", "Invalid Phone Number", validatePhone);
-        var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
+        var isValidEmail = validateInput("#create_supplier_email", "Invalid Email", validateEmail);
        
         var isValidSecondPhone = validateInput("#create_supplier_second_phone", "Second Phone Number is invalid.", validatePhone, false);
         var isValidPhyAddress = validateInput("#create_supplier_phy_address", "Physical Address is required.", null, false);
@@ -789,30 +774,29 @@ if(login_password.length < 3){
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
                 },
                 type: 'POST',
-                url: '/employee/register',
+                url: '/supplier/create',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function(response) {
                     if (response.status === "success") {
-                        console.log('success')
                         if(register_clicked_button=='register_save_view'){
                             setTimeout(() => {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.success(response.message);
-                            window.location.href = "/employee/view/"+btoa(response.user_id);
+                            window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
                         }, 1000);
                     }
                         else{
                             setTimeout(() => {
                                 alertify.set('notifier', 'position', 'top-center');
                                 alertify.success(response.message);
-                                window.location.href = "/employee/register";
+                                window.location.href = "/create-supplier";
                             }, 1000);
                         }
                     } 
                     else if (response.status === "error") {
-                        printErrorMsg(response.message);
+                        printSupplierErrorMsg(response.message);
                         
                     }
                 },
@@ -825,6 +809,283 @@ if(login_password.length < 3){
             
         }
     });
+
+    function printSupplierErrorMsg (msg) {
+        $.each( msg, function( key, value ) {
+            if (isWordPresent(value, 'email')){
+                $("#create_supplier_email").addClass('is-invalid');
+                $("#create_supplier_email").next('.invalid-feedback').remove(); 
+                $("#create_supplier_email").after('<div class="invalid-feedback">' + value + '</div>');
+                $("#create_supplier_email").on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });
+                
+            }
+            else if (isWordPresent(value, 'phone')){
+                $("#create_supplier_phone").addClass('is-invalid');
+                $("#create_supplier_phone").next('.invalid-feedback').remove(); 
+                $("#create_supplier_phone").after('<div class="invalid-feedback">' + value + '</div>');
+                $("#create_supplier_phone").on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });}
+            else if (isWordPresent(value, 'kra')){
+                $("#create_supplier_kra").addClass('is-invalid');
+                $("#create_supplier_kra").next('.invalid-feedback').remove(); 
+                $("#create_supplier_kra").after('<div class="invalid-feedback">' + value + '</div>');
+                $("#create_supplier_kra").on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });}
+            else if (isWordPresent(value, 'staff no')){
+                $("#register_staff_no").addClass('is-invalid');
+                $("#register_staff_no").next('.invalid-feedback').remove(); 
+                $("#register_staff_no").after('<div class="invalid-feedback">' + value + '</div>');
+                $("#register_staff_no").on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });}
+            else if (isWordPresent(value, 'name')){
+                $("#create_supplier_name").addClass('is-invalid');
+                $("#create_supplier_name").next('.invalid-feedback').remove(); 
+                $("#create_supplier_name").after('<div class="invalid-feedback">' + value + '</div>');
+                $("#create_supplier_name").on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });
+               }
+        });
+      }
+
+      var table = $('#active_suppliers_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "/suppliers/list-active",
+       
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+            {data: 'supplier_name', name: 'supplier_name'},
+            {data: 'supplier_phone', name: 'supplier_phone'},
+            {data: 'supplier_email', name: 'supplier_email'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
+        ]
+       
+  });
+
+  $('#update_supplier_form').submit(function(e) {
+    e.preventDefault();
+
+    // Define validation function
+    function validateInput(selector, errorMessage, customValidation = null, required = true) {
+        var value = $(selector).val();
+        if(value){
+            value=value.trim();
+        }
+        if ((required && !value) || (value && customValidation && !customValidation(value))) {
+            $(selector).addClass('is-invalid');
+            $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+            $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+
+            $(selector).on('keyup', function() {
+                $(this).removeClass('is-invalid');
+                $(this).next('.invalid-feedback').remove();
+            });
+            return false;
+        } else {
+            $(selector).removeClass('is-invalid');
+            $(selector).next('.invalid-feedback').remove();
+            return true;
+        }
+    }
+
+    // Custom validation functions
+    function validatePhone(value) {
+        var phoneRegex = /^[0-9]{6,13}$/;
+        return phoneRegex.test(value);
+    }
+
+    function validatePassword(value) {
+        return value.length >= 3;
+    }
+
+    function validateEmail(value) {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value);
+    }
+
+    function validateRole(value) {
+        return value !== null && value !== '';
+    }
+
+    // Validate each input field
+    var isValidName = validateInput("#create_supplier_name", "Enter Suppliers Name");
+    var isValidKra = validateInput("#create_supplier_kra", "Enter Suppliers KRA PIN", null, false);
+    var isValidPhone = validateInput("#create_supplier_phone", "Invalid Phone Number", validatePhone);
+    var isValidEmail = validateInput("#create_supplier_email", "Invalid Email", validateEmail);
+   
+    var isValidSecondPhone = validateInput("#create_supplier_second_phone", "Second Phone Number is invalid.", validatePhone, false);
+    var isValidPhyAddress = validateInput("#create_supplier_phy_address", "Physical Address is required.", null, false);
+  
+    // If all fields are valid, submit the form or perform your desired action
+    if (isValidName && isValidPhone && isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidKra) {
+        // All fields are valid, proceed with form submission or other actions
+        let formData = new FormData(this);
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            type: 'POST',
+            url: '/supplier/update',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status === "success") {
+                    console.log('success')
+                    if(register_clicked_button=='register_save_view'){
+                        setTimeout(() => {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.success(response.message);
+                        window.location.href = "/suppliers/view/"+btoa(response.user_id);
+                    }, 1000);
+                }
+                    else{
+                        setTimeout(() => {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success(response.message);
+                            window.location.href = "/suppliers/list-active";
+                        }, 1000);
+                    }
+                } 
+                else if (response.status === "error") {
+                    printSupplierErrorMsg(response.message);
+                    
+                }
+            },
+            error: function(response) {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error('Something went wrong');
+            }
+        });
+
+        
+    }
+});
+
+$('body').on('click', '#update_suppliers_details', function () {
+    var supplier_id = $(this).data('id');
+    var action_url= $('#action_url').val();
+    $('#update_supplier_modal').modal('show'); 
+    $.get('/suppliers/update/'+supplier_id, function (data) {
+        $('#update_supplier_id').val(data.id);
+        $('#create_supplier_name').val(data.supplier_name);
+        $('#create_supplier_phone').val(data.supplier_phone);
+        $('#create_supplier_kra').val(data.supplier_second_phone);
+        $('#create_supplier_second_phone').val(data.supplier_second_phone);
+        $('#create_supplier_email').val(data.supplier_email);
+        $('#create_supplier_phy_address').val(data.supplier_phy_address);
+        
+    })
+   
+  });
+
+  $('#delete_supplier').on('click',function(e){
+    e.preventDefault();
+   
+var supplier_id = $('#delete_supplier_id').val();
+$.ajax({
+    type: "get",
+        url: "/supplier/delete/"+supplier_id,
+    success: function (response) {
+        if (response.status === "success") {
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.success(response.message);
+            setTimeout(() => {
+            
+        }, 5000);
+        window.location.reload();
+    } 
+    else if (response.status === "error") {
+        alertify.set('notifier', 'position', 'top-center');
+            alertify.error(response.message);
+        setTimeout(() => {
+            
+        }, 1000);
+    }
+    },
+    error: function (response) {
+        alertify.set('notifier', 'position', 'top-center');
+            alertify.error('An error occurred please try again later');
+    }
+});
+
+});
+ 
+$('body').on('click', '#delete_supplier_button',function(e){
+    e.preventDefault();
+    var supplier_id = $(this).data('id');
+
+  $('#delete_supplier_modal').modal('show');
+  $('#delete_supplier_id').val(supplier_id);
+});
+
+var table = $('#deleted_suppliers_table').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "/suppliers/list-deleted",
+   
+    columns: [
+        { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+        {data: 'supplier_name', name: 'supplier_name'},
+        {data: 'supplier_phone', name: 'supplier_phone'},
+        {data: 'supplier_email', name: 'supplier_email'},
+        {data: 'action', name: 'action', orderable: false, searchable: false},
+    ]
+   
+});
+
+$('body').on('click', '#activate_supplier_button',function(e){
+    e.preventDefault();
+    var supplier_id = $(this).data('id');
+  $('#activate_supplier_modal').modal('show');
+  $('#activate_supplier_id').val(supplier_id);
+});
+
+$('#activate_supplier').on('click',function(e){
+    e.preventDefault();
+   
+var supplier_id = $('#activate_supplier_id').val();
+$.ajax({
+    type: "get",
+        url: "/supplier/activate/"+supplier_id,
+    success: function (response) {
+        if (response.status === "success") {
+           
+            setTimeout(() => {
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.success(response.message);
+        }, 5000);
+        window.location.reload();
+    } 
+    else if (response.status === "error") {
+        setTimeout(() => {
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.error(response.message);
+        }, 5000);
+        window.location.reload();
+    }
+    },
+    error: function (response) {
+        alertify.set('notifier', 'position', 'top-center');
+            alertify.error('An error occurred please try again later');
+    }
+});
+
+});
+
+
 
     });
     
