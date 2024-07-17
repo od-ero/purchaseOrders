@@ -54,11 +54,15 @@ View Suppliers
                           </table>
                           <a class="btn btn-info btn-sm" id="back_button"
                           style="color: #fff !important;"><i class="fa fa-backward"></i></a>
-                          
-                          
+                          <a class="btn btn-primary btn-sm"  data-id="{{ base64_encode($supplier_details['id'])}}" id="update_suppliers_details" href="#">Edit</i></a>
+                          @if ($supplier_details['deleted_at'] == null)
+                          <a class="btn btn-success btn-sm"  data-id="{{ base64_encode($supplier_details['id'])}}" id="delete_supplier_button" href="#">Delete</i></a>
+                          @endif
+                          @if ($supplier_details['deleted_at'])
+                          <a class="btn btn-success btn-sm" data-id="{{ base64_encode($supplier_details['id'])}}" id="activate_supplier_button" href="#">Activate</i></a>
+                          @endif
                          
-                          
-</div>
+                      </div>
                     </div>
                 </div>
             </div>

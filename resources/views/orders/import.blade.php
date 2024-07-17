@@ -17,7 +17,7 @@
                     @csrf
                     <div class="form-floating login_form_password my-3">
                         <input class="form-control" id="batch_name" type="text" name="batch_name" placeholder="Batch Name" />
-                        <label for="batch_name">Enter batch name <strong class="text-danger">*</strong></label>
+                        <label for="batch_name">Enter batch name</label>
                         @if ($errors->has('batch_name'))
                             <div class="text-danger mt-2">
                                 {{ $errors->first('batch_name') }}

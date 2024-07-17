@@ -59,19 +59,15 @@ if(login_password.length < 3){
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.success(response.message);
                     setTimeout(() => {
-                        alertify.set('notifier', 'position', 'top-center');
-                        alertify.success(response.message);
                         window.location.href = "/admin/home";
-                    }, 1000);
+                    }, 5000);
                 } else if (response.status === "error") {
                    
                     alertify.set('notifier', 'position', 'top-center');
                     alertify.error(response.message);
-                    setTimeout(() => {
-                        window.location.href = "/login";
-                    }, 1000);
                 }
             },
             error: function(response) {
@@ -168,19 +164,17 @@ if(login_password.length < 3){
                     success: function(response) {
                         if (response.status === "success") {
                             console.log('success')
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success(response.message);
                             if(register_clicked_button=='register_save_view'){
                                 setTimeout(() => {
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
-                                window.location.href = "/employee/view/"+btoa(response.user_id);
-                            }, 1000);
+                                    window.location.href = "/employee/view/"+btoa(response.user_id);
+                            }, 5000);
                         }
                             else{
                                 setTimeout(() => {
-                                    alertify.set('notifier', 'position', 'top-center');
-                                    alertify.success(response.message);
-                                    window.location.href = "/employee/register";
-                                }, 1000);
+                                    window.location.reload();
+                                }, 5000);
                             }
                         } 
                         else if (response.status === "error") {
@@ -269,11 +263,12 @@ if(login_password.length < 3){
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
-                                setTimeout(() => {
-                                alertify.set('notifier', 'position', 'top-center');
+                            alertify.set('notifier', 'position', 'top-center');
                                 alertify.success(response.message);
+                                setTimeout(() => {
+                                
                                 window.location.reload();
-                            }, 1000);
+                            }, 5000);
                         } 
                         else if (response.status === "error") {
                             printErrorMsg(response.message);
@@ -436,16 +431,13 @@ if(login_password.length < 3){
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.success(response.message);
                             setTimeout(() => {
-                            
+                                window.location.reload();
                         }, 5000);
-                        window.location.reload();
+                       
                     } 
                     else if (response.status === "error") {
                         alertify.set('notifier', 'position', 'top-center');
                             alertify.error(response.message);
-                        setTimeout(() => {
-                            
-                        }, 1000);
                     }
                     },
                     error: function (response) {
@@ -465,19 +457,16 @@ if(login_password.length < 3){
                 url: "/employee/activate/"+user_id,
             success: function (response) {
                 if (response.status === "success") {
-                   
-                    setTimeout(() => {
                     alertify.set('notifier', 'position', 'top-center');
                     alertify.success(response.message);
-                }, 5000);
-                window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+                     }, 5000);
+               
             } 
             else if (response.status === "error") {
-                setTimeout(() => {
-                    alertify.set('notifier', 'position', 'top-center');
+                alertify.set('notifier', 'position', 'top-center');
                     alertify.error(response.message);
-                }, 5000);
-                window.location.reload();
             }
             },
             error: function (response) {
@@ -565,10 +554,12 @@ if(login_password.length < 3){
                         if (response.status === "success") {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.success('Success');
-                            window.location.href = '/import-and-view';
+                            setTimeout(() => {
+                                window.location.href = '/import-and-view';
+                            }, 5000);
                         } else if (response.status === "error") {
                             alertify.set('notifier', 'position', 'top-center');
-                            alertify.error('Server error');
+                            alertify.error(response.message);
                         }
                     },
                     error: function(response) {
@@ -618,14 +609,14 @@ if(login_password.length < 3){
                     success: function(response) {
                         
                         if (response.status === "success") {
-                           
-                            window.location.href = "/orders/pdf/"+response.batch_id;
-                           
                             alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message);
+                            alertify.success(response.message); 
+                            setTimeout(() => {
+                                window.location.href = "/orders/pdf/"+response.batch_id;
+                            }, 5000);
                         } else if (response.status === "error") {
                             alertify.set('notifier', 'position', 'top-center');
-                            alertify.error('Server error');
+                            alertify.error(response.message);
                         }
                     },
                     error: function(response) {
@@ -634,11 +625,11 @@ if(login_password.length < 3){
                     }
                 });
             });
-                var table = $('#saved_table').DataTable({
+                var table = $('#view_batch_table').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "/saved/" + $('#saved_batch_id').val(),
+                        url: "/view/batch/" + $('#saved_batch_id').val(),
                         dataSrc: function(json) {
                             // Append the 'Total' row to the data
                             json.data.push({
@@ -655,8 +646,8 @@ if(login_password.length < 3){
                     },
                     columns: [
                         { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                        { data: 'product_name', name: 'product_name' },
                         { data: 'quantity', name: 'quantity' },
+                        { data: 'product_name', name: 'product_name' },
                         { data: 'price_quantity', name: 'price_quantity' },
                         { data: 'sub_total', name: 'sub_total' }, 
                     ],
@@ -780,19 +771,17 @@ if(login_password.length < 3){
                 processData: false,
                 success: function(response) {
                     if (response.status === "success") {
-                        if(register_clicked_button=='register_save_view'){
-                            setTimeout(() => {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.success(response.message);
+                        if(register_clicked_button=='register_save_view'){
+                            setTimeout(() => {
                             window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
-                        }, 1000);
+                        }, 5000);
                     }
                         else{
                             setTimeout(() => {
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
                                 window.location.href = "/create-supplier";
-                            }, 1000);
+                            }, 5000);
                         }
                     } 
                     else if (response.status === "error") {
@@ -943,21 +932,12 @@ if(login_password.length < 3){
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    console.log('success')
-                    if(register_clicked_button=='register_save_view'){
-                        setTimeout(() => {
-                        alertify.set('notifier', 'position', 'top-center');
-                        alertify.success(response.message);
-                        window.location.href = "/suppliers/view/"+btoa(response.user_id);
-                    }, 1000);
-                }
-                    else{
-                        setTimeout(() => {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message);
-                            window.location.href = "/suppliers/list-active";
-                        }, 1000);
-                    }
+                    alertify.set('notifier', 'position', 'top-center');
+                        alertify.success('Supplier Edited Succefully');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 5000);
+                   
                 } 
                 else if (response.status === "error") {
                     printSupplierErrorMsg(response.message);
@@ -1000,19 +980,20 @@ $.ajax({
         url: "/supplier/delete/"+supplier_id,
     success: function (response) {
         if (response.status === "success") {
-            alertify.set('notifier', 'position', 'top-center');
-            alertify.success(response.message);
-            setTimeout(() => {
-            
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success(response.message);
+        setTimeout(() => {
+            window.location.reload();
         }, 5000);
-        window.location.reload();
+            
+       
     } 
     else if (response.status === "error") {
         alertify.set('notifier', 'position', 'top-center');
-            alertify.error(response.message);
+        alertify.error(response.message);
         setTimeout(() => {
             
-        }, 1000);
+        }, 5000);
     }
     },
     error: function (response) {
@@ -1062,19 +1043,21 @@ $.ajax({
         url: "/supplier/activate/"+supplier_id,
     success: function (response) {
         if (response.status === "success") {
-           
-            setTimeout(() => {
-            alertify.set('notifier', 'position', 'top-center');
-            alertify.success(response.message);
+         
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success('Supplier Activated Succefully');
+        setTimeout(() => {
+            window.location.reload();
         }, 5000);
-        window.location.reload();
+            
+       
     } 
     else if (response.status === "error") {
-        setTimeout(() => {
-            alertify.set('notifier', 'position', 'top-center');
-            alertify.error(response.message);
-        }, 5000);
-        window.location.reload();
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.error(response.message);
+         setTimeout(() => {
+            window.location.reload();
+         }, 5000);
     }
     },
     error: function (response) {
@@ -1085,6 +1068,75 @@ $.ajax({
 
 });
 
+var table = $('#imported_batches_table').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "/orders/list-imported-batches",
+   "order": [] ,
+    columns: [
+        {data: 'id', name: 'id'},
+        {data: 'created_date', name: 'created_date'},
+        {data: 'order_no', name: 'order_no'},
+        {data: 'supplier_name', name: 'supplier_name'},
+        {data: 'order_count', name: 'order_count'},
+       
+        {data: 'action', name: 'action', orderable: false, searchable: false},
+    ]
+   
+});
+
+$('#update_batch_button').on('click', function() {
+    var batch_details = {
+        'batch_id':$('#upload_and_view_batch_id').val(),
+        'batch_name':$('#upload_and_view_batch_name').val(),
+        'supplier_id':$('#upload_and_view_supplier_id').val(),
+        'order_no':$('#upload_and_view_order_number').val(),
+    };
+    var tableData = [];
+    
+    $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
+        var rowData = {
+            
+            'product_name': $(tr).find('#product_name').val(),
+            'quantity': $(tr).find('#quantity').val(),
+            'price': $(tr).find('#price').val(),
+            
+            
+        };
+        tableData.push(rowData);
+    });
+  
+    // Example AJAX submission
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'POST',
+        url: '/orders/update-batch', // Adjust the route as needed
+        data: {
+            '_token': $('meta[name="csrf-token"]').attr('content'),
+            'data': tableData,
+            'batch_details':batch_details
+        },
+        success: function(response) {
+            
+            if (response.status === "success") {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.success(response.message); 
+                setTimeout(() => {
+                    window.location.href = "/view/batch/"+response.batch_id;
+                }, 5000);
+            } else if (response.status === "error") {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error(response.message);
+            }
+        },
+        error: function(response) {
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.error('Something went wrong');
+        }
+    });
+});
 
 
     });

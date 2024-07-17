@@ -73,19 +73,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/import-and-view', [OrdersController::class, 'importView'])
     ->name('orders.import_and_view_blade');
 
-    Route::get('/saved/{id}', [OrdersController::class, 'saved'])
-    ->name('orders.saved');
+    Route::get('/view/batch/{id}', [OrdersController::class, 'viewBatch'])
+    ->name('orders.viewBatch');
 
     Route::get('/orders/pdf/{id}', [OrdersController::class, 'previewOrderasPdf'])
     ->name('orders.previewOrderasPdf');
+
+    Route::get('/orders/no-cost-pdf/{id}', [OrdersController::class, 'noCostPDF'])
+    ->name('orders.noCostPDF');
 
     Route::get('/make-orders', [OrdersController::class, 'makeOrder'])
     ->name('orders.makeOrder');
     Route::post('/make-orders', [OrdersController::class, 'sendOrder'])
     ->name('orders.sendOrder');
 
-    
+    Route::get('/orders/list-imported-batches', [OrdersController::class, 'listImportedOrders'])
+    ->name('orders.listImportedOrders');
 
+    Route::get('/update/batch/{id}', [OrdersController::class, 'editBatch'])
+    ->name('orders.editBatch');
+
+    Route::post('/orders/update-batch', [OrdersController::class, 'updateBatch'])
+    ->name('orders.updateBatch');
 
     Route::get('/create-supplier', function () {
         return view('suppliers.create_supplier');

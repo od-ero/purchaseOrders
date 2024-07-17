@@ -86,11 +86,10 @@
                                     </div>
                                 </div>
                                 
-                                <div class="mt-4 mb-0 text-center">
-                                    <button type="submit" id="create_supplier_save_view" class="btn btn-primary  btn-submit">Save and View</button>  
-                                        <button type="submit" id="create_supplier_save_and_add_new" class="btn btn-secondary">Save and Add New</button>
-                                   
-                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                              </div>
                             </form>
       </div>
     </div>

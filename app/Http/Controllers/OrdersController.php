@@ -11,6 +11,7 @@ use App\Http\Requests\PurchaseOrdersRequest;
 use App\Models\OrderBatches;
 use App\Models\OrderBatchItem;
 use App\OrderPDF;
+use Carbon\Carbon;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +19,8 @@ use setasign\Fpdi\Fpdi;
 use DataTables;
 use Log;
 use App\Models\EmailBody;
+
+use function PHPUnit\Framework\isEmpty;
 
 class OrdersController extends Controller
 {   public function importView(){
@@ -41,9 +44,19 @@ class OrdersController extends Controller
         try {
             $filePath = $request->file('file_name')->getPathname();
             $data = array_map('str_getcsv', file($filePath));
-            $supplier= supplier::where('supplier_name',$data[0][2])
+            $supplier_name=$data[0][2];
+            $supplier= supplier::where('supplier_name',$supplier_name)
                                     ->first();
+             $order_no_present =  OrderBatches::where('order_no',$data[0][4]) 
+                                                ->first();  
 
+            if ($supplier== null){
+                return response()->json(['status' => 'error', 'message' => 'Upload file with an active supplier']);
+            }
+            // else if($order_no_present==null) {
+            //     return response()->json(['status' => 'error', 'message' => 'The order number already exists']);
+            // }
+           else { 
                 $batch_details[] = [
                     'batch_name' => $batch_name,
                     'supplier_id' =>  $supplier['id'],
@@ -61,10 +74,12 @@ class OrdersController extends Controller
                 }
             }
 
-            // Store the data in the session
+            
             $request->session()->put(['data' => $transformedData, 'batch_details' => $batch_details]);
 
             return response()->json(['status' => 'success']);
+        }
+           
         } catch (\Exception $ex) {
             Log::error($ex);
             return response()->json(['status' => 'error', 'message' => 'An error occurred']);
@@ -100,11 +115,13 @@ class OrdersController extends Controller
 
     public function saveAndView() {}
 
-    public function saved(Request $request, $encoded_batch_id)
+    public function viewBatch(Request $request, $encoded_batch_id)
     {
         $batch_id = base64_decode($encoded_batch_id);
-
-     $order_batch= OrderBatches::find($batch_id);
+        $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
+                                    ->select('order_batches.*', 'suppliers.supplier_name')
+                                    ->where('order_batches.id', $batch_id)
+                                    ->first();
         if ($request->ajax()) {
             $order_batch= OrderBatches::find($batch_id);
             $data = OrderBatchItem::where('order_batch_id', $batch_id)->get();
@@ -121,7 +138,7 @@ class OrdersController extends Controller
             ->toJson();
         }
 
-        return view('orders.saved', ['encoded_batch_id' => $encoded_batch_id]);
+        return view('orders.view_batch', ['encoded_batch_id' => $encoded_batch_id, 'batch_details'=> $batch_details]);
     }
 
     Public function previewOrderasPdf(Request $request, $encoded_batch_id){
@@ -139,6 +156,21 @@ class OrdersController extends Controller
 
     }
 
+    Public function noCostPdf(Request $request, $encoded_batch_id){
+        $batch_id = base64_decode($encoded_batch_id);
+       
+        $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
+        $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
+                                    ->select('order_batches.order_no','suppliers.supplier_name')
+                                    ->where('order_batches.id',$batch_id)
+                                    ->first();
+        $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);
+
+        return view('orders.view_pdf',['pdfContent'=> $pdfContent,
+        'encoded_product_batch_id'=>$batch_id]);
+
+    }
+
     public function makeOrder(){
         $mail= EmailBody::find(1);
         return view('orders.make_order',['mail'=>$mail]);
@@ -147,5 +179,104 @@ class OrdersController extends Controller
     public function sendOrder(){
         
     }
+
+    public function listImportedOrders(Request $request)
+    {
+        if ($request->ajax()) {
+    
+            $data = OrderBatches::leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
+                ->select('order_batches.*', 'suppliers.supplier_name')
+                ->orderBy('order_batches.id', 'desc')
+                ->get();
+    
+            return DataTables::of($data)
+                ->addColumn('created_date', function($row) {
+                    return Carbon::parse($row->created_at)->toDateTimeString();
+                })
+                ->addColumn('order_count', function($row) {
+                    return OrderBatchItem::where('order_batch_id', $row->id)->count();
+                })
+                ->addColumn('action', function($row) {
+                    $encodedId = base64_encode($row->id);
+                    return '
+    <div class="btn-group">
+        <a type="button" href="/view/batch/' . $encodedId . '" class="btn btn-success">View</a>
+        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/'. $encodedId . '">PDF with Prices</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encodedId . '">PDF No Prices</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/'. $encodedId . '">Edit</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_button" href="#">Delete</a></li>
+        </ul>
+    </div>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+    
+        return view('orders.list_imported_batches');
+    }
+
+    public function editBatch($encoded_batch_id){
+        
+        $suppliers = Supplier::all();
+        $batch_id= base64_decode($encoded_batch_id);
+        $batch_details= OrderBatches::find($batch_id);
+        $batch_items = OrderBatchItem::where('order_batch_id',$batch_id)
+                                    ->get();
+                                    
+    return view('orders.update_orders', ['suppliers' => $suppliers, 'batch_details'=>$batch_details, 'batch_items'=>$batch_items]);
+    }
+    public function updateBatch(Request $request){
+       $data = $request->all();
+        $batch_id = $data['batch_details']['batch_id'];
+       $supplier_id=base64_decode($data['batch_details']['supplier_id']);
+       $order_no = $data['batch_details']['order_no'];
+       $batch_name=$data['batch_details']['batch_name'];
+       
+        try{
+        //     $validated = Validator::make($request->all(), [
+        //         $batch_name => ['nullable', 'string', 'max:255'],
+        //         $supplier_id => ['required', 'string', 'max:255'],
+        //         $order_n0 => ['required', 'string', 'max:255'],
+                
+        //     ]);
+        //    // 'email' => ['nullable', 'email', 'unique:users,email,' . $validated_details['user_id']],
+        
+        //     if ($validated->fails()) {
+                
+        //         return response()->json(['status' =>'error', 'message' => $validated->errors()->all()]);
+        //     }
+        $order_batches = OrderBatches::where('id', $batch_id)
+                                      ->update([
+                                            'batch_name' => $batch_name,
+                                            'supplier_id' => $supplier_id,
+                                            'order_no' => $order_no,
+                                        ]);
+        $batch_items = $data['data'];
+
+        foreach ($batch_items as $row) {
+            if ($row['product_name'] && $row['quantity'] && $row['price']) {
+                OrderBatchItem::where('order_batch_id', $batch_id)
+                              ->update([
+                                    'product_name' => $row['product_name'],
+                                    'quantity' => $row['quantity'],
+                                    'price_quantity' => $row['price']
+                                ]);
+            }
+        }
+        return response()->json(['status' => 'success', 'batch_id' => base64_encode($batch_id),'message' => 'Batch Updated']);
+    }
+    catch (\Exception $ex) {
+        Log::error($ex);
+        dd($ex);
+        return response()->json(['status' => 'error', 'message' => 'An error occurred']);
+    }
+       
+    
+    }
+    
 }
 

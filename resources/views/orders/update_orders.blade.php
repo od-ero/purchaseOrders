@@ -1,32 +1,34 @@
 @extends('layouts.my_app')
 
 @section('subtitle')
- Import View
+ Edit Order
 @endsection
 
 @section('contentheader_title')
- Import View
+ Edit Order
 @endsection
 
 @section('content')
 <div class="container-fluid px-4">
-                        <h1 class="mt-4">Uploaded Orders</h1>
+                        <h1 class="mt-4">Edit Orders</h1>
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item"><a href="{{route('admins.dashboard')}}">Home</a></li>
-                            <li class="breadcrumb-item active">Uploaded Orders</li>
+                            <li class="breadcrumb-item active">Edit Orders</li>
                         </ol>
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                              Uploaded Orders
+                              Edit Orders
                             </div>
                             <div class="card-body">
                             <div class="row mb-3">
                                
                                <div class="col-md-3">
-                                   <div class="form-floating  mb-3 mb-md-0">
+                               <input class="form-control" id="upload_and_view_batch_id" value="{{ $batch_details['id'] }}" name="batch_id" type="text" placeholder="Enter Batch Id"  hidden />
+                                       
+                                  <div class="form-floating  mb-3 mb-md-0">
                                     
-                                       <input class="form-control" id="upload_and_view_batch_name" value="{{session('batch_details')[0]['batch_name']}}" name="batch_name" type="text" placeholder="Enter Batch Name"   />
+                                       <input class="form-control" id="upload_and_view_batch_name" value="{{ $batch_details['batch_name'] }}" name="batch_name" type="text" placeholder="Enter Batch Name"   />
                                        <label for="inputBatchName">Batch Name  </label>
                                        @if ($errors->has('supplier_name'))
                                            <div class="text-danger mt-2">
@@ -37,26 +39,16 @@
                                </div>
                                    <div class="col-md-6">
                                     <div class="form-floating login_form_userid mb-3 mb-md-0">
-                                    <select class="form-control appselect2" id="upload_and_view_supplier_id" name="supplier_id">
-  
-                                        @if(session('batch_details') && isset(session('batch_details')[0]['supplier_id']))
-                                            @php
-                                        
-                                                $sessionSupplierId = session('batch_details')[0]['supplier_id'];
-                                                $sessionSupplierName = session('batch_details')[0]['supplier_name'];
-
-                                            @endphp
-                                            
-                                                <option value="{{ base64_encode($sessionSupplierId) }}" selected>
-                                                    {{ $sessionSupplierName }} <strong class="text-danger">*</strong>
-                                                </option>
-                                        
-                                        @endif
+                                        <select name="supplier_id" id="upload_and_view_supplier_id">
                                         @foreach ($suppliers as $supplier)
-                                            <option value="{{ base64_encode($supplier['id']) }}">{{ $supplier['supplier_name'] }}</option>
+                                            <option value="{{ base64_encode($supplier['id']) }}"
+                                             @if ($supplier['id']==$batch_details['supplier_id'])
+                                            selected
+                                            @endif>
+                                            {{ $supplier['supplier_name'] }}
+                                        </option>
                                         @endforeach
                                     </select>
-
                                             @if ($errors->has('supplier_name'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('supplier_name') }}
@@ -66,7 +58,7 @@
                                </div>
                                <div class="col-md-3">
                                <div class="form-floating mb-3 mb-md-0">
-                                       <input class="form-control" id="upload_and_view_order_number" name="order_number" type="text" value="{{session('batch_details')[0]['order_no']}}" placeholder="Enter Your Order Number"   />
+                                       <input class="form-control" id="upload_and_view_order_number" name="order_number" type="text" value="{{$batch_details['order_no']}}" placeholder="Enter Your Order Number"   />
                                        <label for="inputPassword">Order Number &emsp; <strong class="text-danger text-right" >*</strong></label>
                                        @if ($errors->has('lName'))
                                            <div class="text-danger mt-2">
@@ -90,7 +82,7 @@
             <?php $total_price=0 ?>
            
             <form>
-            @foreach(session('data') as $index => $row)
+            @foreach($batch_items as $index => $row)
 
             <tr>
                 <td class="order-id">{{ $index + 1 }}</td>
@@ -104,8 +96,8 @@
             </form>
             </tbody>
             </table>
-            <button id="save_and_view" class="btn btn-primary">Save and View</button>
-            <button id="save_and_send" class="btn btn-primary">Save and Send</button>
+            <button id="update_batch_button" class="btn btn-primary">Save and View</button>
+            
             </div>
                         </div>
                     </div>
