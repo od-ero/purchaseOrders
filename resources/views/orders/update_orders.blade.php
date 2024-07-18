@@ -9,6 +9,7 @@
 @endsection
 
 @section('content')
+@include('orders.delete_orders');
 <div class="container-fluid px-4">
                         <h1 class="mt-4">Edit Orders</h1>
                         <ol class="breadcrumb mb-4">
@@ -24,6 +25,9 @@
                             <div class="row mb-3">
                                
                                <div class="col-md-3">
+                                @php
+                                $encoded_batch_id = base64_encode($batch_details['id']);
+                                @endphp
                                <input class="form-control" id="upload_and_view_batch_id" value="{{ $batch_details['id'] }}" name="batch_id" type="text" placeholder="Enter Batch Id"  hidden />
                                        
                                   <div class="form-floating  mb-3 mb-md-0">
@@ -88,16 +92,24 @@
                 <td class="order-id">{{ $index + 1 }}</td>
                 <td  class="quantity"> <input id="quantity" value="{{ $row['quantity'] ?? '0' }}" style="width: 80px;"> </td>
                 <td > <input id="product_name" value="{{ $row['product_name'] ?? '0' }}" style="width: 350px;"></td>
-                <td class="price"> <input id="price" value="{{ $row['price'] ?? '0' }}" style="width: 80px;"> </td> 
-                <td class="subtotal">{{$row['price'] * $row['quantity']}}</td>
+                <td class="price"> <input id="price" value="{{ $row['price_quantity'] ?? '0' }}" style="width: 80px;"> </td> 
+                <td class="subtotal">{{$row['price_quantity'] * $row['quantity']}}</td>
             </tr>
            
             @endforeach
             </form>
             </tbody>
             </table>
-            <button id="update_batch_button" class="btn btn-primary">Save and View</button>
-            
+            <a class="btn btn-info btn-sm" id="back_button"
+                          style="color: #fff !important;"><i class="fa fa-backward"></i></a>
+            <a data-id="{{$encoded_batch_id}}" href="/view/batch/{{$encoded_batch_id}}" class="btn btn-primary">View</a>
+            <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_batch_button" href="#">Save and View</a>
+            @if ($batch_details['deleted_at'] == null)
+                <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
+            @endif
+            @if ($batch_details['deleted_at'])
+            <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="activate_batch_order_button" href="#">Activate</a>
+            @endif
             </div>
                         </div>
                     </div>

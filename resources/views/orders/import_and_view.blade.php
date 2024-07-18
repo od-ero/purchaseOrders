@@ -35,7 +35,7 @@
                                        @endif
                                    </div>
                                </div>
-                                   <div class="col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-floating login_form_userid mb-3 mb-md-0">
                                     <select class="form-control appselect2" id="upload_and_view_supplier_id" name="supplier_id">
   
@@ -105,7 +105,7 @@
             </tbody>
             </table>
             <button id="save_and_view" class="btn btn-primary">Save and View</button>
-            <button id="save_and_send" class="btn btn-primary">Save and Send</button>
+            <a id="save_and_send" href="/make-orders/" class="btn btn-primary">Save and Make Order</a>
             </div>
                         </div>
                     </div>

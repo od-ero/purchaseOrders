@@ -102,7 +102,7 @@ class OrderPDF
 
         $pdfContent = $pdf->Output('S');
        
-        return base64_encode($pdfContent);
+        return $pdfContent;
        
         
     }
@@ -177,13 +177,14 @@ class OrderPDF
         
         $pdf->SetY($pdf->GetY() + 30); 
         $pdf->SetFont('Times', '', 12);
-        $pdf->Cell(0, 10, 'Date: ' . Carbon::now()->toFormattedDateString(), 0, 1, 'L');
+        $current_date =  Carbon::now()->isoFormat('ddd MMM Do YYYY h:mm a');
+        $pdf->Cell(0, 10, 'Date: ' .  $current_date, 0, 1, 'L');
 
         $pdfContent = $pdf->Output('S');
        
-        return base64_encode($pdfContent);
+        return $pdfContent;
        
-        
+       
     }
 
 

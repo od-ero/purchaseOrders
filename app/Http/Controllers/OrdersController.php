@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\JsonResponse;
 use App\Imports\PurchaseOrderImport;
 use App\Http\Requests\PurchaseOrdersRequest;
+use App\Mail\MakeOrdersMail;
 use App\Models\OrderBatches;
 use App\Models\OrderBatchItem;
 use App\OrderPDF;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use setasign\Fpdi\Fpdi;
 use DataTables;
 use Log;
+use Mail;
 use App\Models\EmailBody;
 
 use function PHPUnit\Framework\isEmpty;
@@ -150,7 +152,7 @@ class OrdersController extends Controller
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         $pdfContent = OrderPDF::createPDF($batch_items, $batch_details);
-
+        $pdfContent = base64_encode($pdfContent);
         return view('orders.view_pdf',['pdfContent'=> $pdfContent,
         'encoded_product_batch_id'=>$batch_id]);
 
@@ -165,18 +167,59 @@ class OrdersController extends Controller
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);
-
+        $pdfContent = base64_encode($pdfContent);
         return view('orders.view_pdf',['pdfContent'=> $pdfContent,
         'encoded_product_batch_id'=>$batch_id]);
 
     }
 
-    public function makeOrder(){
+    public function makeOrder($encoded_batch_id){
+        $batch_id = base64_decode($encoded_batch_id);
+        $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
+                                    ->select('order_batches.id as order_id','order_batches.order_no','suppliers.supplier_name')
+                                    ->where('order_batches.id',$batch_id)
+                                    ->first();
         $mail= EmailBody::find(1);
-        return view('orders.make_order',['mail'=>$mail]);
+        return view('orders.make_order',['mail'=>$mail, 'batch_details'=>$batch_details]);
     }
 
-    public function sendOrder(){
+    public function sendOrder(Request $request){
+        $mail_content = $request->all();
+        $batch_id= $mail_content['batch_id'];
+        try{
+        $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
+        $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
+                                    ->select('order_batches.order_no','suppliers.supplier_name','suppliers.supplier_email')
+                                    ->where('order_batches.id',$batch_id)
+                                    ->first();
+        if($mail_content['with_prices']=="Yes") {                           
+        $pdfContent = OrderPDF::createPDF($batch_items, $batch_details);
+            }
+            else{
+                $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);     
+            }
+        $mailData = [
+            'title' => $mail_content['email_subject'],
+            'body' => $mail_content['email_body'],
+             'files' => [
+            //     public_path('images/stamp.png'),
+            //     public_path('images/signature.png'),
+                [
+                    'content' => $pdfContent,
+                    'name' =>  $batch_details['order_no'] . '_order.pdf'
+                ]
+            ]
+        ];
+
+        Mail::to($batch_details['supplier_email'])
+            ->send(new MakeOrdersMail($mailData));
+             
+            return response()->json(['status' => 'success', 'message' => 'Order send']);
+
+    } catch (\Exception $ex) {
+        Log::error($ex);
+        return response()->json(['status' => 'error', 'message' => 'An error occurred']);
+    }
         
     }
 
@@ -205,10 +248,11 @@ class OrdersController extends Controller
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
+             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/make-orders/'. $encodedId . '">Make Order</a></li>
             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/'. $encodedId . '">PDF with Prices</a></li>
             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encodedId . '">PDF No Prices</a></li>
             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/'. $encodedId . '">Edit</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_button" href="#">Delete</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_order_button" href="#">Delete</a></li>
         </ul>
     </div>';
                 })
@@ -223,8 +267,10 @@ class OrdersController extends Controller
         
         $suppliers = Supplier::all();
         $batch_id= base64_decode($encoded_batch_id);
-        $batch_details= OrderBatches::find($batch_id);
-        $batch_items = OrderBatchItem::where('order_batch_id',$batch_id)
+        $batch_details= OrderBatches::withTrashed()
+                                     ->find($batch_id);
+        $batch_items = OrderBatchItem::withTrashed()
+                                     ->where('order_batch_id',$batch_id)
                                     ->get();
                                     
     return view('orders.update_orders', ['suppliers' => $suppliers, 'batch_details'=>$batch_details, 'batch_items'=>$batch_items]);
@@ -249,7 +295,8 @@ class OrdersController extends Controller
                 
         //         return response()->json(['status' =>'error', 'message' => $validated->errors()->all()]);
         //     }
-        $order_batches = OrderBatches::where('id', $batch_id)
+        $order_batches = OrderBatches::withTrashed()
+                                    ->where('id', $batch_id)
                                       ->update([
                                             'batch_name' => $batch_name,
                                             'supplier_id' => $supplier_id,
@@ -277,6 +324,20 @@ class OrdersController extends Controller
        
     
     }
+
+    public function deleteOrderBatch($encoded_batch_id){
+      $batch_id=  base64_decode($encoded_batch_id);
+      try{
+        OrderBatchItem::where('order_batch_id',$batch_id)
+                        ->delete();
+        OrderBatches::where('id',$batch_id)
+                    ->delete(); 
+                    return response()->json(['status' => 'success', 'message' => 'Order deleted succesfully']);
+
+    } catch (\Exception $ex) {
+        Log::error($ex);
+        return response()->json(['status' => 'error', 'message' => 'An error occurred']);
+    }                          
+    }
     
 }
-

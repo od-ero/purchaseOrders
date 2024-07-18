@@ -1,5 +1,14 @@
 $(document).ready(function () {
-    
+
+    $('#loading_alert')
+    .hide()  
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+;
         $('#login_password').on('click', function() {
             var login_userid = $("#login_userid").val();
             if(login_userid ==  null){
@@ -1137,6 +1146,83 @@ $('#update_batch_button').on('click', function() {
         }
     });
 });
+
+$('#delete_batch_order').on('click',function(e){
+    e.preventDefault();
+   
+var batch_id = $('#delete_batch_id').val();
+$.ajax({
+    type: "get",
+        url: "/order-batch/delete/"+batch_id,
+    success: function (response) {
+        if (response.status === "success") {
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success(response.message);
+        setTimeout(() => {
+            window.location.reload();
+        }, 5000);
+            
+       
+    } 
+    else if (response.status === "error") {
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.error(response.message);
+        setTimeout(() => {
+            
+        }, 5000);
+    }
+    },
+    error: function (response) {
+        alertify.set('notifier', 'position', 'top-center');
+            alertify.error('An error occurred please try again later');
+    }
+});
+
+});
+ 
+$('body').on('click', '#make_order_modal_button', function(e) {
+    e.preventDefault();
+
+    let form = $('#make_order_form')[0]; // Get the form element
+    let formData = new FormData(form);   // Create FormData from the form element
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        },
+        type: 'POST',
+        url: '/make-orders',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            if (response.status === "success") {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.success(response.message);
+                setTimeout(() => {
+                    window.history.back();
+                }, 5000);
+            } else if (response.status === "error") {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error(response.message);
+            }
+        },
+        error: function(response) {
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.error('Something went wrong');
+        }
+    });
+});
+
+
+$('body').on('click', '#make_order',function(e){
+    e.preventDefault();
+    
+    var order_batch_id = $(this).data('id');
+  $('#make_order_modal').modal('show');
+  $('#delete_batch_id').val(order_batch_id);
+});
+
 
 
     });

@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/no-cost-pdf/{id}', [OrdersController::class, 'noCostPDF'])
     ->name('orders.noCostPDF');
 
-    Route::get('/make-orders', [OrdersController::class, 'makeOrder'])
+    Route::get('/make-orders/{id}', [OrdersController::class, 'makeOrder'])
     ->name('orders.makeOrder');
     Route::post('/make-orders', [OrdersController::class, 'sendOrder'])
     ->name('orders.sendOrder');
@@ -95,6 +95,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/orders/update-batch', [OrdersController::class, 'updateBatch'])
     ->name('orders.updateBatch');
+
+    Route::get('/order-batch/delete/{id}', [OrdersController::class, 'deleteOrderBatch'])
+    ->name('orders.deleteOrderBatch');
 
     Route::get('/create-supplier', function () {
         return view('suppliers.create_supplier');

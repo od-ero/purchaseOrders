@@ -7,46 +7,46 @@ use App\Models\User;
 use DataTables;
 class EmployeesController extends Controller
 {
-    public function index(Request $request)
-    {
-        if ($request->ajax()) {
+        public function index(Request $request)
+        {
+            if ($request->ajax()) {
 
-            $data = User::leftJoin('roles','roles.id','users.role_id')
-                            ->select('users.*','roles.role_name')
-                            ->where('login_access', 1)
-                            ->where('special_access',0)
-                            ->get();
+                $data = User::leftJoin('roles','roles.id','users.role_id')
+                                ->select('users.*','roles.role_name')
+                                ->where('login_access', 1)
+                                ->where('special_access',0)
+                                ->get();
 
-            return DataTables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('full_name', function($row) {
-                        return $row->first_name . ' ' . $row->last_name;
-                    })
-                    ->addColumn('details', function($row) {
-                        return $row->phone . '<br>' . $row->id_no;
-                    })
-                    ->addColumn('action', function($row){
-                        $encodedId = base64_encode($row->id);      
-                            return
-'<div class="btn-group">
-  <a type="button"  href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>
-  <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="visually-hidden">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>
-    <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_user_button" href="#">Delete</a></li>
-    
-    
-  </ul>
-</div>';
-                                               })
-                    ->rawColumns(['details','action'])
-                    ->make(true);
+                return DataTables::of($data)
+                        ->addIndexColumn()
+                        ->addColumn('full_name', function($row) {
+                            return $row->first_name . ' ' . $row->last_name;
+                        })
+                        ->addColumn('details', function($row) {
+                            return $row->phone . '<br>' . $row->id_no;
+                        })
+                        ->addColumn('action', function($row){
+                            $encodedId = base64_encode($row->id);      
+                                return
+    '<div class="btn-group">
+    <a type="button"  href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>
+    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>
+        <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_user_button" href="#">Delete</a></li>
+        
+        
+    </ul>
+    </div>';
+                                                })
+                        ->rawColumns(['details','action'])
+                        ->make(true);
+            }
+            
+            return view('admins.users');
         }
-          
-        return view('admins.users');
-    }
 
     public function indexDeleted(Request $request)
     {

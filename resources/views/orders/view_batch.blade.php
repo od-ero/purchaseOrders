@@ -8,6 +8,7 @@
 @endsection
 
 @section('content')
+@include('orders.delete_orders');
 <div class="container-fluid px-4">
 <form>
     <input type="text" name="saved_batch_id" value="{{$encoded_batch_id}}" id="saved_batch_id" hidden>
@@ -73,6 +74,15 @@
                 <tbody>
                 </tbody>
             </table>
+            <a class="btn btn-info btn-sm" id="back_button"
+                          style="color: #fff !important;"><i class="fa fa-backward"></i></a>
+            <a data-id="{{$encoded_batch_id}}" id="update_batch_button" href="/update/batch/{{$encoded_batch_id}}" class="btn btn-primary">Edit</a>
+            @if ($batch_details['deleted_at'] == null)
+                <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
+            @endif
+            @if ($batch_details['deleted_at'])
+            <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Activate</a>
+            @endif
         </div>
                         </div>
                     </div>
