@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Imports\PurchaseOrderImport;
 use App\Http\Requests\PurchaseOrdersRequest;
 use App\Mail\MakeOrdersMail;
+use App\Models\CcSendBatch;
 use App\Models\OrderBatches;
 use App\Models\OrderBatchItem;
 use App\OrderPDF;
@@ -20,7 +21,9 @@ use setasign\Fpdi\Fpdi;
 use DataTables;
 use Log;
 use Mail;
+use DB;
 use App\Models\EmailBody;
+use App\Models\SendBatch;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -185,8 +188,10 @@ class OrdersController extends Controller
 
     public function sendOrder(Request $request){
         $mail_content = $request->all();
-        $batch_id= $mail_content['batch_id'];
+        $batch_id = $mail_content['batch_id'];
+        DB::beginTransaction();
         try{
+           
         $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
         $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
                                     ->select('order_batches.order_no','suppliers.supplier_name','suppliers.supplier_email')
@@ -210,13 +215,45 @@ class OrdersController extends Controller
                 ]
             ]
         ];
-
-        Mail::to($batch_details['supplier_email'])
-            ->send(new MakeOrdersMail($mailData));
+        
+            OrderBatches::where('id', $batch_id)->update(['ordered' => 1]);   
+        
+            // Create the send batch entry
+           $send_batch= SendBatch::create([
+                'batch_id' => $batch_id,
+                'email_subject' => $mail_content['email_subject'],
+                'email_body' => $mail_content['email_body'], 
+            ]);
+        
+            // Initialize an array to hold CC email addresses
+            $cc_emails = [];
+        
+            // Check if there are CC email addresses
+            if ($mail_content['people_cc'] > 0) {
+                // Collect all CC email addresses
+                for ($i = 1; $i <= $mail_content['people_cc']; $i++) {
+                    $user_email_key = "cc_email_" . $i;
+                    if (isset($mail_content[$user_email_key])) {
+                        $cc_emails[] = $mail_content[$user_email_key];
+                        CcSendBatch::create([
+                            'send_batch_id'=>$send_batch['id'],
+                            'cc_email' => $mail_content[$user_email_key],
+                        ]);
+                    }
+                }
+            }
+        
+            // Send the email with optional CC addresses
+            Mail::to($batch_details['supplier_email'])
+                ->cc($cc_emails)
+                ->send(new MakeOrdersMail($mailData));
+        
+            DB::commit();
              
-            return response()->json(['status' => 'success', 'message' => 'Order send']);
+ return response()->json(['status' => 'success', 'message' => 'Order send']);
 
     } catch (\Exception $ex) {
+        DB::rollBack();
         Log::error($ex);
         return response()->json(['status' => 'error', 'message' => 'An error occurred']);
     }
@@ -228,10 +265,10 @@ class OrdersController extends Controller
         if ($request->ajax()) {
     
             $data = OrderBatches::leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
-                ->select('order_batches.*', 'suppliers.supplier_name')
-                ->orderBy('order_batches.id', 'desc')
-                ->get();
-    
+                                    ->select('order_batches.*', 'suppliers.supplier_name')
+                                    ->whereNot('ordered',1)
+                                    ->orderBy('order_batches.id', 'desc')
+                                    ->get();
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {
                     return Carbon::parse($row->created_at)->toDateTimeString();
@@ -261,6 +298,47 @@ class OrdersController extends Controller
         }
     
         return view('orders.list_imported_batches');
+    }
+
+    public function listOrderedOrders(Request $request)
+    {
+        if ($request->ajax()) {
+    
+            $data = OrderBatches::leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
+                                ->where('ordered',1)
+                                ->select('order_batches.*', 'suppliers.supplier_name')
+                                ->orderBy('order_batches.id', 'desc')
+                                ->get();
+    
+            return DataTables::of($data)
+                ->addColumn('created_date', function($row) {
+                    return Carbon::parse($row->createds_at)->toDateTimeString();
+                })
+                ->addColumn('order_count', function($row) {
+                    return OrderBatchItem::where('order_batch_id', $row->id)->count();
+                })
+                ->addColumn('action', function($row) {
+                    $encodedId = base64_encode($row->id);
+                    return '
+    <div class="btn-group">
+        <a type="button" href="/view/batch/' . $encodedId . '" class="btn btn-success">View</a>
+        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/make-orders/'. $encodedId . '">Make Order</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/'. $encodedId . '">PDF with Prices</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encodedId . '">PDF No Prices</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/'. $encodedId . '">Edit</a></li>
+            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_order_button" href="#">Delete</a></li>
+        </ul>
+    </div>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+    
+        return view('orders.list_ordered_orders');
     }
 
     public function editBatch($encoded_batch_id){
@@ -295,6 +373,7 @@ class OrdersController extends Controller
                 
         //         return response()->json(['status' =>'error', 'message' => $validated->errors()->all()]);
         //     }
+        DB::beginTransaction();
         $order_batches = OrderBatches::withTrashed()
                                     ->where('id', $batch_id)
                                       ->update([
@@ -314,11 +393,12 @@ class OrdersController extends Controller
                                 ]);
             }
         }
+        DB::commit();
         return response()->json(['status' => 'success', 'batch_id' => base64_encode($batch_id),'message' => 'Batch Updated']);
     }
     catch (\Exception $ex) {
         Log::error($ex);
-        dd($ex);
+        DB::rollBack();
         return response()->json(['status' => 'error', 'message' => 'An error occurred']);
     }
        
@@ -328,14 +408,17 @@ class OrdersController extends Controller
     public function deleteOrderBatch($encoded_batch_id){
       $batch_id=  base64_decode($encoded_batch_id);
       try{
+        DB::beginTransaction();
         OrderBatchItem::where('order_batch_id',$batch_id)
                         ->delete();
         OrderBatches::where('id',$batch_id)
                     ->delete(); 
-                    return response()->json(['status' => 'success', 'message' => 'Order deleted succesfully']);
+        DB::commit();            
+        return response()->json(['status' => 'success', 'message' => 'Order deleted succesfully']);
 
     } catch (\Exception $ex) {
         Log::error($ex);
+        DB::rollBack();
         return response()->json(['status' => 'error', 'message' => 'An error occurred']);
     }                          
     }

@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_batches', function (Blueprint $table) {
+        Schema::create('send_batches', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('batch_name')->nullable();
-            $table->string('supplier_name');
-            $table->integer('supplier_id')->nullable()->unsigned();
-            $table->string('order_no');
-            $table->boolean('ordered');
+            $table->integer('batch_id');
+            $table->string('email_subject');
+            $table->string('email_body');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_batches');
+        Schema::dropIfExists('send_batches');
     }
 };

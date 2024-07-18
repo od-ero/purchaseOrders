@@ -50,6 +50,19 @@
                         </div>
                     @endif
                 </div>
+                <div class="form-floating my-3 ">
+                    <input class="form-control" id="people_cc" type="number" name="people_cc"/>
+                    <label for="people_cc">Number of people to CC</label>
+                    @if ($errors->has('people_cc'))
+                        <div class="text-danger mt-2">
+                            {{ $errors->first('people_cc') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="form-floating mb-y mb-md-0">
+                    <div id="doorNamesContainer"></div>
+                        
+                </div>
 
                 <div class="form-floating my-3 mb-md-0">
                     <input class="form-control" id="email_subject" type="text" name="email_subject" value="{{$mail['email_subject']}}" placeholder="Batch Name" />

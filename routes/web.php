@@ -90,6 +90,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/list-imported-batches', [OrdersController::class, 'listImportedOrders'])
     ->name('orders.listImportedOrders');
 
+    Route::get('/orders/list-ordered-batches', [OrdersController::class, 'listOrderedOrders'])
+    ->name('orders.listOrderedOrders');
+
     Route::get('/update/batch/{id}', [OrdersController::class, 'editBatch'])
     ->name('orders.editBatch');
 

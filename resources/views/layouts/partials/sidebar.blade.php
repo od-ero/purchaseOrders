@@ -30,7 +30,7 @@
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link"  href="{{route('import')}}">Import Excel</a>
                                     <a class="nav-link" href="{{route('orders.listImportedOrders')}}">List Imported Batch</a>
-                                    <a class="nav-link" href="/employee/list-deleted">List Sent Batch</a>
+                                    <a class="nav-link" href="{{route('orders.listOrderedOrders')}}">List Sent Batch</a>
                                 </nav>
                             </div>
 

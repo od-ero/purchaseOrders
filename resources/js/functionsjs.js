@@ -634,6 +634,59 @@ if(login_password.length < 3){
                     }
                 });
             });
+
+            $('#save_and_send').on('click', function() {
+                var batch_details = {
+                    'batch_name':$('#upload_and_view_batch_name').val(),
+                    'supplier_id':$('#upload_and_view_supplier_id').val(),
+                    'order_no':$('#upload_and_view_order_number').val(),
+                };
+                var tableData = [];
+                
+                $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
+                    var rowData = {
+                        
+                        'product_name': $(tr).find('#product_name').val(),
+                        'quantity': $(tr).find('#quantity').val(),
+                        'price': $(tr).find('#price').val(),
+                        
+                        
+                    };
+                    tableData.push(rowData);
+                });
+              
+                // Example AJAX submission
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '/save-and-view', 
+                    data: {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'data': tableData,
+                        'batch_details':batch_details
+                    },
+                    success: function(response) {
+                       
+                        if (response.status === "success") {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.success(response.message);
+                            setTimeout(() => {
+                                window.location.href = "/make-orders/"+response.batch_id;
+                            }, 5000);
+                        } else if (response.status === "error") {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error(response.message);
+                        }
+                    },
+                    error: function(response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Something went wrong');
+                    }
+                });
+            });
+
                 var table = $('#view_batch_table').DataTable({
                     processing: true,
                     serverSide: true,
@@ -1094,6 +1147,23 @@ var table = $('#imported_batches_table').DataTable({
    
 });
 
+var table = $('#ordered_batches_table').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "/orders/list-ordered-batches",
+   "order": [] ,
+    columns: [
+        {data: 'id', name: 'id'},
+        {data: 'created_date', name: 'created_date'},
+        {data: 'order_no', name: 'order_no'},
+        {data: 'supplier_name', name: 'supplier_name'},
+        {data: 'order_count', name: 'order_count'},
+       
+        {data: 'action', name: 'action', orderable: false, searchable: false},
+    ]
+   
+});
+
 $('#update_batch_button').on('click', function() {
     var batch_details = {
         'batch_id':$('#upload_and_view_batch_id').val(),
@@ -1134,6 +1204,60 @@ $('#update_batch_button').on('click', function() {
                 alertify.success(response.message); 
                 setTimeout(() => {
                     window.location.href = "/view/batch/"+response.batch_id;
+                }, 5000);
+            } else if (response.status === "error") {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error(response.message);
+            }
+        },
+        error: function(response) {
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.error('Something went wrong');
+        }
+    });
+});
+
+
+$('#update_and_make_order_button').on('click', function() {
+    var batch_details = {
+        'batch_id':$('#upload_and_view_batch_id').val(),
+        'batch_name':$('#upload_and_view_batch_name').val(),
+        'supplier_id':$('#upload_and_view_supplier_id').val(),
+        'order_no':$('#upload_and_view_order_number').val(),
+    };
+    var tableData = [];
+    
+    $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
+        var rowData = {
+            
+            'product_name': $(tr).find('#product_name').val(),
+            'quantity': $(tr).find('#quantity').val(),
+            'price': $(tr).find('#price').val(),
+            
+            
+        };
+        tableData.push(rowData);
+    });
+  
+    // Example AJAX submission
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'POST',
+        url: '/orders/update-batch', // Adjust the route as needed
+        data: {
+            '_token': $('meta[name="csrf-token"]').attr('content'),
+            'data': tableData,
+            'batch_details':batch_details
+        },
+        success: function(response) {
+            
+            if (response.status === "success") {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.success(response.message); 
+                setTimeout(() => {
+                    window.location.href = "/make-orders/"+response.batch_id;
                 }, 5000);
             } else if (response.status === "error") {
                 alertify.set('notifier', 'position', 'top-center');
@@ -1222,8 +1346,93 @@ $('body').on('click', '#make_order',function(e){
   $('#make_order_modal').modal('show');
   $('#delete_batch_id').val(order_batch_id);
 });
-
-
+$("#people_cc").on('keyup', function() {
+   
+        var doorNamesContainer = document.getElementById("doorNamesContainer");
+        var submitButton = document.querySelector('button[type="submit"]');
+    var no_people_cc = $(this).val();
+    
+        if (no_people_cc > 0) {
+            doorNamesContainer.innerHTML = '';
+    
+            
+            var numRows = Math.ceil(no_people_cc / 2); // For pairs of doors in each row
+    
+            for (var i = 1; i <= numRows; i++) {
+                var rowDiv = document.createElement("div");
+                rowDiv.className = "row mb-3";
+    
+                // Create first column for odd-numbered door
+                var colDiv1 = document.createElement("div");
+                colDiv1.className = "col-md-6";
+    
+                if (2 * i - 1 <= no_people_cc) { // Check if there's an odd-numbered door to add
+                    var formFloatingDiv1 = document.createElement("div");
+                    formFloatingDiv1.className = "form-floating mb-3 mb-md-0";
+    
+                    var inputField1 = document.createElement("input");
+                    inputField1.type = "text";
+                    inputField1.className = "form-control";
+                    inputField1.placeholder = "";
+                    inputField1.name = "cc_email_" + (2 * i - 1);
+                    inputField1.id = "cc_email_" + (2 * i - 1);
+                    inputField1.required = true;
+    
+                    var label1 = document.createElement("label");
+                    label1.htmlFor = "cc_email_" + (2 * i - 1);
+                    label1.textContent = "Recipient " + (2 * i - 1) + " email";
+    
+                    formFloatingDiv1.appendChild(inputField1);
+                    formFloatingDiv1.appendChild(label1);
+                    colDiv1.appendChild(formFloatingDiv1);
+                }
+    
+                
+                var colDiv2 = document.createElement("div");
+                colDiv2.className = "col-md-6";
+    
+                if (2 * i <= no_people_cc) { 
+                    var formFloatingDiv2 = document.createElement("div");
+                    formFloatingDiv2.className = "form-floating";
+    
+                    var inputField2 = document.createElement("input");
+                    inputField2.type = "email";
+                    inputField2.className = "form-control";
+                    inputField2.placeholder = "";
+                    inputField2.name = "cc_email_" + (2 * i);
+                    inputField2.id = "cc_email_" + (2 * i);
+                    inputField2.required = true;
+    
+                    var label2 = document.createElement("label");
+                    label2.htmlFor = "cc_email_" + (2 * i);
+                    label2.textContent = "Recepient " + (2 * i) + " Email";
+    
+                    formFloatingDiv2.appendChild(inputField2);
+                    formFloatingDiv2.appendChild(label2);
+                    colDiv2.appendChild(formFloatingDiv2);
+                }
+    
+                // Append columns to row
+                rowDiv.appendChild(colDiv1);
+                rowDiv.appendChild(colDiv2);
+    
+                // Append row to container
+                doorNamesContainer.appendChild(rowDiv);
+            }
+    
+            doorNamesContainer.style.display = "block";
+            submitButton.removeAttribute('disabled');
+            return true;
+    
+           
+        } else {
+            doorNamesContainer.style.display = "none";
+            submitButton.setAttribute('disabled', 'true');
+            return false;
+    
+    
+        }
+});
 
     });
     

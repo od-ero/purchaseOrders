@@ -105,7 +105,7 @@
             </tbody>
             </table>
             <button id="save_and_view" class="btn btn-primary">Save and View</button>
-            <a id="save_and_send" href="/make-orders/" class="btn btn-primary">Save and Make Order</a>
+            <button id="save_and_send" class="btn btn-primary">Save and Make Order</button>
             </div>
                         </div>
                     </div>
