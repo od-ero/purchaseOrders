@@ -96,8 +96,8 @@
                 <td class="order-id">{{ $index + 1 }}</td>
                 <td  class="quantity"> <input id="quantity" value="{{ $row['quantity'] ?? '0' }}" style="width: 80px;"> </td>
                 <td > <input id="product_name" value="{{ $row['product_name'] ?? '0' }}" style="width: 350px;"></td>
-                <td class="price"> <input id="price" value="{{ $row['price'] ?? '0' }}" style="width: 80px;"> </td> 
-                <td class="subtotal">{{$row['price'] * $row['quantity']}}</td>
+                <td class="price text-end"> <input id="price" value="{{ $row['price'] ?? '0' }}" class="text-end" style="width: 80px;"> </td> 
+                <td class="subtotal text-end">{{$row['price'] * $row['quantity']}}</td>
             </tr>
            
             @endforeach
@@ -114,6 +114,7 @@
     .total-row {
     font-weight: bold;
     background-color: #f9f9f9;
+    text-align: right;
 }
 </style>                 
 @endsection                   

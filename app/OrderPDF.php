@@ -4,6 +4,8 @@ namespace App;
 
 use setasign\Fpdi\Fpdi;
 use Carbon\Carbon;
+
+use App\Models\BusinessDetail;
 class OrderPDF
 {
     /**
@@ -17,12 +19,21 @@ class OrderPDF
 
     public  static function createPDF($pDFDatas, $batch_details)
     {
-       
+        $business_details = BusinessDetail::find(1);
         $pdf = new Fpdi();
 
         $pdf->AddPage();
         $pdf->SetFont('Times', 'B', 16);
-        $pdf->Cell(0, 10, 'Products Data', 0, 1, 'C');
+        $pdf->Cell(0, 10,  $business_details['company_name'], 0, 1, 'C');
+        $pdf->Ln(10);
+        $pdf->SetFont('Times', 'B', 16);
+        $pdf->Cell(0, 10, $business_details['head_1'], 0, 1, 'C');
+        $pdf->Ln(10);
+        $pdf->SetFont('Times', 'B', 16);
+        $pdf->Cell(0, 10, $business_details['head_2'], 0, 1, 'C');
+        $pdf->Ln(10);
+        $pdf->SetFont('Times', 'B', 16);
+        $pdf->Cell(0, 10, $business_details['head_3'], 0, 1, 'C');
         $pdf->Ln(10);
         $yPos = $pdf->GetY();
         $xPos = $pdf->GetX();
@@ -63,10 +74,10 @@ class OrderPDF
             
             $pdf->Cell(20, $adjustedCellHeight,' '.  $product['quantity'], 1, 0, 'L');
            
-            $pdf->Cell(25, $adjustedCellHeight,$product['price_quantity']. ' ', 1, 0, 'R');
+            $pdf->Cell(25, $adjustedCellHeight,number_format($product['price_quantity'], 0). ' ', 1, 0, 'R');
         
            
-            $pdf->Cell(25, $adjustedCellHeight, $product['quantity'] * $product['price_quantity'], 1, 0, 'R');
+            $pdf->Cell(25, $adjustedCellHeight, number_format($product['quantity'] * $product['price_quantity'], 0), 1, 0, 'R');
         
            
             $pdf->Ln($adjustedCellHeight);
@@ -76,29 +87,30 @@ class OrderPDF
         }
         
 
-        $pdf->SetFont('Times', 'B', 14);
+        $pdf->SetFont('Times', 'B', 12);
         $pdf->Cell(140, 15, '', 0);
         $pdf->Cell(25, 15, 'Total (Kshs)', 1);
-        $pdf->Cell(25, 15, number_format($total, 2), 1, 0, 'R');
+        $pdf->Cell(25, 15, number_format($total, 0), 1, 0, 'R');
         $pdf->Ln();
         
         $pdf->Ln(10);
 
        
         $pdf->SetFont('Times', 'B', 12);
-        $pdf->Cell(0, 10, 'Official Stamp And Signature', 0, 1, 'L');
+        $pdf->Cell(0, 10, 'Stamp / Signature', 0, 1, 'L');
 
        
-        $stampPath = public_path('images/stamp.png');
+        $stampPath = public_path('images/scanned_stamp.png');
         $pdf->Image($stampPath, 10, $pdf->GetY(), 50); 
 
        
-        $signaturePath = public_path('images/signature.png'); 
-        $pdf->Image($signaturePath, 15, $pdf->GetY()+5, 40);
+        $signaturePath = public_path('images/scanned_signature.png'); 
+        $pdf->Image($signaturePath, 15, $pdf->GetY()+20, 15);
         
-        $pdf->SetY($pdf->GetY() + 30); 
+        $pdf->SetY($pdf->GetY() + 35); 
         $pdf->SetFont('Times', '', 12);
-        $pdf->Cell(0, 10, 'Date: ' . Carbon::now()->toFormattedDateString(), 0, 1, 'L');
+       // $current_date =  Carbon::now()->isoFormat('ddd MMM Do YYYY h:mm a');
+        $pdf->Cell(0, 10, $business_details['signatory_name'], 0, 1, 'L');
 
         $pdfContent = $pdf->Output('S');
        
@@ -168,17 +180,17 @@ class OrderPDF
         $pdf->Cell(0, 10, 'Official Stamp And Signature', 0, 1, 'L');
 
        
-        $stampPath = public_path('images/stamp.png');
+        $stampPath = public_path('images/scanned_stamp.png');
         $pdf->Image($stampPath, 10, $pdf->GetY(), 50); 
 
        
-        $signaturePath = public_path('images/signature.png'); 
-        $pdf->Image($signaturePath, 15, $pdf->GetY()+5, 40);
+        $signaturePath = public_path('images/scanned_signature.png'); 
+        $pdf->Image($signaturePath, 1, $pdf->GetY()+20, 15);
         
-        $pdf->SetY($pdf->GetY() + 30); 
+        $pdf->SetY($pdf->GetY() + 35); 
         $pdf->SetFont('Times', '', 12);
-        $current_date =  Carbon::now()->isoFormat('ddd MMM Do YYYY h:mm a');
-        $pdf->Cell(0, 10, 'Date: ' .  $current_date, 0, 1, 'L');
+       // $current_date =  Carbon::now()->isoFormat('ddd MMM Do YYYY h:mm a');
+        $pdf->Cell(0, 10, 'Elizabeth Mugure', 0, 1, 'L');
 
         $pdfContent = $pdf->Output('S');
        

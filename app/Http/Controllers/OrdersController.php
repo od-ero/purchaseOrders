@@ -271,7 +271,7 @@ class OrdersController extends Controller
                                     ->get();
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {
-                    return Carbon::parse($row->created_at)->toDateTimeString();
+                    return Carbon::parse($row->created_at)->isoFormat('MMM Do YYYY h:mm a');
                 })
                 ->addColumn('order_count', function($row) {
                     return OrderBatchItem::where('order_batch_id', $row->id)->count();
@@ -304,33 +304,33 @@ class OrdersController extends Controller
     {
         if ($request->ajax()) {
     
-            $data = OrderBatches::leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
-                                ->where('ordered',1)
-                                ->select('order_batches.*', 'suppliers.supplier_name')
-                                ->orderBy('order_batches.id', 'desc')
+            $data = SendBatch::leftJoin('order_batches','order_batches.id','=','send_batches.batch_id')
+                                 ->leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
+                                ->select('order_batches.*', 'suppliers.supplier_name','send_batches.created_at as send_at' ,'send_batches.id as send_batch_id')
+                                ->orderBy('send_batches.id', 'desc')
                                 ->get();
     
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {
-                    return Carbon::parse($row->createds_at)->toDateTimeString();
+                    return Carbon::parse($row->send_at)->isoFormat('MMM Do YYYY h:mm a');
                 })
                 ->addColumn('order_count', function($row) {
                     return OrderBatchItem::where('order_batch_id', $row->id)->count();
                 })
                 ->addColumn('action', function($row) {
-                    $encodedId = base64_encode($row->id);
+                    $encodedId = base64_encode($row->send_batch_id);
+                    $encoded_batch_Id = base64_encode($row->id);
                     return '
     <div class="btn-group">
-        <a type="button" href="/view/batch/' . $encodedId . '" class="btn btn-success">View</a>
+        <a type="button" href="/order-batch/view-order-mail-content/'. $encodedId . '" class="btn btn-success">View</a>
         <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
-             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/make-orders/'. $encodedId . '">Make Order</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/'. $encodedId . '">PDF with Prices</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encodedId . '">PDF No Prices</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/'. $encodedId . '">Edit</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_order_button" href="#">Delete</a></li>
+             
+             <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '"href="/view/batch/' . $encoded_batch_Id . '">View Products</a></li>
+            <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_price" href="/orders/pdf/'. $encoded_batch_Id . '">PDF with Prices</a></li>
+            <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encoded_batch_Id . '">PDF No Prices</a></li>
         </ul>
     </div>';
                 })
@@ -423,4 +423,19 @@ class OrdersController extends Controller
     }                          
     }
     
+    public function viewOrderMailContent($send_batch_id){
+        $send_batch_id = base64_decode($send_batch_id);
+        
+        $data = SendBatch::leftJoin('order_batches','order_batches.id','=','send_batches.batch_id')
+                            ->leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
+                            ->where('send_batches.id',$send_batch_id)
+                        ->select('suppliers.supplier_name','suppliers.supplier_email', 'send_batches.*')
+                        ->first();
+        
+        $cc_details = CcSendBatch::where('send_batch_id', $send_batch_id)
+                                    ->get();
+                
+        return view('orders.view_order_mail_content',['send_mail_details' => $data , 'cc_details'=> $cc_details]);
+
+    }
 }

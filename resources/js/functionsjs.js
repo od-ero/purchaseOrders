@@ -695,12 +695,12 @@ if(login_password.length < 3){
                         dataSrc: function(json) {
                             // Append the 'Total' row to the data
                             json.data.push({
-                                DT_RowClass: 'total-row',
+                                DT_RowClass: 'text-end fw-bold',
                                 DT_RowIndex: '',
-                                sub_total: json.sub_total_sum,
+                                sub_total:  `${json.sub_total_sum}`,
                                 product_name: '', 
                                 quantity: '',
-                                price_quantity: 'Total (KSH):',
+                                price_quantity: '<strong>Total (KSH):</strong>',
                                 
                             });
                             return json.data;
@@ -710,44 +710,63 @@ if(login_password.length < 3){
                         { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                         { data: 'quantity', name: 'quantity' },
                         { data: 'product_name', name: 'product_name' },
-                        { data: 'price_quantity', name: 'price_quantity' },
-                        { data: 'sub_total', name: 'sub_total' }, 
+                        { data: 'price_quantity', name: 'price_quantity', createdCell: function (td, cellData, rowData, row, col) {
+                            $(td).addClass('text-end');
+                        }},
+
+                        {
+                            data: 'sub_total',
+                            name: 'sub_total',
+                            createdCell: function (td, cellData, rowData, row, col) {
+                                $(td).addClass('text-end');
+                            },
+                            render: $.fn.dataTable.render.number(',', '.', 0, '')
+                        }
+                        
+
                     ],
                     initComplete: function() {
                        
                     }
                 });
             
-          function appendTotalRowPurchaseOrdersTable() {
-            const totalRow = `
-                <tr>
-                    <td class="no-border"></td> 
-                    <td class="no-border"></td> 
-                    <td class="no-border"></td> 
-                    <td><b>Total (KSH)</b></td> 
-                    <td><b id="total"><input type='text' id='total1' name='total1'></b></td>
-                </tr>
-            `;
-            $('#purchaseOrdersTable tbody').append(totalRow);
-        }
-
-        function updateTotalPurchaseOrdersTable() {
-            let total = 0;
-            $('.subtotal').each(function() {
-                total += parseFloat($(this).text()) || 0;
-            });
-            $('#total').text(total.toFixed(2));
-        }
-
-        function updateSubtotalPurchaseOrdersTable($row) {
-            const quantity = parseFloat($row.find('#quantity').val()) || 0;
-            const price = parseFloat($row.find('#price').val()) || 0;
-           
-            const subtotal = quantity * price;
-            $row.find('.subtotal').text(subtotal.toFixed(0));
-            updateTotalPurchaseOrdersTable();
-        }
-
+                function appendTotalRowPurchaseOrdersTable() {
+                    const totalRow = `
+                        <tr>
+                            <td class="no-border"></td> 
+                            <td class="no-border"></td> 
+                            <td class="no-border"></td> 
+                            <td><b>Total(KSH)</b></td> 
+                            <td id="total" class="text-end fw-bold"><b><input type='text' id='total1' name='total1'></b></td>
+                        </tr>
+                    `;
+                    $('#purchaseOrdersTable tbody').append(totalRow);
+                }
+                
+                function updateSubtotalPurchaseOrdersTable($row) {
+                    const quantity = parseFloat($row.find('#quantity').val()) || 0;
+                    const price = parseFloat($row.find('#price').val()) || 0;
+                    const subtotal = quantity * price;
+                
+                    // Format subtotal without decimal places and add thousand separators
+                    const formattedSubtotal = subtotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    $row.find('.subtotal').html(formattedSubtotal);
+                    
+                    updateTotalPurchaseOrdersTable();
+                }
+                
+                
+                function updateTotalPurchaseOrdersTable() {
+                    let total = 0;
+                    $('.subtotal').each(function() {
+                        total += parseFloat($(this).text().replace(/,/g, '')) || 0;
+                    });
+                
+                    // Format total without decimal places and add thousand separators
+                    const formattedTotal = total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    $('#total').html(  formattedTotal );
+                }
+                
        
         appendTotalRowPurchaseOrdersTable();
 
@@ -1153,7 +1172,7 @@ var table = $('#ordered_batches_table').DataTable({
     ajax: "/orders/list-ordered-batches",
    "order": [] ,
     columns: [
-        {data: 'id', name: 'id'},
+        {data: 'send_batch_id', name: 'send_batch_id'},
         {data: 'created_date', name: 'created_date'},
         {data: 'order_no', name: 'order_no'},
         {data: 'supplier_name', name: 'supplier_name'},
@@ -1433,6 +1452,49 @@ $("#people_cc").on('keyup', function() {
     
         }
 });
+
+$('#update_business_details_form').submit(function(e) {
+    e.preventDefault();
+
+    
+        let formData = new FormData(this);
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            type: 'POST',
+            url: '/update/business-details',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status === "success") {
+                    console.log('success')
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.success(response.message);
+                    
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000);
+                   
+                } 
+                else if (response.status === "error") {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(response.message);
+                    
+                }
+            },
+            error: function(response) {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error('Something went wrong');
+            }
+        });
+
+        
+    
+});
+
 
     });
     

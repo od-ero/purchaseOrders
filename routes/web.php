@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SuppliersController;
-use App\Models\supplier;
+use App\Http\Controllers\BusinessDetailsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +15,8 @@ Route::get('/', function () {
 Route::get('/livewire', function () {
     return view('livewirewelcome');
 });
+
+
 Route::post('/employees/login', [AuthenticatedSessionController::class, 'store'])->name('employee.login');
 
 Route::get('/dashboard', function () {
@@ -102,6 +104,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-batch/delete/{id}', [OrdersController::class, 'deleteOrderBatch'])
     ->name('orders.deleteOrderBatch');
 
+    Route::get('/order-batch/view-order-mail-content/{id}', [OrdersController::class, 'viewOrderMailContent'])
+    ->name('orders.viewOrderMailContent');
+
     Route::get('/create-supplier', function () {
         return view('suppliers.create_supplier');
     })->name('suppliers.create_supplier');
@@ -129,6 +134,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/supplier/activate/{id}', [suppliersController::class, 'activateSupplier'])
     ->name('suppliers.activateSupplier');
+
+    Route::get('/edit/business-details', [BusinessDetailsController::class, 'editBusinessDetails'])
+            ->name('business_details.editBusinessDetails');
+        Route::post('/update/business-details', [BusinessDetailsController::class, 'updateBusinessDetails'])
+        ->name('business_details.updateBusinessDetails');
 
     
 
