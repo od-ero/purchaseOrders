@@ -135,11 +135,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/supplier/activate/{id}', [suppliersController::class, 'activateSupplier'])
     ->name('suppliers.activateSupplier');
 
-    Route::get('/edit/business-details', [BusinessDetailsController::class, 'editBusinessDetails'])
+    Route::get('/business-details', [BusinessDetailsController::class, 'businessDetails'])
             ->name('business_details.editBusinessDetails');
+
         Route::post('/update/business-details', [BusinessDetailsController::class, 'updateBusinessDetails'])
         ->name('business_details.updateBusinessDetails');
+    
+        Route::get('/system-name', [BusinessDetailsController::class, 'systemBusinessName'])
+        ->name('business_details.systemBusinessName');
 
+        Route::post('/system-name/update', [BusinessDetailsController::class, 'updateSystemBusinessName'])
+        ->name('business_details.UpdateSystemBusinessName');
+
+        Route::get('/email-content', [BusinessDetailsController::class, 'emailContent'])
+        ->name('business_details.email_content');
+
+        Route::post('/email-content/update', [BusinessDetailsController::class, 'updateEmailContent'])
+        ->name('business_details.updateEmailContent');
     
 
 

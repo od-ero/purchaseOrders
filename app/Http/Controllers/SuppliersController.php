@@ -22,6 +22,7 @@ class SuppliersController extends Controller
             'create_supplier_second_phone' => ['nullable', 'string', ],
             'create_supplier_email' => ['required', 'email', 'unique:suppliers,supplier_email'],
             'create_supplier_phy_address' => ['nullable', 'string', 'max:255'],
+            'create_supplier_number' => $supplier['create_supplier_number'],
            
         ]);
 
@@ -37,6 +38,7 @@ class SuppliersController extends Controller
                 'supplier_email' => $supplier['create_supplier_email'],
                 'supplier_phy_address' => $supplier['create_supplier_phy_address'],
                 'supplier_kra_pin' => $supplier['create_supplier_kra'],
+                'supplier_number' => $supplier['create_supplier_number'],
             ]);
 
             return response()->json(['status' =>'success', 'supplier_id' => $created_supplier['id'], 'message' => 'Supplier created']);
@@ -138,6 +140,7 @@ public function updateSupplier(Request $request){
             'create_supplier_second_phone' => ['nullable', 'string', ],
             'create_supplier_email' => ['required', 'email', 'unique:suppliers,supplier_email,' . $supplier['update_supplier_id']],
             'create_supplier_phy_address' => ['nullable', 'string', 'max:255'],
+            'create_supplier_number' => $supplier['create_supplier_number'],
            
         ]);
 
@@ -154,6 +157,7 @@ public function updateSupplier(Request $request){
                             'supplier_email' => $supplier['create_supplier_email'],
                             'supplier_phy_address' => $supplier['create_supplier_phy_address'],
                             'supplier_kra_pin' => $supplier['create_supplier_kra'],
+                            'supplier_number' => $supplier['create_supplier_number'],
                         ]);
                         return response()->json(['status' => 'success', 'message' => ['Supplier details updated successfully']]);           
 

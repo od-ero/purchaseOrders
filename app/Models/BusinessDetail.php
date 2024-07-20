@@ -23,6 +23,7 @@ class BusinessDetail extends Model
         'head_3',
         'kra_pin',
         'signatory_name',
+        'system_name',
        
     ];
     protected $dates = ['deleted_at'];

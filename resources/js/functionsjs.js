@@ -830,6 +830,7 @@ if(login_password.length < 3){
         // Validate each input field
         var isValidName = validateInput("#create_supplier_name", "Enter Suppliers Name");
         var isValidKra = validateInput("#create_supplier_kra", "Enter Suppliers KRA PIN", null, false);
+        var isValidNumber = validateInput("#create_supplier_number", "Enter Suppliers Number", null, false);
         var isValidPhone = validateInput("#create_supplier_phone", "Invalid Phone Number", validatePhone);
         var isValidEmail = validateInput("#create_supplier_email", "Invalid Email", validateEmail);
        
@@ -837,7 +838,7 @@ if(login_password.length < 3){
         var isValidPhyAddress = validateInput("#create_supplier_phy_address", "Physical Address is required.", null, false);
       
         // If all fields are valid, submit the form or perform your desired action
-        if (isValidName && isValidPhone && isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidKra) {
+        if (isValidName && isValidPhone && isValidSecondPhone && isValidEmail && isValidPhyAddress && isValidKra && isValidNumber) {
             // All fields are valid, proceed with form submission or other actions
             let formData = new FormData(this);
     
@@ -891,7 +892,15 @@ if(login_password.length < 3){
                     $(this).next('.invalid-feedback').remove();
                 });
                 
-            }
+            } 
+            else if (isWordPresent(value, 'number')){
+                $("#create_supplier_number").addClass('is-invalid');
+                $("#create_supplier_number").next('.invalid-feedback').remove(); 
+                $("#create_supplier_number").after('<div class="invalid-feedback">' + value + '</div>');
+                $("#create_supplier_number").on('keyup', function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });}
             else if (isWordPresent(value, 'phone')){
                 $("#create_supplier_phone").addClass('is-invalid');
                 $("#create_supplier_phone").next('.invalid-feedback').remove(); 
@@ -1453,6 +1462,57 @@ $("#people_cc").on('keyup', function() {
         }
 });
 
+$('#update_business_details_button').on('click',function(e){
+    e.preventDefault();
+  $('#update_business_details_modal').modal('show');
+});
+
+$('#update_email_content_button').on('click',function(e){
+    e.preventDefault();
+  $('#update_email_content_modal').modal('show');
+});
+
+$('#update_email_content_form').submit(function(e) {
+    e.preventDefault();
+
+    
+        let formData = new FormData(this);
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            type: 'POST',
+            url: '/email-content/update',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status === "success") {
+                    console.log('success')
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.success(response.message);
+                    
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000);
+                   
+                } 
+                else if (response.status === "error") {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(response.message);
+                }
+            },
+            error: function(response) {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error('Something went wrong');
+            }
+        });
+
+        
+    
+});
+
 $('#update_business_details_form').submit(function(e) {
     e.preventDefault();
 
@@ -1495,6 +1555,51 @@ $('#update_business_details_form').submit(function(e) {
     
 });
 
+
+$('#update_systerm_name_button').on('click',function(e){
+    e.preventDefault();
+  $('#update_system_name_modal').modal('show');
+});
+
+$('#update_system_name_form').submit(function(e) {
+    e.preventDefault();
+        let formData = new FormData(this);
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            type: 'POST',
+            url: '/system-name/update',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status === "success") {
+                    alertify.set('notifier', 'position', 'top-center');
+
+                alertify.success('Edit Successful');
+                    
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000);
+                   
+                } 
+                else if (response.status === "error") {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(response.message);
+                    
+                }
+            },
+            error: function(response) {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error('Something went wrong');
+            }
+        });
+
+        
+    
+});
 
     });
     

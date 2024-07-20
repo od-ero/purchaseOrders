@@ -1,21 +1,14 @@
-@extends('layouts.my_app')
-@section('subtitle')
- Update Business Details
-@endsection
 
-@section('contentheader_title')
-Update Business Details
-@endsection
-
-
-@section('content')
-
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="card shadow-lg border-0 rounded-lg mt-5">
-                        <div class="card-header"><h3 class="text-center font-weight-light my-4">Update Business Details</h3></div>
-                        <div class="card-body">
-                            <form id="update_business_details_form" >
+       
+<div class="modal fade" id="update_business_details_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Order PDF Details</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form id="update_business_details_form" >
                             @csrf
                             <div class="row mb-3">
                                         <div class="form-floating  mb-3 mb-md-0">
@@ -96,20 +89,14 @@ Update Business Details
                                 </div>
                                 
                                 <div class="mt-4 mb-0 text-center">
-                                    <button type="submit" id="register_save_view" class="btn btn-primary  btn-submit">Update</button>  
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit"  class="btn btn-primary  btn-submit">Update</button>  
                                         
                                    
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-          
-       
-
-          
-@endsection
-
+      </div>
+    </div>
+  </div>
+</div>
 

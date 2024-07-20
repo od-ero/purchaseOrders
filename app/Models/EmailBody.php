@@ -14,6 +14,7 @@ class EmailBody extends Model
     protected $fillable = [
         'email_subject',
         'email_body',
+        'email_cc',
         
     ];
 

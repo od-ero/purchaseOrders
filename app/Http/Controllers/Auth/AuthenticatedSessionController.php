@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\BusinessDetail;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthenticatedSessionController extends Controller
@@ -31,6 +32,9 @@ class AuthenticatedSessionController extends Controller
         try {
             $request->authenticate();
           $request->session()->regenerate();
+          $system_name = BusinessDetail::where('id',1)
+                                        ->value('system_name');
+          $request->session()->put(['system_name' => $system_name, ]);
       
             return response()->json(['status'=>'success', 'message' => 'login successfull']);
         } catch (\Exception $e) {

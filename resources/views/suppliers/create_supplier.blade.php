@@ -40,6 +40,17 @@
                                             @endif
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3 mb-md-0">
+                                            <input class="form-control" id="create_supplier_number" name="create_supplier_number" type="text" placeholder="Enter supplier number"   />
+                                            <label for="inputPassword">Supplier Number &emsp; </label>
+                                            @if ($errors->has('supplier_number'))
+                                                <div class="text-danger mt-2">
+                                                    {{ $errors->first('supplier_number') }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row mb-3">
                                 <div class="col-md-6">

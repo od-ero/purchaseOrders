@@ -26,6 +26,10 @@ View Suppliers
                                 <td style="font-weight: bold;">Name</td>
                                 <td>{{$supplier_details['supplier_name']}}</td>
                               </tr>
+                              <tr>
+                                <td style="font-weight: bold;">Number</td>
+                                <td>{{$supplier_details['supplier_no']}}</td>
+                              </tr>
 
                               <tr>
                                 <td style="font-weight: bold;">KRA PIN</td>

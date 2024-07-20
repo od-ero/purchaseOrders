@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('supplier_second_Phone')->unique()->nullable();
             $table->string('supplier_email');
             $table->string('supplier_phy_address')->nullable();
+            $table->string('supplier_number')->unique()->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

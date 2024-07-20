@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->string('email_subject');
             $table->string('email_body');
+            $table->string('email_cc')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

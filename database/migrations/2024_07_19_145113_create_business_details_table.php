@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('head_2');
             $table->string('head_3');
             $table->string('kra_pin');
-            $table->string('signatory_name')->nullable();
+            $table->string('signatory_name');
+            $table->string('system_name');
             $table->timestamps();
             $table->softDeletes();
         });
