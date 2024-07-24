@@ -56,6 +56,7 @@
                                     <a class="nav-link"  href="/system-name">System Name</a>
                                     <a class="nav-link" href="/business-details">Order Letter Head</a>
                                     <a class="nav-link" href="{{route('business_details.email_content')}}">Email Content</a>
+                                    <a class="nav-link" href="{{route('password.adminEditPassword')}}">Reset Password</a>
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
@@ -106,7 +107,13 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                       @php
+                        use Illuminate\Support\Facades\Auth;
+
+                        $user = Auth::user();
+                       
+                        @endphp
+                       {{$user['first_name']. ' '.$user['last_name']}}
                     </div>
                 </nav>
             </div>

@@ -2,7 +2,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-primary">
-        <h5 class="modal-title" id="exampleModalLabel">Make Order</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Send Order</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -13,7 +13,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" id="make_order_modal_button" class="btn btn-primary">Make Order</button>
+        <button type="button" id="make_order_modal_button" class="btn btn-primary">Send Order</button>
       </div>
     </div>
   </div>

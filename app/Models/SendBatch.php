@@ -15,6 +15,7 @@ class SendBatch extends Model
 
     protected $fillable = [
         'batch_id',
+        'with_price',
         'email_subject',
         'email_body'
     ];

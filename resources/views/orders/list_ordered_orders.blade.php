@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-@include('orders.delete_orders');
+@include('orders.delete_orders')
 <div class="container-fluid px-4">
                         <h1 class="mt-4">Ordered Batches</h1>
                         <ol class="breadcrumb mb-4">

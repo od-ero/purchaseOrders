@@ -21,7 +21,7 @@
                    
                     <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" id="update_system_name_modal_button" class="btn btn-primary">Edit</button>
+                        <button type="submit" id="update_system_name_modal_button" class="btn btn-primary">Save</button>
                     </div>
                 </form>
       </div>

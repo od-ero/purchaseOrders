@@ -12,7 +12,7 @@ class EmailBody extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
-        'email_subject',
+        'subject',
         'email_body',
         'email_cc',
         

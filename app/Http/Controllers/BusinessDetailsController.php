@@ -63,7 +63,7 @@ class BusinessDetailsController extends Controller
             EmailBody::where('id',1)
                         ->update(['email_subject'=>$email_content['email_subject'],
                                     'email_body'=>$email_content['email_body'],
-                                    //'email_cc'=>$email_content['email_cc'],
+                                    'email_cc'=>$email_content['email_cc'],
                             ]);
 
         return response()->json(['status' => 'success', 'message' => 'Default Email Content Updated']);

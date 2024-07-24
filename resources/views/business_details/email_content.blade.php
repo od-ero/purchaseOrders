@@ -8,13 +8,13 @@
 @endsection
 
 @section('content')
-@include('business_details.update_email_content');
+@include('business_details.update_email_content')
 <div class="row justify-content-center">
                 <div class="col-lg-10">
-                    <div class="card shadow-lg border-0 rounded-lg mt-5">
+                    <div class="card shadow-lg border-0 rounded-lg mt-2">
                         <div class="card-header"><h3 class="text-center font-weight-light my-4">Default Email Content</h3></div>
                         <div class="card-body">
-                        @include('suppliers.updateSupplier');
+                        @include('suppliers.updateSupplier')
                     <table  class="table table-bordered data-table">
                       <form>
                         <input type="text" value="view" id="action_url" name="action_url" hidden>
@@ -35,7 +35,7 @@
                               </tr>
                               @if ($email_content['email_cc']!= null)
                                 <tr>
-                                    <td style="font-weight: bold;">Heading Three</td>
+                                    <td style="font-weight: bold;">Default CC</td>
                                     
                                     <td>{{$email_content['email_cc']}}</td>
                                 </tr>

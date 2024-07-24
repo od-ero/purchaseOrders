@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('send_batches', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('batch_id');
+            $table->boolean('with_price');
             $table->string('email_subject');
             $table->string('email_body');
             $table->timestamps();

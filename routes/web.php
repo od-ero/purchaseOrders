@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -20,13 +21,14 @@ Route::get('/livewire', function () {
 Route::post('/employees/login', [AuthenticatedSessionController::class, 'store'])->name('employee.login');
 
 Route::get('/dashboard', function () {
-    return redirect('/admin/home');
+    return redirect()->intended('/admin/home');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/admin/home', function () {
+Route::get('hhhhhh/admin/home', function () {
     return view('admins.dashboard');
 })->middleware(['auth', 'verified'])->name('admins.dashboard');
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/home', [HomeController::class, 'home'])->name('admins.dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

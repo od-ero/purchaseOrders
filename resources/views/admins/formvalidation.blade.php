@@ -14,7 +14,7 @@
 <body>
       
 <div class="container">
-    <div class="card mt-5">
+    <div class="card mt-2">
         <h2 class="card-header"><i class="fa-regular fa-credit-card"></i> Laravel 11 Ajax CRUD Example - ItSolutionStuff.com</h2>
         <div class="card-body">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">

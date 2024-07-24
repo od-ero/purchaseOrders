@@ -18,11 +18,11 @@ class SuppliersController extends Controller
         $validated = Validator::make($request->all(), [
             'create_supplier_name' => ['required', 'string', 'max:255', 'unique:suppliers,supplier_name'],
             'create_supplier_kra' => ['nullable', 'string', ],
+            'create_supplier_number' => ['nullable', 'string', 'unique:suppliers,supplier_number'],
             'create_supplier_phone' => ['required', 'string', 'unique:suppliers,supplier_phone'],
             'create_supplier_second_phone' => ['nullable', 'string', ],
             'create_supplier_email' => ['required', 'email', 'unique:suppliers,supplier_email'],
             'create_supplier_phy_address' => ['nullable', 'string', 'max:255'],
-            'create_supplier_number' => $supplier['create_supplier_number'],
            
         ]);
 
@@ -45,7 +45,7 @@ class SuppliersController extends Controller
 
     }catch (\Exception $e) {
                     
-        return response()->json(['status' => 'error', 'message' => ['An error occurred please try again later']]);
+        return response()->json(['status' => 'error', 'message' => $e]);
     }
     
    }
@@ -136,11 +136,11 @@ public function updateSupplier(Request $request){
         $validated = Validator::make($request->all(), [
             'create_supplier_name' => ['required', 'string', 'max:255', 'unique:suppliers,supplier_name,' . $supplier['update_supplier_id']],
             'create_supplier_kra' => ['nullable', 'string', ],
+            'create_supplier_number' => ['nullable', 'string', 'unique:suppliers,supplier_number,' . $supplier['update_supplier_id']],
             'create_supplier_phone' => ['required', 'string', 'unique:suppliers,supplier_phone,' . $supplier['update_supplier_id']],
             'create_supplier_second_phone' => ['nullable', 'string', ],
             'create_supplier_email' => ['required', 'email', 'unique:suppliers,supplier_email,' . $supplier['update_supplier_id']],
             'create_supplier_phy_address' => ['nullable', 'string', 'max:255'],
-            'create_supplier_number' => $supplier['create_supplier_number'],
            
         ]);
 

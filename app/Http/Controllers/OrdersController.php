@@ -147,18 +147,23 @@ class OrdersController extends Controller
     }
 
     Public function previewOrderasPdf(Request $request, $encoded_batch_id){
+       
         $batch_id = base64_decode($encoded_batch_id);
        
         $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
         $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
-                                    ->select('order_batches.order_no','suppliers.supplier_name')
+                                    ->select('order_batches.order_no','suppliers.*')
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         $pdfContent = OrderPDF::createPDF($batch_items, $batch_details);
         $pdfContent = base64_encode($pdfContent);
+        if ($request->ajax()) {
+            return response()->json(['status' => 'success','pdfContent' => $pdfContent]);
+        }
+        else{
         return view('orders.view_pdf',['pdfContent'=> $pdfContent,
         'encoded_product_batch_id'=>$batch_id]);
-
+        }
     }
 
     Public function noCostPdf(Request $request, $encoded_batch_id){
@@ -166,20 +171,26 @@ class OrdersController extends Controller
        
         $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
         $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
-                                    ->select('order_batches.order_no','suppliers.supplier_name')
+                                    ->select('order_batches.order_no','suppliers.*')
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);
         $pdfContent = base64_encode($pdfContent);
+        if ($request->ajax()) {
+            return response()->json(['status' => 'success','pdfContent' => $pdfContent]);
+
+        }
+        else{
         return view('orders.view_pdf',['pdfContent'=> $pdfContent,
         'encoded_product_batch_id'=>$batch_id]);
+    }
 
     }
 
     public function makeOrder($encoded_batch_id){
         $batch_id = base64_decode($encoded_batch_id);
         $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
-                                    ->select('order_batches.id as order_id','order_batches.order_no','suppliers.supplier_name')
+                                    ->select('order_batches.*','suppliers.supplier_name','suppliers.supplier_email')
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         $mail= EmailBody::find(1);
@@ -194,7 +205,7 @@ class OrdersController extends Controller
            
         $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
         $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
-                                    ->select('order_batches.order_no','suppliers.supplier_name','suppliers.supplier_email')
+                                    ->select('order_batches.order_no','order_batches.created_at','suppliers.supplier_name','suppliers.supplier_email')
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         if($mail_content['with_prices']=="Yes") {                           
@@ -204,14 +215,14 @@ class OrdersController extends Controller
                 $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);     
             }
         $mailData = [
-            'title' => $mail_content['email_subject'],
+            'title' => $mail_content['subject'],
             'body' => $mail_content['email_body'],
              'files' => [
             //     public_path('images/stamp.png'),
             //     public_path('images/signature.png'),
                 [
                     'content' => $pdfContent,
-                    'name' =>  $batch_details['order_no'] . '_order.pdf'
+                    'name' => 'petals_orders_'.$batch_details['order_no'] . '.pdf'
                 ]
             ]
         ];
@@ -221,7 +232,7 @@ class OrdersController extends Controller
             // Create the send batch entry
            $send_batch= SendBatch::create([
                 'batch_id' => $batch_id,
-                'email_subject' => $mail_content['email_subject'],
+                'email_subject' => $mail_content['subject'],
                 'email_body' => $mail_content['email_body'], 
             ]);
         
@@ -229,6 +240,14 @@ class OrdersController extends Controller
             $cc_emails = [];
         
             // Check if there are CC email addresses
+            if ($mail_content['default_cc']){
+                $cc_emails[] = $mail_content['default_cc'];
+                CcSendBatch::create([
+                    'send_batch_id'=>$send_batch['id'],
+                    'cc_email' => $mail_content['default_cc'],
+                    'with_price' => ($mail_content['with_prices'] == "Yes") ? 1 : 0
+                ]);
+            }
             if ($mail_content['people_cc'] > 0) {
                 // Collect all CC email addresses
                 for ($i = 1; $i <= $mail_content['people_cc']; $i++) {
@@ -255,7 +274,7 @@ class OrdersController extends Controller
     } catch (\Exception $ex) {
         DB::rollBack();
         Log::error($ex);
-        return response()->json(['status' => 'error', 'message' => 'An error occurred']);
+        return response()->json(['status' => 'error', 'message' => 'Some thing went wrong']);
     }
         
     }
@@ -271,7 +290,7 @@ class OrdersController extends Controller
                                     ->get();
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {
-                    return Carbon::parse($row->created_at)->isoFormat('MMM Do YYYY h:mm a');
+                    return Carbon::parse($row->created_at)->isoFormat('DD/MM/YYYY HH:mm');
                 })
                 ->addColumn('order_count', function($row) {
                     return OrderBatchItem::where('order_batch_id', $row->id)->count();
@@ -285,7 +304,7 @@ class OrdersController extends Controller
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
-             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/make-orders/'. $encodedId . '">Make Order</a></li>
+             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/make-orders/'. $encodedId . '">Send Order</a></li>
             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/'. $encodedId . '">PDF with Prices</a></li>
             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encodedId . '">PDF No Prices</a></li>
             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/'. $encodedId . '">Edit</a></li>
@@ -306,20 +325,27 @@ class OrdersController extends Controller
     
             $data = SendBatch::leftJoin('order_batches','order_batches.id','=','send_batches.batch_id')
                                  ->leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
-                                ->select('order_batches.*', 'suppliers.supplier_name','send_batches.created_at as send_at' ,'send_batches.id as send_batch_id')
+                                ->select('order_batches.*', 'suppliers.supplier_name','send_batches.created_at as send_at' ,'send_batches.with_price' ,'send_batches.id as send_batch_id')
                                 ->orderBy('send_batches.id', 'desc')
                                 ->get();
     
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {
-                    return Carbon::parse($row->send_at)->isoFormat('MMM Do YYYY h:mm a');
+                    return Carbon::parse($row->send_at)->isoFormat('DD/MM/YYYY HH:mm');;
                 })
                 ->addColumn('order_count', function($row) {
                     return OrderBatchItem::where('order_batch_id', $row->id)->count();
                 })
                 ->addColumn('action', function($row) {
+
                     $encodedId = base64_encode($row->send_batch_id);
                     $encoded_batch_Id = base64_encode($row->id);
+                    if($row->with_price == 1){
+                        $pdfURL = "/orders/pdf/'. $encoded_batch_Id . '";
+                    }else{
+                        $pdfURL = "/orders/no-cost-pdf/'. $encoded_batch_Id . '";
+                    }
+                    
                     return '
     <div class="btn-group">
         <a type="button" href="/order-batch/view-order-mail-content/'. $encodedId . '" class="btn btn-success">View</a>
@@ -327,9 +353,7 @@ class OrdersController extends Controller
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
-             
-             <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '"href="/view/batch/' . $encoded_batch_Id . '">View Products</a></li>
-            <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_price" href="/orders/pdf/'. $encoded_batch_Id . '">PDF with Prices</a></li>
+            <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_price" href="'. $pdfURL . '">PDF</a></li>
             <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encoded_batch_Id . '">PDF No Prices</a></li>
         </ul>
     </div>';

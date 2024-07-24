@@ -18,7 +18,9 @@ class AuthenticatedSessionController extends Controller
      * Display the login view.
      */
     public function create(): View
-    {   $users = User::whereNot('role_id',1)->get();
+    {   $users = User::whereNot('special_access',1)
+                        ->where('login_access',1)
+                        ->get();
         return view('my_auth.login',['users'=>$users]);
     }
 
@@ -28,18 +30,50 @@ class AuthenticatedSessionController extends Controller
     
     public function store(LoginRequest $request): JsonResponse
     { 
-       
         try {
             $request->authenticate();
           $request->session()->regenerate();
           $system_name = BusinessDetail::where('id',1)
                                         ->value('system_name');
           $request->session()->put(['system_name' => $system_name, ]);
+
+          $intendedUrl =  $request->session()->pull('url.intended', '/admin/home');
       
-            return response()->json(['status'=>'success', 'message' => 'login successfull']);
+            return response()->json(['status'=>'success','intendedUrl' =>$intendedUrl, 'message' => 'login successfull']);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Invalid Username or Password']);
         }
+    }
+
+    public function devStore(LoginRequest $request): JsonResponse
+    { //dd( $request->all());
+       
+        $user = User::where('username', $request->login_userid)->first();
+        if($user == null){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid Username or Password.',
+            ]);
+        }elseif($user->special_access != 1){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid Username or Password.',
+            ]);
+        }else{
+            try {
+                $request->authenticateDev();
+              $request->session()->regenerate();
+              $system_name = BusinessDetail::where('id',1)
+                                            ->value('system_name');
+              $request->session()->put(['system_name' => $system_name, ]);
+    
+              $intendedUrl =  $request->session()->pull('url.intended', '/admin/home');
+          
+                return response()->json(['status'=>'success','intendedUrl' =>$intendedUrl, 'message' => 'login successfull']);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'error', 'message' => 'Invalid Username or Password']);
+            }
+    }
     }
 
     /**
@@ -54,5 +88,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function userRole($user_id){
+        $user_id = base64_decode($user_id);
+        $user_role_id = User::where('id',$user_id)
+                            ->value('role_id');
+        return response()->json(['user_role_id' => $user_role_id]);                   
     }
 }

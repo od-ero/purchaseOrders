@@ -23,26 +23,44 @@ class OrderPDF
         $pdf = new Fpdi();
 
         $pdf->AddPage();
-        $pdf->SetFont('Times', 'B', 16);
-        $pdf->Cell(0, 10,  $business_details['company_name'], 0, 1, 'C');
-        $pdf->Ln(10);
-        $pdf->SetFont('Times', 'B', 16);
-        $pdf->Cell(0, 10, $business_details['head_1'], 0, 1, 'C');
-        $pdf->Ln(10);
-        $pdf->SetFont('Times', 'B', 16);
-        $pdf->Cell(0, 10, $business_details['head_2'], 0, 1, 'C');
-        $pdf->Ln(10);
-        $pdf->SetFont('Times', 'B', 16);
-        $pdf->Cell(0, 10, $business_details['head_3'], 0, 1, 'C');
-        $pdf->Ln(10);
+        $pdf->SetFont('Times', 'B', 14);
+        $pdf->Cell(0, 10,  $business_details['company_name'], 0, 1, 'C',0);
+        //$pdf->Ln(10);
+        $pdf->SetFont('Times', '', 13);
+        $pdf->Cell(0,8, $business_details['head_1'], 0, 1, 'C',0);
+        //$pdf->Ln(10);
+        $pdf->SetFont('Times', '', 13);
+        $pdf->Cell(0, 8, $business_details['head_2'], 0, 1, 'C',0);
+       // $pdf->Ln(10);
+        $pdf->SetFont('Times', '', 13);
+        $pdf->Cell(0, 8, $business_details['head_3'], 0, 1, 'C',0);
+        $pdf->SetFont('Times', '', 13);
+         $pdf->Cell(0, 8, 'Pin:  ' .$business_details['kra_pin'], 0, 1, 'C',0);
+        //$pdf->Ln(10);
         $yPos = $pdf->GetY();
         $xPos = $pdf->GetX();
-        $pdf->SetFont('Times', 'I', 10);
-        $pdf->MultiCell(90, 5,'Supplier :'. $batch_details['supplier_name'], 0, 'L');
-        $pdf->SetXY($xPos + 130, $yPos);
-        $pdf->MultiCell(60, 5,'Order Number: '. $batch_details['order_no'], 0, 'R');
-        $pdf->Ln(10);
-        $pdf->SetFont('Times', 'B', 12);
+        $supLength = 140;
+         $pdf->Line($xPos, $yPos,  $xPos+190, $yPos);
+       //  $pdf->Rect($xPos, $yPos+2,  $xPos + $supLength, 30 , 'D');
+        $pdf->SetFont('Times', '', 11);
+        $pdf->SetXY($xPos, $yPos+5);
+        $pdf->MultiCell($supLength+10, 5, $batch_details['supplier_name'], 0, 'L');
+        $pdf->SetXY($xPos, $yPos+12);
+        $pdf->MultiCell($supLength, 5,'Supplier Code: '. $batch_details['supplier_number'], 0, 'L');
+        $pdf->SetXY($xPos, $yPos+18);
+        $pdf->MultiCell($supLength, 5, 'Phone: ' .$batch_details['supplier_phone'], 0, 'L');
+        $pdf->SetXY($xPos, $yPos+24);
+        $pdf->MultiCell($supLength, 5, 'Pin: ' .$batch_details['supplier_kra_pin'], 0, 'L');
+        $ordersXpos= $xPos + 140;
+       // $pdf->Rect($ordersXpos, $yPos+2, 50, 30 , 'D');
+        $pdf->SetXY($ordersXpos, $yPos+8);
+        $pdf->MultiCell(50, 5,'Order No: '. $batch_details['order_no'], 0, 'R');
+        $pdf->SetXY($ordersXpos, $yPos+16);
+        $pdf->MultiCell(50, 5,'Date: ' .Carbon::parse($batch_details['created_at'])->isoFormat('DD/MM/YYYY'), 0, 'R');
+        $pdf->SetXY($ordersXpos, $yPos+24);
+        $pdf->MultiCell(50, 5,'Time: '. Carbon::parse($batch_details['created_at'])->isoFormat('h:mm A'), 0, 'R');
+        $pdf->SetXY($xPos, $yPos+35);
+        $pdf->SetFont('Times', 'B', 10);
         $cellHeight = 15; 
         $yPos = $pdf->GetY();
         $xPos = $pdf->GetX();
@@ -58,7 +76,7 @@ class OrderPDF
         $lineHeight = 10; 
 
 
-        $pdf->SetFont('Times', '', 12);
+        $pdf->SetFont('Times', '', 10);
         foreach ($pDFDatas as $product) {
             $product_name_length = max(1, ceil($pdf->GetStringWidth($product['product_name']) / $product_name_cell_width));
             
@@ -87,16 +105,16 @@ class OrderPDF
         }
         
 
-        $pdf->SetFont('Times', 'B', 12);
+        $pdf->SetFont('Times', 'B', 10);
         $pdf->Cell(140, 15, '', 0);
         $pdf->Cell(25, 15, 'Total (Kshs)', 1);
         $pdf->Cell(25, 15, number_format($total, 0), 1, 0, 'R');
-        $pdf->Ln();
+       
         
         $pdf->Ln(10);
 
        
-        $pdf->SetFont('Times', 'B', 12);
+        $pdf->SetFont('Times', 'B', 10);
         $pdf->Cell(0, 10, 'Stamp / Signature', 0, 1, 'L');
 
        
@@ -105,10 +123,10 @@ class OrderPDF
 
        
         $signaturePath = public_path('images/scanned_signature.png'); 
-        $pdf->Image($signaturePath, 15, $pdf->GetY()+20, 15);
+        $pdf->Image($signaturePath, 60, $pdf->GetY(), 20);
         
-        $pdf->SetY($pdf->GetY() + 35); 
-        $pdf->SetFont('Times', '', 12);
+        $pdf->SetY($pdf->GetY() + 23); 
+        $pdf->SetFont('Times', '', 10);
        // $current_date =  Carbon::now()->isoFormat('ddd MMM Do YYYY h:mm a');
         $pdf->Cell(0, 10, $business_details['signatory_name'], 0, 1, 'L');
 

@@ -105,7 +105,7 @@
             </tbody>
             </table>
             <button id="save_and_view" class="btn btn-primary">Save and View</button>
-            <button id="save_and_send" class="btn btn-primary">Save and Make Order</button>
+            <button id="save_and_send" class="btn btn-primary">Save and Send Order</button>
             </div>
                         </div>
                     </div>

@@ -15,19 +15,16 @@
             <div class="card-body">
                 <form id="login_form">
                     @csrf
-                    <div class="form-floating login_form_userid mb-3 mb-md-0">
-                        <select class="form-control appselect2" id="login_userid" name="login_userid">
-                            <option value="" disabled selected>Select your name<strong class="text-danger">*</strong></option>
+                   
+                    <div class="form-floating">
+                        <select class="form-select mt-3" id="login_userid" name="login_userid" aria-label="Floating label select example">
+                        <option value="" disabled selected>Select Username</option>
                             @foreach ($users as $user)
                                 <option value="{{ base64_encode($user['id']) }}">{{ $user['first_name'].' '.$user['last_name'] }}</option>
                             @endforeach
                         </select>
-                        @if ($errors->has('id'))
-                            <div class="text-danger mt-2">
-                                {{ $errors->first('id') }}
-                            </div>
-                        @endif
-                    </div>
+                        <label for="floatingSelectGrid">Username <strong class="text-danger">*</strong></label>
+                        </div>
                     <div class="form-floating login_form_password my-3">
                         <input class="form-control" id="login_password" type="password" name="login_password" autocomplete="new-password" placeholder="Password" />
                         <label for="login_password">Password <strong class="text-danger">*</strong></label>
@@ -37,18 +34,18 @@
                             </div>
                         @endif
                     </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" id="inputRememberPassword" type="checkbox" name="remember" value="Remember me" autocomplete='off'/>
-                        <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
+                    <div id="remember_me_class" class="form-check mb-3">
+                        <input class="form-check-input" id="inputRememberPassword" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} autocomplete='off'/>
+                        <label class="form-check-label" for="inputRememberPassword">Remember Me</label>
                     </div>
-                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                        <a class="small" href="{{ route('password.request') }}">Forgot Password?</a>
+                     <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                       
                         <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
+                    </div> 
                 </form>
             </div>
             <div class="card-footer text-center py-3">
-                <div class="small"><a href="{{ route('register') }}">Need an account? Sign up!</a></div>
+                
             </div>
         </div>
     </div>

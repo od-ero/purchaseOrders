@@ -53,6 +53,22 @@ class LoginRequest extends FormRequest
 
         RateLimiter::clear($this->throttleKey());
     }
+    public function authenticateDev(): void
+    {
+        $this->ensureIsNotRateLimited();
+          
+           $data= ["username" => $this->login_userid,
+           "password" => $this->login_password];
+        if (! Auth::attempt($data, $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
+            //return response()->json(['status' => 'error', 'message' => 'Login reuest Authentication failed'], 401);
+            throw ValidationException::withMessages([
+                'id' => trans('auth.failed'),
+            ]);
+        }
+
+        RateLimiter::clear($this->throttleKey());
+    }
 
     /**
      * Ensure the login request is not rate limited.

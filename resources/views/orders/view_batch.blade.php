@@ -80,7 +80,7 @@
             @if($batch_details['ordered']!=1)          
                 <a data-id="{{$encoded_batch_id}}" id="update_batch_button" href="/update/batch/{{$encoded_batch_id}}" class="btn btn-primary">Edit</a>
                 @if ($batch_details['deleted_at'] == null)
-                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}"  href="/make-orders/{{$encoded_batch_id}}">Make Order</a>
+                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}"  href="/make-orders/{{$encoded_batch_id}}">Send Order</a>
                     <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
                 @endif
                 @if ($batch_details['deleted_at'])

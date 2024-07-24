@@ -11,9 +11,18 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+    Route::get('/devs/login', function () {
+        return view('my_auth.developer_login');
+    });
+
+    Route::post('/devs/login', [AuthenticatedSessionController::class, 'devStore'])->name('devs.login');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
+
+    Route::get('/user-role/{id}', [AuthenticatedSessionController::class, 'userRole'])
+    ->name('userRole');           
+
 
     Route::post('/employees/login', [AuthenticatedSessionController::class, 'store'])->name('employee.login');
 
@@ -47,7 +56,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+    Route::post('/password', [PasswordController::class, 'update'])->name('password.update');
+
+    Route::get('/edit-password', [PasswordController::class, 'edit'])->name('password.edit');
+
+    Route::get('employee/edit-password', [PasswordController::class, 'adminEditPassword'])->name('password.adminEditPassword');
+
+    Route::post('employee/update-password', [PasswordController::class, 'adminUpdatePassword'])->name('password.adminUpdatePassword');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');

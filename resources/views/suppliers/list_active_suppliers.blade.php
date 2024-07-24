@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-@include('suppliers.updateSupplier');
+@include('suppliers.updateSupplier')
 <div class="container-fluid px-4">
                         <h1 class="mt-4">Active Suppliers</h1>
                         <ol class="breadcrumb mb-4">

@@ -1,14 +1,22 @@
 $(document).ready(function () {
+    // $(window).load(function(){ 
+    //     //PAGE IS FULLY LOADED 
+    //     //FADE OUT YOUR OVERLAYING DIV
+    //     $('#overlay').fadeOut();
+    //    });
+    
 
-    $('#loading_alert')
-    .hide()  
-    .ajaxStart(function() {
-        $(this).show();
-    })
-    .ajaxStop(function() {
-        $(this).hide();
-    })
-;
+    // $('#loading_alert')
+    // .hide()  
+    // .ajaxStart(function() {
+    //     alertify.notify('custom message.', 'custom', 2, function(){console.log('dismissed');});
+  
+    // })
+    // .ajaxStop(function() {
+    //     $(this).hide();
+    // });
+    var adminLoginUrlClickCount = 0;
+
         $('#login_password').on('click', function() {
             var login_userid = $("#login_userid").val();
             if(login_userid ==  null){
@@ -21,12 +29,19 @@ $(document).ready(function () {
         });
         $('#login_userid').on('change', function() {
             var login_userid = $("#login_userid").val();
-        
             // Remove error state when a value is selected
             if (login_userid != null) {
                 $(".login_form_userid").removeClass("border border-danger");
                 $("#login_userid_error").remove();
             }
+          
+            $.get('/user-role/'+login_userid, function (data) {
+                if(data.user_role_id != 1){
+                   
+                $('#remember_me_class').hide();
+            }
+
+            });
         });
 
 
@@ -71,7 +86,7 @@ if(login_password.length < 3){
                     alertify.set('notifier', 'position', 'top-center');
                     alertify.success(response.message);
                     setTimeout(() => {
-                        window.location.href = "/admin/home";
+                        window.location.href = response.intendedUrl;
                     }, 5000);
                 } else if (response.status === "error") {
                    
@@ -729,6 +744,25 @@ if(login_password.length < 3){
                        
                     }
                 });
+
+                var table = $('#view_batch_table_no_cost').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "/view/batch/" + $('#saved_batch_id').val(),
+                       
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                        { data: 'quantity', name: 'quantity' },
+                        { data: 'product_name', name: 'product_name' },
+                       
+                        
+
+                    ],
+                   
+                });
+            
             
                 function appendTotalRowPurchaseOrdersTable() {
                     const totalRow = `
@@ -783,6 +817,7 @@ if(login_password.length < 3){
     });
 
     $('#create_supplier_form').submit(function(e) {
+       
         e.preventDefault();
 
         // Define validation function
@@ -867,6 +902,7 @@ if(login_password.length < 3){
                         }
                     } 
                     else if (response.status === "error") {
+                       
                         printSupplierErrorMsg(response.message);
                         
                     }
@@ -1051,6 +1087,7 @@ $('body').on('click', '#update_suppliers_details', function () {
     $.get('/suppliers/update/'+supplier_id, function (data) {
         $('#update_supplier_id').val(data.id);
         $('#create_supplier_name').val(data.supplier_name);
+        $('#create_supplier_number').val(data.supplier_number);
         $('#create_supplier_phone').val(data.supplier_phone);
         $('#create_supplier_kra').val(data.supplier_second_phone);
         $('#create_supplier_second_phone').val(data.supplier_second_phone);
@@ -1345,6 +1382,13 @@ $('body').on('click', '#make_order_modal_button', function(e) {
         type: 'POST',
         url: '/make-orders',
         data: formData,
+        beforeSend: function(){
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.message('Sending....', 0);
+          },
+          complete: function(){
+            alertify.dismissAll();
+          },
         contentType: false,
         processData: false,
         success: function(response) {
@@ -1374,93 +1418,7 @@ $('body').on('click', '#make_order',function(e){
   $('#make_order_modal').modal('show');
   $('#delete_batch_id').val(order_batch_id);
 });
-$("#people_cc").on('keyup', function() {
-   
-        var doorNamesContainer = document.getElementById("doorNamesContainer");
-        var submitButton = document.querySelector('button[type="submit"]');
-    var no_people_cc = $(this).val();
-    
-        if (no_people_cc > 0) {
-            doorNamesContainer.innerHTML = '';
-    
-            
-            var numRows = Math.ceil(no_people_cc / 2); // For pairs of doors in each row
-    
-            for (var i = 1; i <= numRows; i++) {
-                var rowDiv = document.createElement("div");
-                rowDiv.className = "row mb-3";
-    
-                // Create first column for odd-numbered door
-                var colDiv1 = document.createElement("div");
-                colDiv1.className = "col-md-6";
-    
-                if (2 * i - 1 <= no_people_cc) { // Check if there's an odd-numbered door to add
-                    var formFloatingDiv1 = document.createElement("div");
-                    formFloatingDiv1.className = "form-floating mb-3 mb-md-0";
-    
-                    var inputField1 = document.createElement("input");
-                    inputField1.type = "text";
-                    inputField1.className = "form-control";
-                    inputField1.placeholder = "";
-                    inputField1.name = "cc_email_" + (2 * i - 1);
-                    inputField1.id = "cc_email_" + (2 * i - 1);
-                    inputField1.required = true;
-    
-                    var label1 = document.createElement("label");
-                    label1.htmlFor = "cc_email_" + (2 * i - 1);
-                    label1.textContent = "Recipient " + (2 * i - 1) + " email";
-    
-                    formFloatingDiv1.appendChild(inputField1);
-                    formFloatingDiv1.appendChild(label1);
-                    colDiv1.appendChild(formFloatingDiv1);
-                }
-    
-                
-                var colDiv2 = document.createElement("div");
-                colDiv2.className = "col-md-6";
-    
-                if (2 * i <= no_people_cc) { 
-                    var formFloatingDiv2 = document.createElement("div");
-                    formFloatingDiv2.className = "form-floating";
-    
-                    var inputField2 = document.createElement("input");
-                    inputField2.type = "email";
-                    inputField2.className = "form-control";
-                    inputField2.placeholder = "";
-                    inputField2.name = "cc_email_" + (2 * i);
-                    inputField2.id = "cc_email_" + (2 * i);
-                    inputField2.required = true;
-    
-                    var label2 = document.createElement("label");
-                    label2.htmlFor = "cc_email_" + (2 * i);
-                    label2.textContent = "Recepient " + (2 * i) + " Email";
-    
-                    formFloatingDiv2.appendChild(inputField2);
-                    formFloatingDiv2.appendChild(label2);
-                    colDiv2.appendChild(formFloatingDiv2);
-                }
-    
-                // Append columns to row
-                rowDiv.appendChild(colDiv1);
-                rowDiv.appendChild(colDiv2);
-    
-                // Append row to container
-                doorNamesContainer.appendChild(rowDiv);
-            }
-    
-            doorNamesContainer.style.display = "block";
-            submitButton.removeAttribute('disabled');
-            return true;
-    
-           
-        } else {
-            doorNamesContainer.style.display = "none";
-            submitButton.setAttribute('disabled', 'true');
-            return false;
-    
-    
-        }
-});
+
 
 $('#update_business_details_button').on('click',function(e){
     e.preventDefault();
@@ -1600,6 +1558,508 @@ $('#update_system_name_form').submit(function(e) {
         
     
 });
+
+function xxaddCCField(ccCounter) {
+    ccCounter++;
+    $('#people_cc').val(ccCounter);
+    var no_people_cc = ccCounter;
+    if (no_people_cc > 0) {
+        doorNamesContainer.innerHTML = '';
+
+        var numRows = Math.ceil(no_people_cc / 2); // For pairs of doors in each row
+
+        for (var i = 1; i <= numRows; i++) {
+            var rowDiv = document.createElement("div");
+            rowDiv.className = "row mb-3";
+           // rowDiv.id = "cc_row_" + (2 * i - 1); 
+
+            // Create first column for odd-numbered door
+            var colDiv1 = document.createElement("div");
+            colDiv1.className = "col-md-6";
+            
+
+            if (2 * i - 1 <= no_people_cc) { // Check if there's an odd-numbered door to add
+                var formFloatingDiv1 = document.createElement("div");
+                formFloatingDiv1.className = "form-floating mb-3 mb-md-0";
+                colDiv1.id = "cc_row_" + (2 * i - 1);
+                var inputField1 = document.createElement("input");
+                inputField1.type = "email"; // Corrected type to 'email'
+                inputField1.className = "form-control";
+                inputField1.placeholder = "";
+                inputField1.name = "cc_email_" + (2 * i - 1);
+                inputField1.id = "cc_email_" + (2 * i - 1);
+                inputField1.required = true;
+
+                var label1 = document.createElement("label");
+                label1.htmlFor = "cc_email_" + (2 * i - 1);
+                label1.textContent = "Recipient " + (2 * i - 1) + " email";
+
+                formFloatingDiv1.appendChild(inputField1);
+                formFloatingDiv1.appendChild(label1);
+                colDiv1.appendChild(formFloatingDiv1);
+            }
+
+            var colDiv2 = document.createElement("div");
+            colDiv2.className = "col-md-6";
+           
+
+            if (2 * i <= no_people_cc) { 
+                var formFloatingDiv2 = document.createElement("div");
+                formFloatingDiv2.className = "form-floating";
+                colDiv2.id = "cc_row_" + (2 * i);
+                var inputField2 = document.createElement("input");
+                inputField2.type = "email";
+                inputField2.className = "form-control";
+                inputField2.placeholder = "";
+                inputField2.name = "cc_email_" + (2 * i);
+                inputField2.id = "cc_email_" + (2 * i);
+                inputField2.required = true;
+
+                var label2 = document.createElement("label");
+                label2.htmlFor = "cc_email_" + (2 * i);
+                label2.textContent = "Recipient " + (2 * i) + " email";
+
+                formFloatingDiv2.appendChild(inputField2);
+                formFloatingDiv2.appendChild(label2);
+                colDiv2.appendChild(formFloatingDiv2);
+            }
+
+            // Append columns to row
+            rowDiv.appendChild(colDiv1);
+            rowDiv.appendChild(colDiv2);
+
+            // Append row to container
+            doorNamesContainer.appendChild(rowDiv);
+        }
+
+        doorNamesContainer.style.display = "block";
+       // submitButton.removeAttribute('disabled');
+        return true;
+    } else {
+        doorNamesContainer.style.display = "none";
+       // submitButton.setAttribute('disabled', 'true');
+        return false;
+    }
+}
+
+function xxremoveCCField(ccCounter) {
+    if (ccCounter > 0) {
+        var rowDiv = document.getElementById("cc_row_" + ccCounter);
+        if (rowDiv) {
+            rowDiv.parentNode.removeChild(rowDiv); // Ensure you're removing the node from its parent
+            ccCounter--;
+            $('#people_cc').val(ccCounter);
+
+            if (ccCounter === 0) {
+                doorNamesContainer.style.display = "none";
+
+            }
+        }
+    }
+}
+
+$("#make_order_add_cc").on('click', function(e) {
+    e.preventDefault();
+    
+   var ccCounter= $('#people_cc').val();
+    var doorNamesContainer = document.getElementById("ccEmailsContainer");
+    
+    addCCField(ccCounter);
+});
+
+$("#make_order_reduce_cc").on('click', function(e) {
+    e.preventDefault();
+    var ccCounter= $('#people_cc').val();
+
+    var doorNamesContainer = document.getElementById("ccEmailsContainer");
+    if(ccCounter>0){
+    xxremoveCCField(ccCounter);}
+    else{
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.error('You have no person cc');
+    }
+
+});
+
+
+
+
+
+    if ($('#pdfPage').length) {
+       
+        function loadPdf() {
+            var selectedOption = $('input[name="with_prices"]:checked').val();
+            var batch_id = $('#batch_id').val();
+            if(selectedOption=="Yes"){
+                var action_url= '/orders/pdf/' + btoa(batch_id);
+            }else{
+                var action_url= '/orders/no-cost-pdf/' + btoa(batch_id);
+            }
+           
+            $.ajax({
+                url: action_url,
+                type: 'GET',
+                data: { option: selectedOption },
+                success: function(response) {
+                    if (response.pdfContent) {
+                        var pdfContent = 'data:application/pdf;base64,' + response.pdfContent;
+                        $('#pdfIframe').attr('src', pdfContent);
+                    } else {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Fail to generate pdf');
+                    }
+                },
+                error: function(xhr) {
+                    console.log('Error:', xhr.responseText);
+                    alert('Fail to generate PDF');
+                }
+            });
+        }
+        loadPdf();
+
+        // Add event listener for radio button changes
+        $('input[name="with_prices"]').change(function() {
+            loadPdf();
+        });
+        }
+
+        
+        
+            function addCCField(ccCounter) {
+                ccCounter++;
+                $('#people_cc').val(ccCounter);
+                var rowDiv = document.createElement("div");
+                rowDiv.className = "row mb-3";
+                rowDiv.id = "cc_row_" + ccCounter;
+        
+                var colDiv = document.createElement("div");
+                colDiv.className = "col-md-12 d-flex align-items-center";
+        
+                var formFloatingDiv = document.createElement("div");
+                formFloatingDiv.className = "form-floating flex-grow-1 me-2"; // Flex-grow to fill the remaining space and margin-right for spacing
+        
+                var inputField = document.createElement("input");
+                inputField.type = "email";
+                inputField.className = "form-control";
+                inputField.placeholder = "";
+                inputField.name = "cc_email_" + ccCounter;
+                inputField.id = "cc_email_" + ccCounter;
+                inputField.required = true;
+        
+                var label = document.createElement("label");
+                label.htmlFor = "cc_email_" + ccCounter;
+                label.textContent = "Recipient " + ccCounter + " Email";
+        
+                var removeButton = document.createElement("button");
+                removeButton.type = "button";
+                removeButton.className = "btn  btn-outline-primary";
+                removeButton.textContent = "Remove";
+                removeButton.id = "make_order_remove_cc";
+        
+                formFloatingDiv.appendChild(inputField);
+                formFloatingDiv.appendChild(label);
+                colDiv.appendChild(formFloatingDiv);
+                colDiv.appendChild(removeButton);
+                rowDiv.appendChild(colDiv);
+                ccEmailsContainer.appendChild(rowDiv);
+        
+                ccEmailsContainer.style.display = "block";
+               
+            }
+        
+            function removeCCField(id) {
+                var rowDiv = document.getElementById("cc_row_" + id);
+                ccEmailsContainer.removeChild(rowDiv);
+                var ccCounter =  $('#people_cc').val();
+                ccCounter--;
+                $('#people_cc').val(ccCounter);
+                if (ccCounter === 0) {
+                    ccEmailsContainer.style.display = "none";
+                   
+                } else {
+                    updateFieldAttributes();
+                }
+            }
+        
+            function updateFieldAttributes() {
+                var rows = ccEmailsContainer.querySelectorAll(".row");
+                var counter = 1;
+        
+                rows.forEach(function(row) {
+                    var inputField = row.querySelector("input");
+                    var label = row.querySelector("label");
+                    var removeButton = row.querySelector("button");
+        
+                    inputField.name = "cc_email_" + counter;
+                    inputField.id = "cc_email_" + counter;
+                    label.htmlFor = "cc_email_" + counter;
+                    label.textContent = "Recipient " + counter + " Email";
+                    row.id = "cc_row_" + counter;
+        
+                    counter++;
+                });
+            }
+        
+            $("#add_cc").on('click', function() {
+                addCCField();
+            });
+        
+            // Use event delegation for remove buttons
+            $("#ccEmailsContainer").on('click', '#make_order_remove_cc', function() {
+                var rowId = $(this).closest('.row').attr('id').split('_')[2];
+                removeCCField(rowId);
+            });
+
+            $('#update_password_form').submit(function(e) {
+                e.preventDefault();
+            
+                // Define validation function
+                function validateInput(selector, errorMessage, customValidation = null, required = true, matchValue = null) {
+                    var value = $(selector).val();
+                    if (value) {
+                        value = value.trim();
+                    }
+                    if ((required && !value) || (value && customValidation && !customValidation(value)) || (matchValue && value !== $(matchValue).val())) {
+                        $(selector).addClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                        $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+            
+                        $(selector).on('keyup', function() {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        });
+                        return false;
+                    } else {
+                        $(selector).removeClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove();
+                        return true;
+                    }
+                }
+            
+                function validatePassword(value) {
+                    return value.length >= 3;
+                }
+            
+                var isValidCurrentPassword = validateInput("#update_password_current_password", "Check Your Password", validatePassword);
+                var isValidNewPassword = validateInput("#update_password_password", "Check User Password", validatePassword);
+                var isValidConfirmPassword = validateInput("#update_password_password_confirmation", "Passwords do not match", validatePassword, true, "#update_password_password");
+            
+                if (isValidCurrentPassword && isValidNewPassword && isValidConfirmPassword) {
+                    let formData = new FormData(this);
+            
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        type: 'POST', // Use POST or PUT depending on your endpoint
+                        url: '/password',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.status === "success") {
+                                console.log('success');
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 5000);
+                            } else if (response.status === "error") {
+                                printConfirmPasswordErrorMsg(response.message);
+                            }
+                        },
+                        error: function(response) {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Something went wrong');
+                        }
+                    });
+                }
+            });
+            
+            function printConfirmPasswordErrorMsg (msg) {
+                $.each( msg, function( key, value ) {
+                   alert(value);
+                    if (isWordPresent(value, 'password')){
+                        $("#update_password_current_password").addClass('is-invalid');
+                        $("#update_password_current_password").next('.invalid-feedback').remove(); 
+                        $("#update_password_current_password").after('<div class="invalid-feedback">' + value + '</div>');
+                        $("#update_password_current_password").on('keyup', function() {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        });}
+                    
+                   
+                });
+               
+              }
+
+              $('#admin_update_password_form').submit(function(e) {
+                e.preventDefault();
+            
+                // Define validation function
+                function validateInput(selector, errorMessage, customValidation = null, required = true, matchValue = null) {
+                    var value = $(selector).val();
+                    if (value) {
+                        value = value.trim();
+                    }
+                    if ((required && !value) || (value && customValidation && !customValidation(value)) || (matchValue && value !== $(matchValue).val())) {
+                        $(selector).addClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                        $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+            
+                        $(selector).on('keyup', function() {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        });
+                        return false;
+                    } else {
+                        $(selector).removeClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove();
+                        return true;
+                    }
+                }
+            
+                function validateUser(value) {
+                    return value !== null && value !== '';
+                }
+            
+                function validatePassword(value) {
+                    return value.length >= 3;
+                }
+            
+                var isValidCurrentPassword = validateInput("#update_password_current_password", "Check Current Password", validatePassword);
+                var isValidNewPassword = validateInput("#update_password_password", "Check New Password", validatePassword);
+                var isValidConfirmPassword = validateInput("#update_password_password_confirmation", "Passwords do not match", validatePassword, true, "#update_password_password");
+                var isValidUserId = validateInput("#update_user_id", "Select User", validateUser, true);
+            
+                if (isValidCurrentPassword && isValidNewPassword && isValidConfirmPassword && isValidUserId) {
+                    let formData = new FormData(this);
+            
+                    // Debug: Log form data to ensure values are being captured
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+            
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST', // Use POST or PUT depending on your endpoint
+                        url: '/employee/update-password', 
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.status === "success") {
+                                console.log('success');
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 5000);
+                            } else if (response.status === "error") {
+                                printConfirmPasswordErrorMsg(response.message);
+                            }
+                        },
+                        error: function(response) {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Something went wrong');
+                        }
+                    });
+                }
+            });
+
+            $('#developers_login_form').submit(function(e) {
+                e.preventDefault();
+           
+                // Define validation function
+                function validateInput(selector, errorMessage, customValidation = null, required = true) {
+                    var value = $(selector).val();
+                    if (value) {
+                        value = value.trim();
+                    }
+                    if ((required && !value) || (value && customValidation && !customValidation(value))) {
+                        $(selector).addClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                        $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+            
+                        $(selector).on('keyup', function() {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        });
+                        return false;
+                    } else {
+                        $(selector).removeClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove();
+                        return true;
+                    }
+                }
+            
+                function validateUser(value) {
+                    return value !== null && value !== '';
+                }
+            
+                function validatePassword(value) {
+                    return value.length >= 3;
+                }
+            
+                var isValid_password = validateInput("#developer_password", "Check Your Password", validatePassword);
+                var isValid_user_name = validateInput("#developer_user_name", "Enter Username");
+            
+                if (isValid_password  && isValid_user_name) {
+                    let formData = new FormData(this);
+            
+                    // Debug: Log form data to ensure values are being captured
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+            
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST', 
+                        url: '/devs/login', 
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.status === "success") {
+                                console.log('success');
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 5000);
+                            } else if (response.status === "error") {
+                                alertify.set('notifier', 'position', 'top-center');
+                            alertify.error(response.message);
+                            }
+                        },
+                        error: function(response) {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Something went wrong');
+                        }
+                    });
+                }
+            });
+
+            $('#adminLoginUrl').click(function(){
+                adminLoginUrlClickCount++;
+                if(adminLoginUrlClickCount==4){
+                window.location.href = '/devs/login';
+                adminLoginUrlClickCount=0
+            }
+           
+            });
+            
+        
+           
+    
+        
+        
+        
+
 
     });
     

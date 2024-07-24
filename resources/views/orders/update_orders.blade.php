@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-@include('orders.delete_orders');
+@include('orders.delete_orders')
 <div class="container-fluid px-4">
                         <h1 class="mt-4">Edit Orders</h1>
                         <ol class="breadcrumb mb-4">
@@ -105,7 +105,7 @@
             <a data-id="{{$encoded_batch_id}}" href="/view/batch/{{$encoded_batch_id}}" class="btn btn-primary">View</a>
             <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_batch_button" href="#">Save and View</a>
             @if ($batch_details['deleted_at'] == null)
-            <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_button" href="#">Save and Make Order</a>
+            <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_button" href="#">Save and Send Order</a>
                 <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
             @endif
             @if ($batch_details['deleted_at'])
