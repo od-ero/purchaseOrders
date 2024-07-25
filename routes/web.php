@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\BusinessDetailsController;
+use App\Http\Controllers\RolesAndPermissionsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,9 +25,7 @@ Route::get('/dashboard', function () {
     return redirect()->intended('/admin/home');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('hhhhhh/admin/home', function () {
-    return view('admins.dashboard');
-})->middleware(['auth', 'verified'])->name('admins.dashboard');
+Auth::routes();
 Route::middleware('auth')->group(function () {
     Route::get('/admin/home', [HomeController::class, 'home'])->name('admins.dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -111,7 +110,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/create-supplier', function () {
         return view('suppliers.create_supplier');
-    })->name('suppliers.create_supplier');
+    })->name('suppliers.create_supplier')->middleware('permission:Add-Supplier');
     
     Route::post('/supplier/create', [SuppliersController::class, 'createSupplier'])
         ->name('suppliers.createSupplier');
@@ -154,6 +153,41 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/email-content/update', [BusinessDetailsController::class, 'updateEmailContent'])
         ->name('business_details.updateEmailContent');
+
+        Route::get('/add-permissions', [RolesAndPermissionsController::class, 'addPermissions'])
+        ->name('r_p.addPermissions');
+        Route::get('/add-roles', [RolesAndPermissionsController::class, 'addRoles'])
+        ->name('r_p.addRoles');
+
+        Route::get('/create-roles', [RolesAndPermissionsController::class, 'createRoles'])
+        ->name('r_p.createRoles');
+
+        Route::get('/list-roles', [RolesAndPermissionsController::class, 'listRoles'])
+        ->name('r_p.listRoles');
+
+        Route::post('/store-roles', [RolesAndPermissionsController::class, 'storeRoles'])
+        ->name('r_p.storeRoles');
+
+        Route::get('/show-role/{id}', [RolesAndPermissionsController::class, 'showRole'])
+        ->name('r_p.showRole');
+
+        Route::get('/create-permission', [RolesAndPermissionsController::class, 'createPermission'])
+        ->name('r_p.createpermission');
+
+        Route::post('/store-permissions', [RolesAndPermissionsController::class, 'storePermissions'])
+        ->name('r_p.storepermissions');
+
+        Route::get('/edit-role/{id}', [RolesAndPermissionsController::class, 'editRole'])
+        ->name('r_p.editRole');
+
+        Route::post('/update-role', [RolesAndPermissionsController::class, 'updateRole'])
+        ->name('r_p.updateRole');
+
+        Route::get('/delete-role/{id}', [RolesAndPermissionsController::class, 'destroyRole'])
+        ->name('r_p.deleteRole');
+
+
+       
     
 
 

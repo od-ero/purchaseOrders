@@ -15,6 +15,7 @@ $(document).ready(function () {
     // .ajaxStop(function() {
     //     $(this).hide();
     // });
+    var submitButton = document.querySelector('button[type="submit"]');
     var adminLoginUrlClickCount = 0;
 
         $('#login_password').on('click', function() {
@@ -1559,127 +1560,14 @@ $('#update_system_name_form').submit(function(e) {
     
 });
 
-function xxaddCCField(ccCounter) {
-    ccCounter++;
-    $('#people_cc').val(ccCounter);
-    var no_people_cc = ccCounter;
-    if (no_people_cc > 0) {
-        doorNamesContainer.innerHTML = '';
-
-        var numRows = Math.ceil(no_people_cc / 2); // For pairs of doors in each row
-
-        for (var i = 1; i <= numRows; i++) {
-            var rowDiv = document.createElement("div");
-            rowDiv.className = "row mb-3";
-           // rowDiv.id = "cc_row_" + (2 * i - 1); 
-
-            // Create first column for odd-numbered door
-            var colDiv1 = document.createElement("div");
-            colDiv1.className = "col-md-6";
-            
-
-            if (2 * i - 1 <= no_people_cc) { // Check if there's an odd-numbered door to add
-                var formFloatingDiv1 = document.createElement("div");
-                formFloatingDiv1.className = "form-floating mb-3 mb-md-0";
-                colDiv1.id = "cc_row_" + (2 * i - 1);
-                var inputField1 = document.createElement("input");
-                inputField1.type = "email"; // Corrected type to 'email'
-                inputField1.className = "form-control";
-                inputField1.placeholder = "";
-                inputField1.name = "cc_email_" + (2 * i - 1);
-                inputField1.id = "cc_email_" + (2 * i - 1);
-                inputField1.required = true;
-
-                var label1 = document.createElement("label");
-                label1.htmlFor = "cc_email_" + (2 * i - 1);
-                label1.textContent = "Recipient " + (2 * i - 1) + " email";
-
-                formFloatingDiv1.appendChild(inputField1);
-                formFloatingDiv1.appendChild(label1);
-                colDiv1.appendChild(formFloatingDiv1);
-            }
-
-            var colDiv2 = document.createElement("div");
-            colDiv2.className = "col-md-6";
-           
-
-            if (2 * i <= no_people_cc) { 
-                var formFloatingDiv2 = document.createElement("div");
-                formFloatingDiv2.className = "form-floating";
-                colDiv2.id = "cc_row_" + (2 * i);
-                var inputField2 = document.createElement("input");
-                inputField2.type = "email";
-                inputField2.className = "form-control";
-                inputField2.placeholder = "";
-                inputField2.name = "cc_email_" + (2 * i);
-                inputField2.id = "cc_email_" + (2 * i);
-                inputField2.required = true;
-
-                var label2 = document.createElement("label");
-                label2.htmlFor = "cc_email_" + (2 * i);
-                label2.textContent = "Recipient " + (2 * i) + " email";
-
-                formFloatingDiv2.appendChild(inputField2);
-                formFloatingDiv2.appendChild(label2);
-                colDiv2.appendChild(formFloatingDiv2);
-            }
-
-            // Append columns to row
-            rowDiv.appendChild(colDiv1);
-            rowDiv.appendChild(colDiv2);
-
-            // Append row to container
-            doorNamesContainer.appendChild(rowDiv);
-        }
-
-        doorNamesContainer.style.display = "block";
-       // submitButton.removeAttribute('disabled');
-        return true;
-    } else {
-        doorNamesContainer.style.display = "none";
-       // submitButton.setAttribute('disabled', 'true');
-        return false;
-    }
-}
-
-function xxremoveCCField(ccCounter) {
-    if (ccCounter > 0) {
-        var rowDiv = document.getElementById("cc_row_" + ccCounter);
-        if (rowDiv) {
-            rowDiv.parentNode.removeChild(rowDiv); // Ensure you're removing the node from its parent
-            ccCounter--;
-            $('#people_cc').val(ccCounter);
-
-            if (ccCounter === 0) {
-                doorNamesContainer.style.display = "none";
-
-            }
-        }
-    }
-}
 
 $("#make_order_add_cc").on('click', function(e) {
     e.preventDefault();
     
    var ccCounter= $('#people_cc').val();
-    var doorNamesContainer = document.getElementById("ccEmailsContainer");
-    
     addCCField(ccCounter);
 });
 
-$("#make_order_reduce_cc").on('click', function(e) {
-    e.preventDefault();
-    var ccCounter= $('#people_cc').val();
-
-    var doorNamesContainer = document.getElementById("ccEmailsContainer");
-    if(ccCounter>0){
-    xxremoveCCField(ccCounter);}
-    else{
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.error('You have no person cc');
-    }
-
-});
 
 
 
@@ -1775,6 +1663,8 @@ $("#make_order_reduce_cc").on('click', function(e) {
                 $('#people_cc').val(ccCounter);
                 if (ccCounter === 0) {
                     ccEmailsContainer.style.display = "none";
+                    submitButton.setAttribute('disabled', 'true');
+
                    
                 } else {
                     updateFieldAttributes();
@@ -1800,9 +1690,7 @@ $("#make_order_reduce_cc").on('click', function(e) {
                 });
             }
         
-            $("#add_cc").on('click', function() {
-                addCCField();
-            });
+           
         
             // Use event delegation for remove buttons
             $("#ccEmailsContainer").on('click', '#make_order_remove_cc', function() {
@@ -1878,7 +1766,7 @@ $("#make_order_reduce_cc").on('click', function(e) {
             
             function printConfirmPasswordErrorMsg (msg) {
                 $.each( msg, function( key, value ) {
-                   alert(value);
+                  
                     if (isWordPresent(value, 'password')){
                         $("#update_password_current_password").addClass('is-invalid');
                         $("#update_password_current_password").next('.invalid-feedback').remove(); 
@@ -2052,9 +1940,432 @@ $("#make_order_reduce_cc").on('click', function(e) {
             }
            
             });
+
+            var table = $('#list_roles_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "/list-roles",
+               
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    {data: 'name', name: 'name'},
+                    
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+                ]
+               
+          });
             
+          $('#create_role_form').submit(function(e) {
+       
+            e.preventDefault();
+    
+            // Define validation function
+            function validateInput(selector, errorMessage, customValidation = null, required = true) {
+                var value = $(selector).val();
+                if(value){
+                    value=value.trim();
+                }
+                if ((required && !value) || (value && customValidation && !customValidation(value))) {
+                    $(selector).addClass('is-invalid');
+                    $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                    $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+    
+                    $(selector).on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    return false;
+                } else {
+                    $(selector).removeClass('is-invalid');
+                    $(selector).next('.invalid-feedback').remove();
+                    return true;
+                }
+            }
+    
+            // Custom validation functions
+            function validatePhone(value) {
+                var phoneRegex = /^[0-9]{6,13}$/;
+                return phoneRegex.test(value);
+            }
+    
+            function validatePassword(value) {
+                return value.length >= 3;
+            }
+    
+            function validateEmail(value) {
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value);
+            }
+    
+            function validateRole(value) {
+                return value !== null && value !== '';
+            }
+    
+            // Validate each input field
+            var isValidName = validateInput("#role_name", "Enter Role Name");
+           
+           
+            
+            // If all fields are valid, submit the form or perform your desired action
+            if (isValidName) {
+                // All fields are valid, proceed with form submission or other actions
+                let formData = new FormData(this);
+        
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    type: 'POST',
+                    url: '/store-roles',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === "success") {
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                            if(register_clicked_button=='register_save_view'){
+                                setTimeout(() => {
+                                window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
+                            }, 5000);
+                        }
+                            else{
+                                setTimeout(() => {
+                                    window.location.href = "/create-supplier";
+                                }, 5000);
+                            }
+                        } 
+                        else if (response.status === "error") {
+                           
+                            printSupplierErrorMsg(response.message);
+                            
+                        }
+                    },
+                    error: function(response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Something went wrong');
+                    }
+                });
+    
+                
+            }
+        }); 
+
+          function addPermissionField(ccCounter) {
+                ccCounter++;
+                $('#no_of_permissions').val(ccCounter);
+                var rowDiv = document.createElement("div");
+                rowDiv.className = "row mb-3";
+                rowDiv.id = "permission_row_" + ccCounter;
+        
+                var colDiv = document.createElement("div");
+                colDiv.className = "col-md-12 d-flex align-items-center";
+        
+                var formFloatingDiv = document.createElement("div");
+                formFloatingDiv.className = "form-floating flex-grow-1 me-2"; // Flex-grow to fill the remaining space and margin-right for spacing
+        
+                var inputField = document.createElement("input");
+                inputField.type = "text";
+                inputField.className = "form-control";
+                inputField.placeholder = "";
+                inputField.name = "permission_" + ccCounter;
+                inputField.id = "permission_" + ccCounter;
+                inputField.required = true;
+        
+                var label = document.createElement("label");
+                label.htmlFor = "permission_" + ccCounter;
+                label.textContent = "Permission " + ccCounter + " Name";
+        
+                var removeButton = document.createElement("button");
+                removeButton.type = "button";
+                removeButton.className = "btn  btn-outline-primary";
+                removeButton.textContent = "Remove";
+                removeButton.id = "create_permission_remove";
+        
+                formFloatingDiv.appendChild(inputField);
+                formFloatingDiv.appendChild(label);
+                colDiv.appendChild(formFloatingDiv);
+                colDiv.appendChild(removeButton);
+                rowDiv.appendChild(colDiv);
+               permissionsContainer.appendChild(rowDiv);
+        
+               permissionsContainer.style.display = "block";
+               
+            }
+        
+            function removePermissionField(id) {
+                var rowDiv = document.getElementById("permission_row_" + id);
+                permissionsContainer.removeChild(rowDiv);
+                var ccCounter =  $('#no_of_permissions').val();
+                ccCounter--;
+                $('#no_of_permissions').val(ccCounter);
+                if (ccCounter === 0) {
+                    permissionsContainer.style.display = "none";
+                   
+                } else {
+                    updatePermissionFieldAttributes();
+                }
+            }
+        
+            function updatePermissionFieldAttributes() {
+                var rows =permissionsContainer.querySelectorAll(".row");
+                var counter = 1;
+        
+                rows.forEach(function(row) {
+                    var inputField = row.querySelector("input");
+                    var label = row.querySelector("label");
+                    var removeButton = row.querySelector("button");
+        
+                    inputField.name = "permission_" + counter;
+                    inputField.id = "permission_" + counter;
+                    label.htmlFor = "permission_" + counter;
+                    label.textContent = "Permission_ " + counter + " Name";
+                    row.id = "permission_row_" + counter;
+        
+                    counter++;
+                });
+            }
         
            
+        
+            // Use event delegation for remove buttons
+            $("#permissionsContainer").on('click', '#create_permission_remove', function() {
+                var rowId = $(this).closest('.row').attr('id').split('_')[2];
+                
+                removePermissionField(rowId);
+            });  
+            
+            $('#create_permission_form').submit(function(e) {
+               
+       
+                e.preventDefault();
+                var permissionCounter = $('#no_of_permissions').val();
+
+                if(permissionCounter < 1){   
+                    alertify.set('notifier','position', 'top-center');
+                    alertify.error('Enter Permission Name');
+                    return false
+                }
+                
+                    let formData = new FormData(this);
+            
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        type: 'POST',
+                        url: '/store-permissions',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.status === "success") {
+                                    alertify.set('notifier', 'position', 'top-center');
+                                    alertify.success(response.message);
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 5000);
+                               
+                            } 
+                            else if (response.status === "error") {
+                               
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.error(response.message);
+                                
+                            }
+                        },
+                        error: function(response) {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Something went wrong');
+                        }
+                    });
+        
+                    
+               // }
+            });
+
+            $("#create_permission_add").on('click', function(e) {
+                e.preventDefault();
+                
+                var permissionCounter = $('#no_of_permissions').val();
+               
+                addPermissionField(permissionCounter);
+            });
+
+            $('body').on('click', '#update_roles_button', function () {
+                var role_id = $(this).data('id');
+            
+                $.get('/edit-role/' + role_id, function (data) {
+                    var rolePermissionsArray = Object.keys(data.rolePermissions).map(function (key) {
+                        return parseInt(key);
+                    });
+            
+                    // Clear previous checkboxes
+                    var permissionsContainer = $('#permissions_container');
+                    permissionsContainer.empty();
+            
+                    // Show the modal
+                    $('#update_role_modal').modal('show');
+            
+                    // Set role data
+                    $('#role_id').val(data.role.id);
+                    $('#role_name').val(data.role.name);
+            
+                    // Append new checkboxes
+                    data.permissions.forEach(function (permission) {
+                        var isChecked = rolePermissionsArray.includes(permission.id) ? 'checked' : '';
+                        var checkboxHtml = `
+                            <div class="form-check mb-3">
+                                <input type="checkbox" id="permission_${permission.id}" name="permission[${permission.id}]" value="${permission.id}" class="form-check-input" ${isChecked} />
+                                <label class="form-check-label" for="permission_${permission.id}"> ${permission.name}</label>
+                            </div>
+                        `;
+                        permissionsContainer.append(checkboxHtml);
+                    });
+                }).fail(function () {
+                    alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Something went wrong');
+                });
+            });
+
+            $('#update_role_form').submit(function(e) {
+       
+                e.preventDefault();
+        
+                // Define validation function
+                function validateInput(selector, errorMessage, customValidation = null, required = true) {
+                    var value = $(selector).val();
+                    if(value){
+                        value=value.trim();
+                    }
+                    if ((required && !value) || (value && customValidation && !customValidation(value))) {
+                        $(selector).addClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                        $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+        
+                        $(selector).on('keyup', function() {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        });
+                        return false;
+                    } else {
+                        $(selector).removeClass('is-invalid');
+                        $(selector).next('.invalid-feedback').remove();
+                        return true;
+                    }
+                }
+        
+                // Custom validation functions
+                function validatePhone(value) {
+                    var phoneRegex = /^[0-9]{6,13}$/;
+                    return phoneRegex.test(value);
+                }
+        
+                function validatePassword(value) {
+                    return value.length >= 3;
+                }
+        
+                function validateEmail(value) {
+                    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(value);
+                }
+        
+                function validateRole(value) {
+                    return value !== null && value !== '';
+                }
+        
+                // Validate each input field
+                var isValidName = validateInput("#role_name", "Enter Role Name");
+               
+               
+                
+                // If all fields are valid, submit the form or perform your desired action
+                if (isValidName) {
+                    // All fields are valid, proceed with form submission or other actions
+                    let formData = new FormData(this);
+            
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        type: 'POST',
+                        url: '/update-role',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.status === "success") {
+                                    alertify.set('notifier', 'position', 'top-center');
+                                    alertify.success(response.message);
+                                if(register_clicked_button=='register_save_view'){
+                                    setTimeout(() => {
+                                    window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
+                                }, 5000);
+                            }
+                                else{
+                                    setTimeout(() => {
+                                        window.location.href = "/create-supplier";
+                                    }, 5000);
+                                }
+                            } 
+                            else if (response.status === "error") {
+                               
+                                printSupplierErrorMsg(response.message);
+                                
+                            }
+                        },
+                        error: function(response) {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error('Something went wrong');
+                        }
+                    });
+        
+                    
+                }
+            });    
+            
+            $('#delete_role_button').on('click',function(e){
+                e.preventDefault();
+               
+            var role_id = $('#delete_role_id').val();
+            $.ajax({
+                type: "get",
+                    url: "/delete-role/"+role_id,
+                success: function (response) {
+                    if (response.status === "success") {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.success(response.message);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 5000);
+                        
+                   
+                } 
+                else if (response.status === "error") {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(response.message);
+                    setTimeout(() => {
+                        
+                    }, 5000);
+                }
+                },
+                error: function (response) {
+                    alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('An error occurred please try again later');
+                }
+            });
+            
+            });   
+            
+            
+          $('body').on('click', '#delete_role_button',function(e){
+            e.preventDefault();
+            var role_id = $(this).data('id');
+
+          $('#delete_role_modal').modal('show');
+          $('#delete_role_id').val(role_id);
+        });
+            
     
         
         

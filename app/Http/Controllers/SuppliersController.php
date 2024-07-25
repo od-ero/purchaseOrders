@@ -51,6 +51,7 @@ class SuppliersController extends Controller
    }
 
   public function listActiveSuppliers(Request $request){
+    if (auth()->user()->can('Add-Supplier')) {
     if ($request->ajax()) {
 
         $data = Supplier::select('suppliers.*')
@@ -79,7 +80,10 @@ class SuppliersController extends Controller
                     }
                     
                     return view('suppliers.list_active_suppliers');
+   }else{
+    dd('no permission');
    }
+}
 
    public function listDeletedSuppliers(Request $request){
     if ($request->ajax()) {

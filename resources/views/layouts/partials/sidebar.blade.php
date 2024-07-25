@@ -41,7 +41,9 @@
                             </a>
                             <div class="collapse" id="collapseSuppliers" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
+                                    @can('Add-Supplier')
                                     <a class="nav-link"  href="{{route('suppliers.create_supplier')}}">Add Supplier</a>
+                                    @endcan
                                     <a class="nav-link" href="{{route('suppliers.listActiveSuppliers')}}">List Active Suppliers</a>
                                     <a class="nav-link" href="{{route('suppliers.listDeletedSuppliers')}}">List Deleted Suppliers</a>
                                 </nav>
@@ -56,6 +58,19 @@
                                     <a class="nav-link"  href="/system-name">System Name</a>
                                     <a class="nav-link" href="/business-details">Order Letter Head</a>
                                     <a class="nav-link" href="{{route('business_details.email_content')}}">Email Content</a>
+                                    <a class="nav-link" href="{{route('password.adminEditPassword')}}">Reset Password</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_permissions" aria-expanded="false" aria-controls="collapseSettings">
+                                <div class="sb-nav-link-icon"><i class="fa fa-cog"></i></div>
+                                    Permissions
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapse_permissions" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{route('r_p.createRoles')}}">Create Roles</a>
+                                    <a class="nav-link"  href="{{route('r_p.listRoles')}}">List Roles</a>
+                                    <a class="nav-link" href="{{route('r_p.createpermission')}}">Create Permission</a>
                                     <a class="nav-link" href="{{route('password.adminEditPassword')}}">Reset Password</a>
                                 </nav>
                             </div>
