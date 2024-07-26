@@ -46,7 +46,14 @@
                               </tr>
                               <tr>
                                 <td style="font-weight: bold;">Permission Level</td>
-                                <td>{{$user_details['role_name']}}</td>
+                                <td> @if(!empty($user_details->getRoleNames()))
+                                      @foreach($user_details->getRoleNames() as $role)
+                                          {{ $role }}
+                                      @endforeach
+                                      @else
+                                      Null
+                                  @endif
+                                </td>
                               </tr>
                               <tr>
                                 <td style="font-weight: bold;">Phone</td>
@@ -67,8 +74,8 @@
                                 <td>{{$user_details['phy_address']}}</td>
                               </tr>
                               <tr>
-                                <td style="font-weight: bold;">Login_access</td>
-                                <td>{{ $user_details['login_access'] == 1 ? 'Yes' : 'No' }}</td>
+                                <td style="font-weight: bold;">Login Status</td>
+                                <td>{{ $user_details['login_access'] == 1 ? 'Active' : 'Deleted' }}</td>
                               </tr>
                               
                             </tbody>

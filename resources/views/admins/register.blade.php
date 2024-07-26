@@ -103,16 +103,16 @@
                                 </div>
                                 </div>  
                                 <div class="row mb-3">
-                                <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="register_email" name="email" type="email" placeholder="Enter user email"   />
-                                                <label for="inputEmail">Email</label>
-                                                @if ($errors->has('email'))
-                                                    <div class="text-danger mt-2">
-                                                        {{ $errors->first('email') }}
-                                                    </div>
-                                                @endif
-                                            </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3 mb-md-0">
+                                            <input class="form-control" id="register_email" name="email" type="email" placeholder="Enter user email"   />
+                                            <label for="inputEmail">Email</label>
+                                            @if ($errors->has('email'))
+                                                <div class="text-danger mt-2">
+                                                    {{ $errors->first('email') }}
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3 mb-md-0">
@@ -126,39 +126,39 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    
-                                        <div class="col-md-6">
-                                        <div class="form-floating">
-            <select class="form-select" id="register_role_id" name="role_id"  aria-label="Floating label select example">
-            <option value="" disabled selected>Select Permission</option>
-                @foreach ($roles as $role)
-                <option value="{{$role['id']}}">{{$role['role_name']}}</option>
-                @endforeach
-            </select>
-  <label for="floatingSelect">Permission Level</label>
-</div>
-                                            
-                                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                            <div class="form-floating">
+                                <select name="roles[]" id="register_role_id" class="form-select" aria-label="Floating label select example">
+                                    <option value=" " selected disabled> Select</option> 
+                                    @foreach ($roles as $value => $label)
+                                        <option value="{{ $value }}">
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            <label for="role">Permission Level &emsp; <strong class="text-danger text-right" > *</strong></label>
+                            </div>       
+                        </div>
 
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="register_password" name="password" type="password" placeholder="Enter user password" />
-                                                <label for="inputPassword">Password &emsp; <i>(> 3)</i>&emsp; <strong class="text-danger text-right" > *</strong></label>
-                                                @if ($errors->has('password'))
-                                                    <div class="text-danger mt-2">
-                                                        {{ $errors->first('password') }}
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                <input class="form-control" id="register_password" name="password" type="password" placeholder="Enter user password" />
+                                <label for="inputPassword">Password &emsp; <i>(> 3)</i>&emsp; <strong class="text-danger text-right" > *</strong></label>
+                                @if ($errors->has('password'))
+                                    <div class="text-danger mt-2">
+                                        {{ $errors->first('password') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                         </div>
                                 
-                                <div class="mt-4 mb-0 text-center">
-                                    <button type="submit" id="register_save_view" class="btn btn-primary  btn-submit">Save and View</button>  
-                                        <button type="submit" id="register_save_and_add_new" class="btn btn-secondary">Save and Add New</button>
-                                   
-                                </div>
+                        <div class="mt-4 mb-0 text-center">
+                            <button type="submit" id="register_save_view" class="btn btn-primary  btn-submit">Save and View</button>  
+                                <button type="submit" id="register_save_and_add_new" class="btn btn-secondary">Save and Add New</button>
+                            
+                        </div>
                             </form>
                         </div>
                     </div>

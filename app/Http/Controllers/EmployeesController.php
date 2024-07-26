@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\User;
-use DataTables;
+use Spatie\Permission\Models\Role;
+use Yajra\DataTables\DataTables as DataTables;
+
+
 class EmployeesController extends Controller
 {
         public function index(Request $request)
         {
             if ($request->ajax()) {
 
-                $data = User::leftJoin('roles','roles.id','users.role_id')
-                                ->select('users.*','roles.role_name')
+                $data = User::select('users.*')
                                 ->where('login_access', 1)
                                 ->where('special_access',0)
                                 ->get();
@@ -21,6 +23,12 @@ class EmployeesController extends Controller
                         ->addIndexColumn()
                         ->addColumn('full_name', function($row) {
                             return $row->first_name . ' ' . $row->last_name;
+                        })
+                        ->addColumn('role_name', function($user) {
+                            $userRole = $user->roles->pluck('name')->first();
+                          
+                            return $userRole;
+                           
                         })
                         ->addColumn('details', function($row) {
                             return $row->phone . '<br>' . $row->id_no;
@@ -35,6 +43,7 @@ class EmployeesController extends Controller
     </button>
     <ul class="dropdown-menu">
         <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>
+         <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_permission_level_button" href="#">Edit Permission Level</a></li>
         <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_user_button" href="#">Delete</a></li>
         
         
@@ -52,8 +61,7 @@ class EmployeesController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = User::leftJoin('roles','roles.id','users.role_id')
-                            ->select('users.*','roles.role_name')
+            $data = User::select('users.*')
                             ->where('login_access',0)
                             ->where('special_access',0)
                             ->get();
@@ -62,6 +70,10 @@ class EmployeesController extends Controller
             ->addIndexColumn()
             ->addColumn('full_name', function($row) {
                 return $row->first_name . ' ' . $row->last_name;
+            })
+            ->addColumn('role_name', function($user) {
+                $userRole = $user->roles->pluck('name','name')->all();
+                return $userRole;
             })
             ->addColumn('details', function($row) {
                 return $row->phone . '<br>' . $row->id_no;
@@ -90,22 +102,13 @@ class EmployeesController extends Controller
     }
 
     public function edit($id){
-    
         $id= base64_decode($id);
-        
-        $user_details= User::leftJoin('roles','roles.id', '=','users.role_id')
-                            -> where('users.id',$id)
-                            -> select('users.*','roles.role_name')
-                            -> first();
-                            return response()->json($user_details);
+        $user = User::find($id);
+        return response()->json($user);
     }
     public function show($id){
         $id= base64_decode($id);
-        $user_details= User::leftJoin('roles','roles.id', '=','users.role_id')
-                            -> where('users.id',$id)
-                            -> select('users.*','roles.role_name')
-                            -> first();
-
+        $user_details= $user = User::find($id);
         return view('admins.viewUser',['user_details'=> $user_details]);
     }
 

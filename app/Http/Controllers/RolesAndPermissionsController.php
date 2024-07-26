@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use DB;
-use DataTables;
+use Yajra\DataTables\DataTables as DataTables;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Validator;
@@ -19,20 +19,21 @@ class RolesAndPermissionsController extends Controller
 
 
     public function addRoles(Request $request){
-      $role = Role::create([
-            'name'=> 'Admin'
-        ]);
+    //   $role = Role::create([
+    //         'name'=> 'Admin'
+    //     ]);
 
         // foreach($request->permission as $permission){
         //     $role->givePermissionTo($permission);
         // }
-        $role->givePermissionTo('Add-Supplier');
+      //  $role->givePermissionTo('Add-Supplier');
         // foreach($request->users as $user){
         //     $user = User::find($user);
         //     $role->assignRole($role->name);
         // }
-        $user = User::find(22);
-        $user->assignRole($role->name);
+        $user = User::find(1);
+        $user->assignRole('super-admin');
+        dd('success');
 
     }
 
@@ -40,6 +41,7 @@ class RolesAndPermissionsController extends Controller
     public function listRoles(Request $request)
     {
         if ($request->ajax()) {
+        
         $roles = Role::orderBy('id','DESC')->get();
         return DataTables::of($roles)
         ->addIndexColumn()
@@ -89,7 +91,7 @@ class RolesAndPermissionsController extends Controller
     
         $role = Role::create(['name' => $request->input('role_name')]);
         $role->syncPermissions($permissionsID);
-        return response()->json(['status' =>'success', 'message' => 'Role created']);
+        return response()->json(['status' =>'success','role_id'=>$role['id'] ,'message' => 'Role created']);
 
     }catch (\Exception $e) {
                     
@@ -161,7 +163,7 @@ class RolesAndPermissionsController extends Controller
     
         $role->syncPermissions($permissionsID);
     
-        return response()->json(['status' =>'success', 'message' => 'Role Edited']);
+        return response()->json(['status' =>'success', 'role_id'=>$role['id'], 'message' => 'Role Edited']);
     }
     /**
      * Remove the specified resource from storage.
@@ -208,5 +210,44 @@ $role_id = base64_decode($encoded_role_id);
         }
            
         }
+
+        public function editPermissionLevel($encoded_user_id){
+            $user_id = base64_decode($encoded_user_id);
+            $user = User::find($user_id);
+            $roles = Role::whereNot('name','super-admin')
+                            ->orderBy('id','DESC')
+                            ->pluck('name','name');
+            $userRole = $user->roles->pluck('name','name')->first();
+
+            return response()->json(['roles'=>$roles , 'userRole'=>$userRole]);
+
+        }
+
+        public function updatePermissionLevel(Request $request){
+           $user_detail = $request->all();
+           
+            $validated = Validator::make($user_detail, [
+                'password' => ['required','current_password'],
+                'roles' => ['required'],
+            ]);
+        
+            if ($validated->fails()) {
+                
+                return response()->json(['status' =>'error', 'message' => $validated->errors()->all()]);
+            }
+            try{
+                $user_id = base64_decode($user_detail['user_id']);
+            $user = User::find($user_id);
+            DB::table('model_has_roles')->where('model_id',$user_id)->delete();
+    
+            $user->assignRole($request->input('roles')); 
+            return response()->json(['status' => 'success', 'message' => 'Permission Level Edited']);
+        } catch (\Exception $e) {
+                    
+            return response()->json(['status' => 'error', 'message' => 'Ann Error Occured']);
+        }
+            
+        }
+        
    
 }

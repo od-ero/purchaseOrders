@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('username')->unique()->nullable();
             $table->string('id_no')->unique();
             $table->string('staff_no')->unique()->nullable();
-            $table->integer('role_id')->unsigned();
+            $table->integer('role_id')->unsigned()->nullable();
             $table->string('phone')->unique();
             $table->string('second_Phone')->unique()->nullable();
             $table->string('email')->unique()->nullable();

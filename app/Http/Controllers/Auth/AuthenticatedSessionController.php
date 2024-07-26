@@ -91,8 +91,9 @@ class AuthenticatedSessionController extends Controller
     }
     public function userRole($user_id){
         $user_id = base64_decode($user_id);
-        $user_role_id = User::where('id',$user_id)
-                            ->value('role_id');
-        return response()->json(['user_role_id' => $user_role_id]);                   
+        $user = User::find($user_id);
+        $userRole = $user->roles->pluck('id')->first();
+        
+        return response()->json(['user_role_id' => $userRole]);                   
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 
 Use App\Models\Supplier;
-use DataTables;
+use Yajra\DataTables\DataTables as DataTables;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +51,7 @@ class SuppliersController extends Controller
    }
 
   public function listActiveSuppliers(Request $request){
-    if (auth()->user()->can('Add-Supplier')) {
+   // if (auth()->user()->can('Add-Supplier')) {
     if ($request->ajax()) {
 
         $data = Supplier::select('suppliers.*')
@@ -80,9 +80,9 @@ class SuppliersController extends Controller
                     }
                     
                     return view('suppliers.list_active_suppliers');
-   }else{
-    dd('no permission');
-   }
+//    }else{
+//     dd('no permission');
+//    }
 }
 
    public function listDeletedSuppliers(Request $request){

@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PurchaseOrder;
 use App\Models\supplier;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\JsonResponse;
-use App\Imports\PurchaseOrderImport;
-use App\Http\Requests\PurchaseOrdersRequest;
 use App\Mail\MakeOrdersMail;
 use App\Models\CcSendBatch;
 use App\Models\OrderBatches;
@@ -18,7 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use setasign\Fpdi\Fpdi;
-use DataTables;
+use Yajra\DataTables\DataTables as DataTables;
 use Log;
 use Mail;
 use DB;
@@ -354,7 +350,6 @@ class OrdersController extends Controller
         </button>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_price" href="'. $pdfURL . '">PDF</a></li>
-            <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encoded_batch_Id . '">PDF No Prices</a></li>
         </ul>
     </div>';
                 })

@@ -186,6 +186,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/delete-role/{id}', [RolesAndPermissionsController::class, 'destroyRole'])
         ->name('r_p.deleteRole');
 
+        Route::get('/edit-permission-level/{id}', [RolesAndPermissionsController::class, 'editPermissionLevel'])
+        ->name('r_p.editPermissionLevel');
+
+        Route::post('/update-permission-level', [RolesAndPermissionsController::class, 'updatePermissionLevel'])
+        ->name('r_p.UpdatePermissionLevel');
+
+
 
        
     

@@ -166,7 +166,7 @@ if(login_password.length < 3){
             var isValidPhone = validateInput("#register_phone", "Invalid Phone Number", validatePhone);
             var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
             var isValidPassword = validateInput("#register_password", "Check password", validatePassword);
-            var isValidRoleId = validateInput("#register_role_id", "Select Role ID", validateRole, true);
+            var isValidRoleId = validateInput("#register_role_id", "Select Permission Level", validateRole, true);
            
             var isValidSecondPhone = validateInput("#register_second_phone", "Second Phone Number is invalid.", validatePhone, false);
             var isValidPhyAddress = validateInput("#register_phy_address", "Physical Address is required.", null, false);
@@ -366,9 +366,119 @@ if(login_password.length < 3){
             })
            
           });
+          $('body').on('click', '#update_permission_level_button', function () {
+           
+            var user_id = $(this).data('id');
+           
+            $.get('/edit-permission-level/'+user_id, function (data) {
+                $('#user_id').val(user_id);
+                $('#update_user_role_modal').modal('show');
+                var roleSelect = $('#register_role_id');
+                roleSelect.empty(); 
+                $.each(data.roles, function(value, label) {
+                var isSelected = data.userRole === label ? 'selected' : '';
+                var optionHtml = `<option value="${value}" ${isSelected}>${label}</option>`;
+                roleSelect.append(optionHtml);
+            });
+                
+            })
+           
+          });
+
+          $('#update_role_form').submit(function(e) {
+       
+            e.preventDefault();
+    
+            // Define validation function
+            function validateInput(selector, errorMessage, customValidation = null, required = true) {
+                var value = $(selector).val();
+                if(value){
+                    value=value.trim();
+                }
+                if ((required && !value) || (value && customValidation && !customValidation(value))) {
+                    $(selector).addClass('is-invalid');
+                    $(selector).next('.invalid-feedback').remove(); // Remove existing error message
+                    $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
+    
+                    $(selector).on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    return false;
+                } else {
+                    $(selector).removeClass('is-invalid');
+                    $(selector).next('.invalid-feedback').remove();
+                    return true;
+                }
+            }
+    
+            // Custom validation functions
+            function validatePhone(value) {
+                var phoneRegex = /^[0-9]{6,13}$/;
+                return phoneRegex.test(value);
+            }
+    
+            function validatePassword(value) {
+                return value.length >= 3;
+            }
+    
+            function validateEmail(value) {
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value);
+            }
+    
+            function validateRole(value) {
+                return value !== null && value !== '';
+            }
+    
+            // Validate each input field
+            var isValidName = validateInput("#role_name", "Enter Role Name");
+           
+           
+            
+            // If all fields are valid, submit the form or perform your desired action
+            if (isValidName) {
+                // All fields are valid, proceed with form submission or other actions
+                let formData = new FormData(this);
+        
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    type: 'POST',
+                    url: '/update-role',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === "success") {
+                                alertify.set('notifier', 'position', 'top-center');
+                                alertify.success(response.message);
+                          
+                                setTimeout(() => {
+                                window.location.href = "/show-role/"+btoa(response.role_id);
+                            }, 5000);
+                       
+                        } 
+                        else if (response.status === "error") {
+                           
+                            printSupplierErrorMsg(response.message);
+                            
+                        }
+                    },
+                    error: function(response) {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Something went wrong');
+                    }
+                });
+    
+                
+            }
+        }); 
 
           function printErrorMsg (msg) {
             $.each( msg, function( key, value ) {
+
                 if (isWordPresent(value, 'email')){
                     $("#register_email").addClass('is-invalid');
                     $("#register_email").next('.invalid-feedback').remove(); 
@@ -425,7 +535,11 @@ if(login_password.length < 3){
                     $("#register_password").on('keyup', function() {
                         $(this).removeClass('is-invalid');
                         $(this).next('.invalid-feedback').remove();
-                    });}
+                    });} 
+                    else{
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error(value);
+                    }
                 
                
             });
@@ -971,6 +1085,10 @@ if(login_password.length < 3){
                     $(this).next('.invalid-feedback').remove();
                 });
                }
+               else{
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error(value);
+            }
         });
       }
 
@@ -1774,7 +1892,10 @@ $("#make_order_add_cc").on('click', function(e) {
                         $("#update_password_current_password").on('keyup', function() {
                             $(this).removeClass('is-invalid');
                             $(this).next('.invalid-feedback').remove();
-                        });}
+                        });} else{
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.error(value);
+                        }
                     
                    
                 });
@@ -2024,16 +2145,10 @@ $("#make_order_add_cc").on('click', function(e) {
                         if (response.status === "success") {
                                 alertify.set('notifier', 'position', 'top-center');
                                 alertify.success(response.message);
-                            if(register_clicked_button=='register_save_view'){
+                            
                                 setTimeout(() => {
-                                window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
+                                window.location.href = "/show-role/"+btoa(response.role_id);
                             }, 5000);
-                        }
-                            else{
-                                setTimeout(() => {
-                                    window.location.href = "/create-supplier";
-                                }, 5000);
-                            }
                         } 
                         else if (response.status === "error") {
                            
@@ -2228,7 +2343,7 @@ $("#make_order_add_cc").on('click', function(e) {
                 });
             });
 
-            $('#update_role_form').submit(function(e) {
+            $('#update_permission_level_form').submit(function(e) {
        
                 e.preventDefault();
         
@@ -2255,32 +2370,23 @@ $("#make_order_add_cc").on('click', function(e) {
                     }
                 }
         
-                // Custom validation functions
-                function validatePhone(value) {
-                    var phoneRegex = /^[0-9]{6,13}$/;
-                    return phoneRegex.test(value);
-                }
+              
         
                 function validatePassword(value) {
                     return value.length >= 3;
                 }
-        
-                function validateEmail(value) {
-                    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return emailRegex.test(value);
-                }
-        
                 function validateRole(value) {
+                   
                     return value !== null && value !== '';
                 }
         
                 // Validate each input field
-                var isValidName = validateInput("#role_name", "Enter Role Name");
+                var isValidPassword = validateInput("#password", "Check Your password", validatePassword);
+                var isValidPemissionLevel = validateInput("#register_role_id", "Select Permission Level", validateRole, true);
                
                
-                
                 // If all fields are valid, submit the form or perform your desired action
-                if (isValidName) {
+                if (isValidPassword && isValidPemissionLevel) {
                     // All fields are valid, proceed with form submission or other actions
                     let formData = new FormData(this);
             
@@ -2289,7 +2395,7 @@ $("#make_order_add_cc").on('click', function(e) {
                             'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         type: 'POST',
-                        url: '/update-role',
+                        url: '/update-permission-level',
                         data: formData,
                         contentType: false,
                         processData: false,
@@ -2297,20 +2403,14 @@ $("#make_order_add_cc").on('click', function(e) {
                             if (response.status === "success") {
                                     alertify.set('notifier', 'position', 'top-center');
                                     alertify.success(response.message);
-                                if(register_clicked_button=='register_save_view'){
                                     setTimeout(() => {
-                                    window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
+                                    window.location.reload();
                                 }, 5000);
-                            }
-                                else{
-                                    setTimeout(() => {
-                                        window.location.href = "/create-supplier";
-                                    }, 5000);
-                                }
+                                
                             } 
                             else if (response.status === "error") {
                                
-                                printSupplierErrorMsg(response.message);
+                                printPermissionLelevelErrorMsg(response.message);
                                 
                             }
                         },
@@ -2365,6 +2465,33 @@ $("#make_order_add_cc").on('click', function(e) {
           $('#delete_role_modal').modal('show');
           $('#delete_role_id').val(role_id);
         });
+
+        function  printPermissionLelevelErrorMsg (msg) {
+            $.each( msg, function( key, value ) {
+                if (isWordPresent(value, 'email')){
+                    $("#register_role_id").addClass('is-invalid');
+                    $("#register_role_id").next('.invalid-feedback').remove(); 
+                    $("#register_role_id").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#register_role_id").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    
+                } 
+                else if (isWordPresent(value, 'password')){
+                    $("#password").addClass('is-invalid');
+                    $("#password").next('.invalid-feedback').remove(); 
+                    $("#password").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#password").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                   else{
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(value);
+                }
+            });
+          }
             
     
         

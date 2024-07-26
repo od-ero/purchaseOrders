@@ -179,3 +179,41 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="update_user_role_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Employee Permission Level</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form id="update_permission_level_form">
+      @csrf
+      <input class="form-control" id="user_id" type="text" name="user_id" placeholder="user_id" hidden/>
+            <div class="form-floating my-3">
+                <select name="roles[]" id="register_role_id" class="form-select" aria-label="Floating label select example">
+                    
+                </select>
+                <label for="register_role_id">Permission Level</label>
+            </div>
+
+            <div class="form-floating login_form_password my-3">
+                <input class="form-control" id="password" type="password" name="password" placeholder="password" />
+                <label for="password">Your Password<strong class="text-danger">*</strong></label>
+                <div id="role_name_error" class="text-danger mt-2" style="display: none;">
+                    <!-- Error message will be inserted here by jQuery -->
+                </div>
+            </div>
+           
+            
+            <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" id="update_employee_level" class="btn btn-success">Save</button>
+      </div>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
