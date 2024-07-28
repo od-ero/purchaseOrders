@@ -14,8 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class RolesAndPermissionsController extends Controller
 {
-    //
-    
+    //   
 
 
     public function addRoles(Request $request){
@@ -42,25 +41,46 @@ class RolesAndPermissionsController extends Controller
     {
         if ($request->ajax()) {
         
-        $roles = Role::orderBy('id','DESC')->get();
+        //$roles = Role::orderBy('id','DESC')->get();
+        $roles = Role::whereNot('name','super-admin')
+                            ->orderBy('id','DESC')
+                            ->get();
         return DataTables::of($roles)
         ->addIndexColumn()
         ->addColumn('action', function($row){
             $encodedId = base64_encode($row->id);      
-                return
-        '<div class="btn-group">
-        <a type="button"  href="/show-role/' . $encodedId . '" class="btn btn-success">View</a>
-        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="visually-hidden">Toggle Dropdown</span>
-        </button>
-        <ul class="dropdown-menu">
-        <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_roles_button" href="#">Edit</a></li>
-        <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_role_button" href="#">Delete</a></li>
-       
-
-        </ul>
-        </div>';
-                                                })
+        
+            // View button
+            $viewButton = '';
+            if (auth()->user()->can('view-role')) {
+            $viewButton = '<a type="button" href="/show-role/' . $encodedId . '" class="btn btn-success">View</a>';
+            }
+        
+            // Edit button, only if the user has the 'edit-role' permission
+            $editButton = '';
+            if (auth()->user()->can('edit-role')) {
+                $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_roles_button" href="#">Edit</a></li>';
+            }
+        
+            // Delete button, only if the user has the 'delete-role' permission
+            $deleteButton = '';
+            if (auth()->user()->can('destroy-role')) {
+                $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_role_button" href="#">Delete</a></li>';
+            }
+        
+            return '
+            <div class="btn-group">
+                ' . $viewButton . '
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    ' . $editButton . '
+                    ' . $deleteButton . '
+                </ul>
+            </div>';
+        })
+        
         ->rawColumns(['action'])
         ->make(true);
         }
@@ -68,9 +88,13 @@ class RolesAndPermissionsController extends Controller
     }
     public function createRoles(): View
     {
-        $permission = Permission::get();
-        return view('permissions.create_role',compact('permission'));
+        $permissions = Permission::orderBy('grouping_id','ASC')
+                                ->get()
+                                ->groupBy('grouping_id');
+                               
+        return view('permissions.create_role',compact('permissions'));
     }
+    
 
     public function storeRoles(Request $request): JsonResponse
     {
@@ -108,11 +132,12 @@ class RolesAndPermissionsController extends Controller
     public function showRole($encoded_role_id): View
     { $id = base64_decode($encoded_role_id);
         $role = Role::find($id);
-        $rolePermissions = Permission::join("role_has_permissions","role_has_permissions.permission_id","=","permissions.id")
-            ->where("role_has_permissions.role_id",$id)
-            ->get();
-    
-        return view('permissions.show_role',compact('role','rolePermissions'));
+        $rolePermissionsGroups = Permission::join("role_has_permissions", "role_has_permissions.permission_id", "=", "permissions.id")
+                                            ->where("role_has_permissions.role_id", $id)
+                                            ->orderBy('grouping_id','ASC')
+                                            ->get()
+                                            ->groupBy('grouping_id');
+        return view('permissions.show_role',compact('role','rolePermissionsGroups'));
     }
     
     /**
@@ -124,12 +149,14 @@ class RolesAndPermissionsController extends Controller
     public function editRole($encoded_role_id): JsonResponse
     { $id = base64_decode($encoded_role_id);
         $role = Role::find($id);
-        $permission = Permission::get();
+        $permissions = Permission::orderBy('grouping_id','ASC')
+                        ->get()
+                        ->groupBy('grouping_id');
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
     
-        return response()-> json(['permissions' => $permission, 'rolePermissions' => $rolePermissions, 'role'=>$role]);
+        return response()-> json(['permissions' => $permissions, 'rolePermissions' => $rolePermissions, 'role'=>$role]);
     }
     
     /**

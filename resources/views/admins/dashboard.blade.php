@@ -19,6 +19,7 @@
                     <li class="breadcrumb-item active">Home</li>
                 </ol>
                 <div class="row">
+                @can('import-excel')
                     <div class="col-md-6">
                         <div class="card bg-primary text-white mb-4">
                             <div class="card-body">Import Excel</div>
@@ -28,6 +29,8 @@
                             </div>
                         </div>
                     </div>
+                @endcan    
+                @can('list-imported-batch')  
                     <div class="col-md-6">
                         <div class="card bg-warning text-white mb-4">
                             <div class="card-body">Imported Excel</div>
@@ -37,11 +40,10 @@
                             </div>
                         </div>
                     </div>
-                    
+                @endcan    
                 </div>
-
                 <div class="row">
-                    
+                 @can('list-send-batch') 
                     <div class="col-md-6">
                         <div class="card bg-success text-white mb-4">
                             <div class="card-body">Send Orders</div>
@@ -51,6 +53,8 @@
                             </div>
                         </div>
                     </div>
+                 @endcan
+                 @can('list-active-supplier')   
                     <div class="col-md-6">
                         <div class="card bg-secondary text-white mb-4">
                             <div class="card-body">Suppliers<br> {{$suppliers}}</div>
@@ -60,6 +64,7 @@
                             </div>
                         </div>
                     </div>
+                 @endcan   
                 </div>
                 
             </div>

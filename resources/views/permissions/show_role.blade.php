@@ -25,11 +25,28 @@
                         @endif
                     </div>
                     <div class="form-group">
-                     <strong>Permissions:</strong>
-                         @if(!empty($rolePermissions))
-                            @foreach($rolePermissions as $value)
-                            <label class="label label-success">{{ $value->name }},</label>
-                            @endforeach
+                     <strong>Permissions:</strong> <br>
+                         @if(!empty($rolePermissionsGroups))
+                            
+                            @foreach($rolePermissionsGroups as $grouping_id => $permissionGroup)
+                            <table class="table table-bordered data-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ $grouping_id }}</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($permissionGroup as $permission)
+                                    <tr>
+                                        <td>
+                                            <label class="form-check-label" for="inputRememberPassword">{{ $permission->display_name }}</label>
+                                        </td>
+                                    </tr>
+                                @endforeach    
+                                </tbody>
+                            </table>
+                        @endforeach     
                          @endif   
                     </div>        
                      <div class="d-flex align-items-center justify-content-between mt-4 mb-0">

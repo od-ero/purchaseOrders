@@ -15,9 +15,15 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
+                                @can('import-excel')
                                     <a class="nav-link"  href="/employee/register">Add Employee</a>
+                                    @endcan
+                                 @can('list-active-employee')    
                                     <a class="nav-link" href="/employee/list-active">List Active Employees</a>
+                                @endcan
+                                @can('list-deleted-employee')   
                                     <a class="nav-link" href="/employee/list-deleted">List Deleted Employees</a>
+                                @endcan  
                                 </nav>
                             </div>
 
@@ -28,9 +34,15 @@
                             </a>
                             <div class="collapse" id="collapseImports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
+                                @can('import-excel')
                                     <a class="nav-link"  href="{{route('import')}}">Import Excel</a>
+                                @endcan
+                                @can('list-imported-batch')   
                                     <a class="nav-link" href="{{route('orders.listImportedOrders')}}">List Imported Batch</a>
+                                @endcan
+                                @can('list-send-batch')
                                     <a class="nav-link" href="{{route('orders.listOrderedOrders')}}">List Sent Batch</a>
+                                 @endcan 
                                 </nav>
                             </div>
 
@@ -44,8 +56,12 @@
                                     @can('Add-Supplier')
                                     <a class="nav-link"  href="{{route('suppliers.create_supplier')}}">Add Supplier</a>
                                     @endcan
+                                    @can('list-active-supplier')
                                     <a class="nav-link" href="{{route('suppliers.listActiveSuppliers')}}">List Active Suppliers</a>
+                                    @endcan
+                                    @can('list-deleted-supplier')
                                     <a class="nav-link" href="{{route('suppliers.listDeletedSuppliers')}}">List Deleted Suppliers</a>
+                                    @endcan
                                 </nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSettings" aria-expanded="false" aria-controls="collapseSettings">
@@ -55,10 +71,19 @@
                             </a>
                             <div class="collapse" id="collapseSettings" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link"  href="/system-name">System Name</a>
-                                    <a class="nav-link" href="/business-details">Order Letter Head</a>
-                                    <a class="nav-link" href="{{route('business_details.email_content')}}">Email Content</a>
-                                    <a class="nav-link" href="{{route('password.adminEditPassword')}}">Reset Password</a>
+                                    @can('system-name')
+                                        <a class="nav-link"  href="/system-name">System Name</a>
+                                    @endcan
+                                    @can('view-letter-head')   
+                                        <a class="nav-link" href="/business-details">Order Letter Head</a>
+                                    @endcan
+                                    @can('view-email-content')   
+                                        <a class="nav-link" href="{{route('business_details.email_content')}}">Email Content</a>
+                                    @endcan
+                                    @can('reset-password')   
+                                        <a class="nav-link" href="{{route('password.adminEditPassword')}}">Reset Password</a>
+                                    @endcan
+                                        
                                 </nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_permissions" aria-expanded="false" aria-controls="collapseSettings">
@@ -68,10 +93,14 @@
                             </a>
                             <div class="collapse" id="collapse_permissions" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{route('r_p.createRoles')}}">Create Roles</a>
+                                @can('create-role')
+                                 <a class="nav-link" href="{{route('r_p.createRoles')}}">Create Roles</a>
+                                @endcan
+                                @can('list-role')
                                     <a class="nav-link"  href="{{route('r_p.listRoles')}}">List Roles</a>
+                                 @endcan
+                                      
                                     <a class="nav-link" href="{{route('r_p.createpermission')}}">Create Permission</a>
-                                    <a class="nav-link" href="{{route('password.adminEditPassword')}}">Reset Password</a>
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

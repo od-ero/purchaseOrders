@@ -24,12 +24,31 @@
                             </div>
                         @endif
                     </div>
-                    @foreach($permission as $value)
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" id="inputRememberPassword" type="checkbox" name="permission[{{$value->id}}]" value="{{$value->id}}" {{ old('remember') ? 'checked' : '' }} />
-                            <label class="form-check-label" for="inputRememberPassword"> {{ $value->name }}</label>
-                        </div>
-                    @endforeach
+                        @foreach($permissions as $grouping_id => $permissionGroup)
+                            <table class="table table-bordered data-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ $grouping_id }}</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($permissionGroup as $permission)
+                                    <tr>
+                                        <td>
+                                            <label class="form-check-label" for="inputRememberPassword">{{ $permission->display_name }}</label>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input"  name="permission[{{$permission->id}}]" value="{{$permission->id}}" type="checkbox" role="switch" id="flexSwitch_{{ $permission->id }}">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach    
+                                </tbody>
+                            </table>
+                        @endforeach
+                    
                      <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                      <a class="btn btn-info btn-sm" id="back_button"
                      style="color: #fff !important;"><i class="fa fa-backward"></i></a>

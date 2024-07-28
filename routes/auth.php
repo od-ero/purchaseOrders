@@ -60,9 +60,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/edit-password', [PasswordController::class, 'edit'])->name('password.edit');
 
-    Route::get('employee/edit-password', [PasswordController::class, 'adminEditPassword'])->name('password.adminEditPassword');
+    Route::get('employee/edit-password', [PasswordController::class, 'adminEditPassword'])->name('password.adminEditPassword')->middleware('permission:reset-password');
 
-    Route::post('employee/update-password', [PasswordController::class, 'adminUpdatePassword'])->name('password.adminUpdatePassword');
+    Route::post('employee/update-password', [PasswordController::class, 'adminUpdatePassword'])->name('password.adminUpdatePassword')->middleware('permission:reset-password');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');

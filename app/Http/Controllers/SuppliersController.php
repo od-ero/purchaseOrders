@@ -60,21 +60,36 @@ class SuppliersController extends Controller
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $encodedId = base64_encode($row->id);      
-                        return
-                '<div class="btn-group">
-                <a type="button"  href="/suppliers/view/' . $encodedId . '" class="btn btn-success">View</a>
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_suppliers_details" href="#">Edit</a></li>
-                <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_supplier_button" href="#">Delete</a></li>
-               
+                    $encodedId = base64_encode($row->id);
 
-                </ul>
-                </div>';
-                                                        })
+                    $viewButton = '';
+                    if(auth()->user()->can('view-supplier')) {
+                    $viewButton = '<a type="button" href="/suppliers/view/' . $encodedId . '" class="btn btn-success">View</a>';
+                    }
+                
+                    $editButton = '';
+                    if (auth()->user()->can('edit-supplier')) {
+                        $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_suppliers_details" href="#">Edit</a></li>';
+                    }
+                
+                    $deleteButton = '';
+                    if (auth()->user()->can('delete-supplier')) {
+                        $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_supplier_button" href="#">Delete</a></li>';
+                    }
+                
+                    return '
+                        <div class="btn-group">
+                            ' . $viewButton . '
+                            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                ' . $editButton . '
+                                ' . $deleteButton . '
+                            </ul>
+                        </div>';
+                })
+                
                 ->rawColumns(['action'])
                 ->make(true);
                     }
@@ -96,21 +111,33 @@ class SuppliersController extends Controller
         return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $encodedId = base64_encode($row->id);      
-                        return
-                '<div class="btn-group">
-                <a type="button"  href="/suppliers/view/' . $encodedId . '" class="btn btn-success">View</a>
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_suppliers_details" href="#">Edit</a></li>
-                <li><a class="dropdown-item" data-id="' . $encodedId . '" id="activate_supplier_button" href="#">Activate</a></li>
-               
-
-                </ul>
-                </div>';
-                                                        })
+                    $encodedId = base64_encode($row->id);
+                
+                    $viewButton = '<a type="button" href="/suppliers/view/' . $encodedId . '" class="btn btn-success">View</a>';
+                
+                    $editButton = '';
+                    if (auth()->user()->can('edit-supplier')) {
+                        $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_suppliers_details" href="#">Edit</a></li>';
+                    }
+                
+                    $activateButton = '';
+                    if (auth()->user()->can('destroy-supplier')) {
+                        $activateButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="activate_supplier_button" href="#">Activate</a></li>';
+                    }
+                
+                    return '
+                        <div class="btn-group">
+                            ' . $viewButton . '
+                            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                ' . $editButton . '
+                                ' . $activateButton . '
+                            </ul>
+                        </div>';
+                })
+                
                 ->rawColumns(['action'])
                 ->make(true);
                     }

@@ -293,21 +293,52 @@ class OrdersController extends Controller
                 })
                 ->addColumn('action', function($row) {
                     $encodedId = base64_encode($row->id);
+                     $viewButton = '';
+                    if (auth()->user()->can('view-order')) {
+                    $viewButton = '<a type="button" href="/view/batch/' . $encodedId . '" class="btn btn-success">View</a>';
+                    }
+
+                    $sendOrderButton = '';
+                    if (auth()->user()->can('send-order')) {
+                        $sendOrderButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" href="/make-orders/' . $encodedId . '">Send Order</a></li>';
+                    }
+                
+                    $pdfWithPricesButton = '';
+                    if (auth()->user()->can('view-pdf')) {
+                        $pdfWithPricesButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/' . $encodedId . '">PDF with Prices</a></li>';
+                    }
+                
+                    $pdfNoPricesButton = '';
+                    if (auth()->user()->can('view-pdf')) {
+                        $pdfNoPricesButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_price" href="/orders/no-cost-pdf/' . $encodedId . '">PDF No Prices</a></li>';
+                    }
+                
+                    $editButton = '';
+                    if (auth()->user()->can('edit-batch')) {
+                        $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/' . $encodedId . '">Edit</a></li>';
+                    }
+                
+                    $deleteButton = '';
+                    if (auth()->user()->can('destroy-batch')) {
+                        $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_order_button" href="#">Delete</a></li>';
+                    }
+                
                     return '
-    <div class="btn-group">
-        <a type="button" href="/view/batch/' . $encodedId . '" class="btn btn-success">View</a>
-        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="visually-hidden">Toggle Dropdown</span>
-        </button>
-        <ul class="dropdown-menu">
-             <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/make-orders/'. $encodedId . '">Send Order</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/'. $encodedId . '">PDF with Prices</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_no_preice" href="/orders/no-cost-pdf/'. $encodedId . '">PDF No Prices</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/'. $encodedId . '">Edit</a></li>
-            <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_order_button" href="#">Delete</a></li>
-        </ul>
-    </div>';
+                        <div class="btn-group">
+                            ' . $viewButton . '
+                            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                ' . $sendOrderButton . '
+                                ' . $pdfWithPricesButton . '
+                                ' . $pdfNoPricesButton . '
+                                ' . $editButton . '
+                                ' . $deleteButton . '
+                            </ul>
+                        </div>';
                 })
+                
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -333,26 +364,36 @@ class OrdersController extends Controller
                     return OrderBatchItem::where('order_batch_id', $row->id)->count();
                 })
                 ->addColumn('action', function($row) {
-
                     $encodedId = base64_encode($row->send_batch_id);
                     $encoded_batch_Id = base64_encode($row->id);
-                    if($row->with_price == 1){
-                        $pdfURL = "/orders/pdf/'. $encoded_batch_Id . '";
-                    }else{
-                        $pdfURL = "/orders/no-cost-pdf/'. $encoded_batch_Id . '";
+                
+                    // Determine the correct PDF URL
+                    $pdfURL = $row->with_price == 1 
+                        ? '/orders/pdf/' . $encoded_batch_Id 
+                        : '/orders/no-cost-pdf/' . $encoded_batch_Id;
+                
+                    $viewButton = '';
+                    if (auth()->user()->can('view-email-content')) {
+                        $viewButton = '<a type="button" href="/order-batch/view-order-mail-content/' . $encodedId . '" class="btn btn-success">View</a>';
                     }
-                    
+                
+                    $pdfButton = '';
+                    if (auth()->user()->can('view-pdf')) {
+                        $pdfButton = '<li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_price" href="' . $pdfURL . '">PDF</a></li>';
+                    }
+                
                     return '
-    <div class="btn-group">
-        <a type="button" href="/order-batch/view-order-mail-content/'. $encodedId . '" class="btn btn-success">View</a>
-        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="visually-hidden">Toggle Dropdown</span>
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-id="' . $encoded_batch_Id . '" id="order_price" href="'. $pdfURL . '">PDF</a></li>
-        </ul>
-    </div>';
+                    <div class="btn-group">
+                        ' . $viewButton . '
+                        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            ' . $pdfButton . '
+                        </ul>
+                    </div>';
                 })
+                
                 ->rawColumns(['action'])
                 ->make(true);
         }

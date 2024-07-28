@@ -33,23 +33,37 @@ class EmployeesController extends Controller
                         ->addColumn('details', function($row) {
                             return $row->phone . '<br>' . $row->id_no;
                         })
+                        
                         ->addColumn('action', function($row){
-                            $encodedId = base64_encode($row->id);      
-                                return
-    '<div class="btn-group">
-    <a type="button"  href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>
-    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="visually-hidden">Toggle Dropdown</span>
-    </button>
-    <ul class="dropdown-menu">
-        <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>
-         <li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_permission_level_button" href="#">Edit Permission Level</a></li>
-        <li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_user_button" href="#">Delete</a></li>
-        
-        
-    </ul>
-    </div>';
-                                                })
+                            $encodedId = base64_encode($row->id);
+                        
+                            $viewButton = '';
+                            if (auth()->user()->can('view-employee')) {
+                                $viewButton = '<a type="button" href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>';
+                            }
+                        
+                            $editButton = '';
+                            if (auth()->user()->can('edit-employee')) {
+                                $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>';
+                            }
+                        
+                            $deleteButton = '';
+                            if (auth()->user()->can('destroy-employee')) {
+                                $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_user_button" href="#">Delete</a></li>';
+                            }
+                        
+                            return
+                            '<div class="btn-group">
+                                ' . $viewButton . '
+                                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    ' . $editButton . '
+                                    ' . $deleteButton . '
+                                </ul>
+                            </div>';
+                        })                        
                         ->rawColumns(['details','action'])
                         ->make(true);
             }
@@ -79,21 +93,36 @@ class EmployeesController extends Controller
                 return $row->phone . '<br>' . $row->id_no;
             })
             ->addColumn('action', function($row){
-                $encodedId = base64_encode($row->id);      
-                    return
-'<div class="btn-group">
-<a type="button"  href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>
-<button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-<span class="visually-hidden">Toggle Dropdown</span>
-</button>
-<ul class="dropdown-menu">
-<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>
-<li><a class="dropdown-item" data-id="' . $encodedId . '" id="activate_user_button" href="#">Activate</a></li>
-
-
-</ul>
-</div>';
-                                       })
+                $encodedId = base64_encode($row->id);
+            
+                $viewButton = '';
+                if (auth()->user()->can('view-employee')) {
+                    $viewButton = '<a type="button" href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>';
+                }
+            
+                $editButton = '';
+                if (auth()->user()->can('edit-employee')) {
+                    $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>';
+                }
+            
+                $activateButton = '';
+                if (auth()->user()->can('activate-employee')) {
+                    $activateButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="activate_user_button" href="#">Activate</a></li>';
+                }
+            
+                return
+                '<div class="btn-group">
+                    ' . $viewButton . '
+                    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        ' . $editButton . '
+                        ' . $activateButton . '
+                    </ul>
+                </div>';
+            })
+            
             ->rawColumns(['details','action'])
             ->make(true);
 }

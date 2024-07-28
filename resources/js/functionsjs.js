@@ -2309,7 +2309,7 @@ $("#make_order_add_cc").on('click', function(e) {
 
             $('body').on('click', '#update_roles_button', function () {
                 var role_id = $(this).data('id');
-            
+                $('#update_role_modal').modal('show');
                 $.get('/edit-role/' + role_id, function (data) {
                     var rolePermissionsArray = Object.keys(data.rolePermissions).map(function (key) {
                         return parseInt(key);
@@ -2320,22 +2320,49 @@ $("#make_order_add_cc").on('click', function(e) {
                     permissionsContainer.empty();
             
                     // Show the modal
-                    $('#update_role_modal').modal('show');
+                   
             
                     // Set role data
                     $('#role_id').val(data.role.id);
                     $('#role_name').val(data.role.name);
             
                     // Append new checkboxes
-                    data.permissions.forEach(function (permission) {
-                        var isChecked = rolePermissionsArray.includes(permission.id) ? 'checked' : '';
-                        var checkboxHtml = `
-                            <div class="form-check mb-3">
-                                <input type="checkbox" id="permission_${permission.id}" name="permission[${permission.id}]" value="${permission.id}" class="form-check-input" ${isChecked} />
-                                <label class="form-check-label" for="permission_${permission.id}"> ${permission.name}</label>
-                            </div>
+                    Object.keys(data.permissions).forEach(function(grouping_id) {
+                        // Create a table for the grouping_id
+                        var tableHtml = `
+                            <table class="table table-bordered data-table">
+                                <thead>
+                                    <tr>
+                                        <th>${grouping_id}</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_${grouping_id}">
+                                </tbody>
+                            </table>
                         `;
-                        permissionsContainer.append(checkboxHtml);
+                        permissionsContainer.append(tableHtml);
+                
+                        // Get the tbody element for the current group
+                        var tbody = $(`#tbody_${grouping_id}`);
+                
+                        // Iterate through each permission in the current group
+                        data.permissions[grouping_id].forEach(function (permission) {
+                            var isChecked = rolePermissionsArray.includes(permission.id) ? 'checked' : '';
+                            var rowHtml = `
+                                <tr>
+                                    <td>
+                                        <label class="form-check-label" for="permission_${permission.id}">${permission.display_name}</label>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="permission_${permission.id}" name="permission[${permission.id}]" value="${permission.id}" ${isChecked} />
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                            tbody.append(rowHtml);
+                        });
                     });
                 }).fail(function () {
                     alertify.set('notifier', 'position', 'top-center');
@@ -2493,8 +2520,33 @@ $("#make_order_add_cc").on('click', function(e) {
             });
           }
             
+          $(document).on('change', '.form-check-input', function() {
+            var isChecked = $(this).is(':checked');
+            var label = $(this).closest('tr').find('.form-check-label');
     
+            // Update all related switches and labels
+            var permissionId = $(this).val();
+            $(`input[value="${permissionId}"]`).each(function() {
+                $(this).prop('checked', isChecked);
+                var relatedLabel = $(this).closest('tr').find('.form-check-label');
+                relatedLabel.text(relatedLabel.text().replace(' (On)', '').replace(' (Off)', '') + (isChecked ? ' (On)' : ' (Off)'));
+            });
+        });
+
         
+        function handleSwitchToggle(switchElement) {
+            var isChecked = $(switchElement).is(':checked');
+            var label = $(switchElement).closest('tr').find('.form-check-label');
+            if (isChecked) {
+                label.append(' (On)');
+            } else {
+                label.append(' (Off)');
+            }
+        }
+    
+        $('.form-check-input').each(function() {
+            handleSwitchToggle(this);
+        });
         
         
 

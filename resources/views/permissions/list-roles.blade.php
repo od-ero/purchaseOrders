@@ -25,7 +25,7 @@
             <table id="list_roles_table" class="table table-bordered data-table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th width="50px">#</th>
                         <th>Name</th>
                         <th width="100px">Action</th>
                     </tr>
