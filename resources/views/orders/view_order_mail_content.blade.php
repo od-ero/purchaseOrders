@@ -91,8 +91,8 @@ View Order Mail Content
                           @endif
                           <a class="btn btn-info btn-sm" id="back_button"
                           style="color: #fff !important;"><i class="fa fa-backward"></i></a>
-                          <a data-id="{{$send_mail_details['batch_id']}}" href="/view/batch/{{base64_encode($send_mail_details['batch_id'])}}" class="btn btn-primary">View</a>
-                          
+                          <!-- <a data-id="{{$send_mail_details['batch_id']}}" href="/view/batch/{{base64_encode($send_mail_details['batch_id'])}}" class="btn btn-primary">View</a>
+                           -->
                          
                       </div>
                     </div>

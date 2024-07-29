@@ -82,13 +82,19 @@
                           </table>
                           <a class="btn btn-info btn-sm" id="back_button"
                           style="color: #fff !important;"><i class="fa fa-backward"></i></a>
-                          <a class="btn btn-primary btn-sm" data-id="{{ base64_encode($user_details['id'])}}" id="update_employees_details" href="#">Edit</i></a>
-                          @if ($user_details['login_access'] == 1 )
-                          <a class="btn btn-success btn-sm"  data-id="{{ base64_encode($user_details['id'])}}" id="delete_user_button" href="#">Delete</i></a>
-                          @endif
-                          @if ($user_details['login_access'] == 0 )
-                          <a class="btn btn-success btn-sm" data-id="{{ base64_encode($user_details['id'])}}" id="activate_user_button" href="#">Activate</i></a>
-                          @endif
+                          @can('edit-employee')
+                            <a class="btn btn-primary btn-sm" data-id="{{ base64_encode($user_details['id'])}}" id="update_employees_details" href="#">Edit</i></a>
+                           @endcan 
+                           @can('destroy-employee')
+                            @if ($user_details['login_access'] == 1 )
+                              <a class="btn btn-success btn-sm"  data-id="{{ base64_encode($user_details['id'])}}" id="delete_user_button" href="#">Delete</i></a>
+                            @endif
+                          @endcan
+                          @can('activate-employee')
+                            @if ($user_details['login_access'] == 0 )
+                              <a class="btn btn-success btn-sm" data-id="{{ base64_encode($user_details['id'])}}" id="activate_user_button" href="#">Activate</i></a>
+                            @endif
+                          @endcan
                           
 </div>
                     </div>

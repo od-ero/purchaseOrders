@@ -47,8 +47,9 @@
                           </table>
                           <a class="btn btn-info btn-sm" id="back_button"
                           style="color: #fff !important;"><i class="fa fa-backward"></i></a>
-                          <a class="btn btn-primary btn-sm"  data-id="{{$email_content['id']}}" id="update_email_content_button" href="#">Edit</i></a>
-                         
+                          @can('edit-email-content')
+                            <a class="btn btn-primary btn-sm"  data-id="{{$email_content['id']}}" id="update_email_content_button" href="#">Edit</i></a>
+                          @endcan
                          
                       </div>
                     </div>

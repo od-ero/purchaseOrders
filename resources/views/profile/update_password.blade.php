@@ -45,8 +45,9 @@
                     </div>
                    
                     <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                       
-                        <button type="submit" class="btn btn-primary">Save</button>
+                       @can('reset-password')
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        @endcan
                     </div>
                 </form>
             </div>

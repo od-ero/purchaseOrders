@@ -15,7 +15,7 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                @can('import-excel')
+                                @can('Add-Employee')
                                     <a class="nav-link"  href="/employee/register">Add Employee</a>
                                     @endcan
                                  @can('list-active-employee')    

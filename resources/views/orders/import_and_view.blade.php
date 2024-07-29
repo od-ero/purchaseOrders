@@ -104,8 +104,15 @@
             </form>
             </tbody>
             </table>
+            <a class="btn btn-info btn-sm" id="back_button"
+                          style="color: #fff !important;"><i class="fa fa-backward"></i></a>
+            @can('import-excel')
             <button id="save_and_view" class="btn btn-primary">Save and View</button>
-            <button id="save_and_send" class="btn btn-primary">Save and Send Order</button>
+            @can('send-order')
+            @endcan
+             <button id="save_and_send" class="btn btn-primary">Save and Send Order</button>
+            @endcan
+            
             </div>
                         </div>
                     </div>

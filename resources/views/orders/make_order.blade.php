@@ -105,6 +105,8 @@
                 
 
         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+        <a class="btn btn-info btn-sm" id="back_button"
+        style="color: #fff !important;"><i class="fa fa-backward"></i></a>
             <button type="submit" id="make_order" class="btn btn-primary">Send Order</button>
         </div>
             </form>

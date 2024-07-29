@@ -37,7 +37,7 @@ class EmployeesController extends Controller
                         ->addColumn('action', function($row){
                             $encodedId = base64_encode($row->id);
                         
-                            $viewButton = '';
+                            $viewButton = '<button type="button" href="#" class="btn btn-success" disabled>View</button>';
                             if (auth()->user()->can('view-employee')) {
                                 $viewButton = '<a type="button" href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>';
                             }
@@ -95,7 +95,7 @@ class EmployeesController extends Controller
             ->addColumn('action', function($row){
                 $encodedId = base64_encode($row->id);
             
-                $viewButton = '';
+                $viewButton = '<a type="button" href="#" class="btn btn-success">View</a>';
                 if (auth()->user()->can('view-employee')) {
                     $viewButton = '<a type="button" href="/employee/view/' . $encodedId . '" class="btn btn-success">View</a>';
                 }

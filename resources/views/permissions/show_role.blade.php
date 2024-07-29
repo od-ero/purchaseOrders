@@ -8,6 +8,7 @@
 @endsection
 
 @section('content')
+@include('permissions.update_role')
 <div class="row justify-content-center">
     <div class="col-lg-5">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
@@ -50,8 +51,12 @@
                          @endif   
                     </div>        
                      <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+
                      <a class="btn btn-info btn-sm" id="back_button"
                      style="color: #fff !important;"><i class="fa fa-backward"></i></a>
+                     @can('edit-role')
+                         <a data-id="{{base64_encode($role->id)}}" id="update_roles_button" href="#" class="btn btn-primary">Edit</a>
+                     @endcan
                     </div> 
                 </form>
             </div>

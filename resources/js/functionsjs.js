@@ -1455,6 +1455,14 @@ $('#update_and_make_order_button').on('click', function() {
     });
 });
 
+$('body').on('click', '#delete_batch_order_button',function(e){
+    e.preventDefault();
+    var batch_id = $(this).data('id');
+
+  $('#delete_batch_order_modal').modal('show');
+  $('#delete_batch_id').val(batch_id);
+});
+
 $('#delete_batch_order').on('click',function(e){
     e.preventDefault();
    

@@ -41,8 +41,7 @@
                         </div>
                     </div>
                 @endcan    
-                </div>
-                <div class="row">
+               
                  @can('list-send-batch') 
                     <div class="col-md-6">
                         <div class="card bg-success text-white mb-4">
@@ -57,7 +56,7 @@
                  @can('list-active-supplier')   
                     <div class="col-md-6">
                         <div class="card bg-secondary text-white mb-4">
-                            <div class="card-body">Suppliers<br> {{$suppliers}}</div>
+                            <div class="card-body">Suppliers  ({{$suppliers}})</div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
                                 <a class="small text-white stretched-link" href="{{route('suppliers.listActiveSuppliers')}}">list</a>
                                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>

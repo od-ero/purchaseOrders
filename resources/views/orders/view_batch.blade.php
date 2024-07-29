@@ -77,15 +77,23 @@
             <a class="btn btn-info btn-sm" id="back_button"
                           style="color: #fff !important;"><i class="fa fa-backward"></i></a>
              
-            @if($batch_details['ordered']!=1)          
-                <a data-id="{{$encoded_batch_id}}" id="update_batch_button" href="/update/batch/{{$encoded_batch_id}}" class="btn btn-primary">Edit</a>
+            @if($batch_details['ordered']!=1)  
+                @can('edit-order')        
+                    <a data-id="{{$encoded_batch_id}}" id="update_batch_button" href="/update/batch/{{$encoded_batch_id}}" class="btn btn-primary">Edit</a>
+                 @endcan   
                 @if ($batch_details['deleted_at'] == null)
+                @can('send-order')
                     <a class="btn btn-primary" data-id="{{$encoded_batch_id}}"  href="/make-orders/{{$encoded_batch_id}}">Send Order</a>
+                @endcan
+                @can('destroy-order')    
                     <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
+                @endcan    
                 @endif
-                @if ($batch_details['deleted_at'])
-                <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Activate</a>
-                @endif
+                @can('activate-order') 
+                    @if ($batch_details['deleted_at'])
+                    <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="activate_batch_order_button" href="#">Activate</a>
+                    @endif
+                @endcan
             @endif
         </div>
                         </div>
