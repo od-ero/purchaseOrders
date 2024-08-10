@@ -78,7 +78,7 @@ class OrdersController extends Controller
             
             $request->session()->put(['data' => $transformedData, 'batch_details' => $batch_details]);
 
-            return response()->json(['status' => 'success']);
+            return response()->json(['status' => 'success' , 'message' => 'Preview The Orders Before Saving or sending']);
         }
            
         } catch (\Exception $ex) {
@@ -102,11 +102,13 @@ class OrdersController extends Controller
 
         foreach ($data as $row) {
             if ($row['product_name'] && $row['quantity'] && $row['price']) {
+                $quantity = is_numeric($row['quantity']) ? floatval(str_replace(',', '', $row['quantity'])) : 0;
+                $price_quantity = is_numeric($row['price']) ? floatval(str_replace(',', '', $row['price'])) : 0;
                 OrderBatchItem::create([
                     'order_batch_id' => $order_batches->id,
                     'product_name' => $row['product_name'],
-                    'quantity' => $row['quantity'],
-                    'price_quantity' => $row['price']
+                    'quantity' => $quantity,
+                    'price_quantity' => $price_quantity
                 ]);
             }
         }
@@ -185,12 +187,20 @@ class OrdersController extends Controller
 
     public function makeOrder($encoded_batch_id){
         $batch_id = base64_decode($encoded_batch_id);
+        $with_prices_encoded = request()->query('Query');
+        if ($with_prices_encoded) {
+            $with_prices = base64_decode($with_prices_encoded);
+        } else {
+           
+            $with_prices = 'Yes'; // Default value if the query parameter is not present
+        }
         $batch_details= OrderBatches::leftJoin('suppliers','suppliers.id','=','order_batches.supplier_id')
                                     ->select('order_batches.*','suppliers.supplier_name','suppliers.supplier_email')
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
         $mail= EmailBody::find(1);
-        return view('orders.make_order',['mail'=>$mail, 'batch_details'=>$batch_details]);
+        
+        return view('orders.make_order',['mail'=>$mail, 'batch_details'=>$batch_details , 'with_prices' => $with_prices]);
     }
 
     public function sendOrder(Request $request){
@@ -281,7 +291,7 @@ class OrdersController extends Controller
     
             $data = OrderBatches::leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
                                     ->select('order_batches.*', 'suppliers.supplier_name')
-                                    ->whereNot('ordered',1)
+                                    ->where('ordered', NULL)
                                     ->orderBy('order_batches.id', 'desc')
                                     ->get();
             return DataTables::of($data)
@@ -445,11 +455,13 @@ class OrdersController extends Controller
 
         foreach ($batch_items as $row) {
             if ($row['product_name'] && $row['quantity'] && $row['price']) {
+                $quantity = is_numeric($row['quantity']) ? floatval(str_replace(',', '', $row['quantity'])) : 0;
+                $price_quantity = is_numeric($row['price']) ? floatval(str_replace(',', '', $row['price'])) : 0;
                 OrderBatchItem::where('order_batch_id', $batch_id)
                               ->update([
                                     'product_name' => $row['product_name'],
-                                    'quantity' => $row['quantity'],
-                                    'price_quantity' => $row['price']
+                                    'quantity' => $quantity,
+                                    'price_quantity' => $price_quantity
                                 ]);
             }
         }
@@ -459,6 +471,7 @@ class OrdersController extends Controller
     catch (\Exception $ex) {
         Log::error($ex);
         DB::rollBack();
+        dd($ex);
         return response()->json(['status' => 'error', 'message' => 'An error occurred']);
     }
        

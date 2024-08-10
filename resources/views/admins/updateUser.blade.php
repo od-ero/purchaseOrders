@@ -57,7 +57,7 @@
         <div class="col-md-6">
             <div class="form-floating mb-3 mb-md-0">
                 <input class="form-control" id="register_id_no" name="id_no" type="text" placeholder="Enter user id number"   />
-                <label for="inputPassword">Id Number &emsp; <strong class="text-danger text-right" >*</strong></label>
+                <label for="inputPassword">Id Number &emsp; </label>
                 @if ($errors->has('id_no'))
                     <div class="text-danger mt-2">
                         {{ $errors->first('id_no') }}

@@ -110,7 +110,8 @@
             <button id="save_and_view" class="btn btn-primary">Save and View</button>
             @can('send-order')
             @endcan
-             <button id="save_and_send" class="btn btn-primary">Save and Send Order</button>
+             <button id="save_and_send" data-id="Yes" class="btn btn-primary">Save and Send Order With Prices</button>
+             <button id="save_and_send_with_no_prices"  data-id="No"class="btn btn-primary">Save and Send Order With No Prices</button>
             @endcan
             
             </div>

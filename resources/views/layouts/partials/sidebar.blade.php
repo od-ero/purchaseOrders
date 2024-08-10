@@ -15,7 +15,7 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                @can('Add-Employee')
+                                @can('add-employee')
                                     <a class="nav-link"  href="/employee/register">Add Employee</a>
                                     @endcan
                                  @can('list-active-employee')    
@@ -53,7 +53,7 @@
                             </a>
                             <div class="collapse" id="collapseSuppliers" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    @can('Add-Supplier')
+                                    @can('add-supplier')
                                     <a class="nav-link"  href="{{route('suppliers.create_supplier')}}">Add Supplier</a>
                                     @endcan
                                     @can('list-active-supplier')
@@ -100,7 +100,7 @@
                                     <a class="nav-link"  href="{{route('r_p.listRoles')}}">List Roles</a>
                                  @endcan
                                       
-                                    <a class="nav-link" href="{{route('r_p.createpermission')}}">Create Permission</a>
+                                    <!-- <a class="nav-link" href="{{route('r_p.createpermission')}}">Create Permission</a> -->
                                 </nav>
                             </div>
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

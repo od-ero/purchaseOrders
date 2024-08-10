@@ -17,16 +17,15 @@
                         <div class="card-body">
                             <form id="create_supplier_form" >
                             @csrf
-                            <div class="row mb-3">
-                                        <div class="form-floating  mb-3 mb-md-0">
-                                            <input class="form-control" id="create_supplier_name" name="create_supplier_name" type="text" placeholder="Enter user first name"   />
-                                            <label for="inputPassword">Name </label>
+                            
+                                <div class="form-floating my-3">
+                                    <input class="form-control" id="create_supplier_name" name="create_supplier_name" type="text" placeholder="Enter user first name"   />
+                                            <label for="inputPassword">Name  &emsp; <strong class="text-danger text-right" >*</strong></label>
                                             @if ($errors->has('first_name'))
                                                 <div class="text-danger mt-2">
                                                     {{ $errors->first('first_name') }}
                                                 </div>
                                             @endif
-                                        </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">

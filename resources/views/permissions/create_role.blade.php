@@ -24,6 +24,7 @@
                             </div>
                         @endif
                     </div>
+                    <div id="role_permissions" class="permission">
                         @foreach($permissions as $grouping_id => $permissionGroup)
                             <table class="table table-bordered data-table">
                                 <thead>
@@ -48,7 +49,7 @@
                                 </tbody>
                             </table>
                         @endforeach
-                    
+                    </div>
                      <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                      <a class="btn btn-info btn-sm" id="back_button"
                      style="color: #fff !important;"><i class="fa fa-backward"></i></a>

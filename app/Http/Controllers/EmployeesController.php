@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\DataTables as DataTables;
 
@@ -17,6 +18,7 @@ class EmployeesController extends Controller
                 $data = User::select('users.*')
                                 ->where('login_access', 1)
                                 ->where('special_access',0)
+                                ->whereNot('id', Auth::id())
                                 ->get();
 
                 return DataTables::of($data)
@@ -46,6 +48,11 @@ class EmployeesController extends Controller
                             if (auth()->user()->can('edit-employee')) {
                                 $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_employees_details" href="#">Edit</a></li>';
                             }
+                            $update_role_button = '';
+                           
+                                if (auth()->user()->can('edit-employee-role')) {
+                                    $update_role_button   = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_permission_level_button" href="#">Edit Permission Level</a></li>';
+                            }
                         
                             $deleteButton = '';
                             if (auth()->user()->can('destroy-employee')) {
@@ -61,6 +68,7 @@ class EmployeesController extends Controller
                                 <ul class="dropdown-menu">
                                     ' . $editButton . '
                                     ' . $deleteButton . '
+                                    ' . $update_role_button . '
                                 </ul>
                             </div>';
                         })                        
@@ -109,6 +117,11 @@ class EmployeesController extends Controller
                 if (auth()->user()->can('activate-employee')) {
                     $activateButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="activate_user_button" href="#">Activate</a></li>';
                 }
+                $update_role_button = '';
+                           
+                    if (auth()->user()->can('edit-employee-role')) {
+                        $update_role_button   = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_permission_level_button" href="#">Edit Permission Level</a></li>';
+                }
             
                 return
                 '<div class="btn-group">
@@ -119,6 +132,7 @@ class EmployeesController extends Controller
                     <ul class="dropdown-menu">
                         ' . $editButton . '
                         ' . $activateButton . '
+                        ' . $update_role_button . '
                     </ul>
                 </div>';
             })

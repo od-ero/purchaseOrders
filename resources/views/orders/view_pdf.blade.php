@@ -20,17 +20,15 @@
                     </div>
         <div class="row">
         <div class="mb-4 col-auto">
-                 <a href="/create/fpdf/download/{{$encoded_product_batch_id}}" class="btn btn-outline-success btn-sm" tabindex="-1" role="button">back</a>        
+        <a class="btn btn-info btn-sm" id="back_button"
+        style="color: #fff !important;"><i class="fa fa-backward"></i></a>        
             </div>
             <div class="mb-4 col-auto">
-                 <a href="/send/mail/{{$encoded_product_batch_id}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF</a>        
+                 <a href="/make-orders/{{base64_encode($encoded_product_batch_id)}}?Query={{base64_encode('Yes')}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF With Prices</a>   
+                 <a href="/make-orders/{{base64_encode($encoded_product_batch_id)}}?Query={{base64_encode('No')}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF With No Prices</a>       
             </div>
         </div>
            
 
-<script>
-                function setUnitId(unitId) {
-                    document.getElementById('unitIdInput').value = unitId;
-                }
-            </script>
+
                     @endsection

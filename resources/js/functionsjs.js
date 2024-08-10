@@ -84,11 +84,8 @@ if(login_password.length < 3){
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    alertify.set('notifier', 'position', 'top-center');
-                    alertify.success(response.message);
-                    setTimeout(() => {
+                    sessionStorage.setItem('successMessage', response.message);
                         window.location.href = response.intendedUrl;
-                    }, 5000);
                 } else if (response.status === "error") {
                    
                     alertify.set('notifier', 'position', 'top-center');
@@ -161,7 +158,7 @@ if(login_password.length < 3){
             var isValidFirstName = validateInput("#register_first_name", "Enter First Name");
             var isValidMiddleName = validateInput("#register_middle_name", "Middle Name is required.", null, false);
             var isValidLastName = validateInput("#register_last_name", "Enter Last Name");
-            var isValidIdNo = validateInput("#register_id_no", "Enter ID Number");
+            var isValidIdNo = validateInput("#register_id_no", "Enter ID Number",null, false);
             var isValidStaffNo = validateInput("#register_staff_no", "Staff number is required.", null, false);
             var isValidPhone = validateInput("#register_phone", "Invalid Phone Number", validatePhone);
             var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
@@ -188,18 +185,16 @@ if(login_password.length < 3){
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
-                            console.log('success')
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message);
+                            sessionStorage.setItem('successMessage', response.message);
                             if(register_clicked_button=='register_save_view'){
-                                setTimeout(() => {
+                                
                                     window.location.href = "/employee/view/"+btoa(response.user_id);
-                            }, 5000);
+                           
                         }
                             else{
-                                setTimeout(() => {
+                               
                                     window.location.reload();
-                                }, 5000);
+                               
                             }
                         } 
                         else if (response.status === "error") {
@@ -264,7 +259,7 @@ if(login_password.length < 3){
             var isValidFirstName = validateInput("#register_first_name", "Enter First Name");
             var isValidMiddleName = validateInput("#register_middle_name", "Middle Name is required.", null, false);
             var isValidLastName = validateInput("#register_last_name", "Enter Last Name");
-            var isValidIdNo = validateInput("#register_id_no", "Enter ID Number");
+            var isValidIdNo = validateInput("#register_id_no", "Enter ID Number", null, false);
             var isValidStaffNo = validateInput("#register_staff_no", "Staff number is required.", null, false);
             var isValidPhone = validateInput("#register_phone", "Invalid Phone Number", validatePhone);
             var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
@@ -288,12 +283,8 @@ if(login_password.length < 3){
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
-                            alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
-                                setTimeout(() => {
-                                
+                            sessionStorage.setItem('successMessage', response.message);
                                 window.location.reload();
-                            }, 5000);
                         } 
                         else if (response.status === "error") {
                             printErrorMsg(response.message);
@@ -314,6 +305,8 @@ if(login_password.length < 3){
             var table = $('#active_employees_table').DataTable({
                 processing: true,
                 serverSide: true,
+                "order": [] ,
+                "pageLength": 500, 
                 ajax: "/employee/list-active",
                
                 columns: [
@@ -329,6 +322,8 @@ if(login_password.length < 3){
           var table = $('#deleted_employees_table').DataTable({
             processing: true,
             serverSide: true,
+            "order": [] ,
+            "pageLength": 500,
             ajax: "/employee/list-deleted",
            
             columns: [
@@ -452,13 +447,9 @@ if(login_password.length < 3){
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
-                          
-                                setTimeout(() => {
+                            sessionStorage.setItem('successMessage', response.message);
                                 window.location.href = "/show-role/"+btoa(response.role_id);
-                            }, 5000);
-                       
+                           
                         } 
                         else if (response.status === "error") {
                            
@@ -567,12 +558,8 @@ if(login_password.length < 3){
                         url: "/employee/delete/"+user_id,
                     success: function (response) {
                         if (response.status === "success") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message);
-                            setTimeout(() => {
+                            sessionStorage.setItem('successMessage', response.message);
                                 window.location.reload();
-                        }, 5000);
-                       
                     } 
                     else if (response.status === "error") {
                         alertify.set('notifier', 'position', 'top-center');
@@ -596,12 +583,8 @@ if(login_password.length < 3){
                 url: "/employee/activate/"+user_id,
             success: function (response) {
                 if (response.status === "success") {
-                    alertify.set('notifier', 'position', 'top-center');
-                    alertify.success(response.message);
-                    setTimeout(() => {
+                    sessionStorage.setItem('successMessage', response.message);
                         window.location.reload();
-                     }, 5000);
-               
             } 
             else if (response.status === "error") {
                 alertify.set('notifier', 'position', 'top-center');
@@ -691,11 +674,9 @@ if(login_password.length < 3){
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success('Success');
-                            setTimeout(() => {
-                                window.location.href = '/import-and-view';
-                            }, 5000);
+                            sessionStorage.setItem('successMessage', response.message);
+                            window.location.href = '/import-and-view';
+                           
                         } else if (response.status === "error") {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.error(response.message);
@@ -711,9 +692,13 @@ if(login_password.length < 3){
             });
 
             
-            $('#purchaseOrdersTable').DataTable();
+        $('#purchaseOrdersTable').DataTable({
+            "order": [] ,
+            "pageLength": 500,
+        });
 
             $('#save_and_view').on('click', function() {
+                
                 var batch_details = {
                     'batch_name':$('#upload_and_view_batch_name').val(),
                     'supplier_id':$('#upload_and_view_supplier_id').val(),
@@ -748,11 +733,9 @@ if(login_password.length < 3){
                     success: function(response) {
                         
                         if (response.status === "success") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message); 
-                            setTimeout(() => {
-                                window.location.href = "/orders/pdf/"+response.batch_id;
-                            }, 5000);
+                            sessionStorage.setItem('successMessage', response.message);
+                             window.location.href = "/orders/pdf/"+response.batch_id;
+                           
                         } else if (response.status === "error") {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.error(response.message);
@@ -766,6 +749,20 @@ if(login_password.length < 3){
             });
 
             $('#save_and_send').on('click', function() {
+                
+                saveAndSend('Yes')
+
+
+            });
+
+            $('#save_and_send_with_no_prices').on('click', function() {
+              
+                saveAndSend('No')
+
+            });
+            
+           
+               function saveAndSend(with_prices){
                 var batch_details = {
                     'batch_name':$('#upload_and_view_batch_name').val(),
                     'supplier_id':$('#upload_and_view_supplier_id').val(),
@@ -800,11 +797,13 @@ if(login_password.length < 3){
                     success: function(response) {
                        
                         if (response.status === "success") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message);
-                            setTimeout(() => {
-                                window.location.href = "/make-orders/"+response.batch_id;
-                            }, 5000);
+                            sessionStorage.setItem('successMessage', response.message);
+                            var url = "/make-orders/" + response.batch_id;
+
+                            url += "?Query=" + encodeURIComponent(btoa(with_prices));
+                            
+                            window.location.href = url;
+                             
                         } else if (response.status === "error") {
                             alertify.set('notifier', 'position', 'top-center');
                             alertify.error(response.message);
@@ -815,11 +814,14 @@ if(login_password.length < 3){
                         alertify.error('Something went wrong');
                     }
                 });
-            });
+           
+            }
 
                 var table = $('#view_batch_table').DataTable({
                     processing: true,
                     serverSide: true,
+                    "order": [] ,
+                    "pageLength": 500,
                     ajax: {
                         url: "/view/batch/" + $('#saved_batch_id').val(),
                         dataSrc: function(json) {
@@ -863,6 +865,8 @@ if(login_password.length < 3){
                 var table = $('#view_batch_table_no_cost').DataTable({
                     processing: true,
                     serverSide: true,
+                    "order": [] ,
+                    "pageLength": 500,
                     ajax: {
                         url: "/view/batch/" + $('#saved_batch_id').val(),
                        
@@ -964,18 +968,14 @@ if(login_password.length < 3){
             return phoneRegex.test(value);
         }
 
-        function validatePassword(value) {
-            return value.length >= 3;
-        }
+       
 
         function validateEmail(value) {
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(value);
         }
 
-        function validateRole(value) {
-            return value !== null && value !== '';
-        }
+       
 
         // Validate each input field
         var isValidName = validateInput("#create_supplier_name", "Enter Suppliers Name");
@@ -1003,17 +1003,16 @@ if(login_password.length < 3){
                 processData: false,
                 success: function(response) {
                     if (response.status === "success") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.success(response.message);
+                        sessionStorage.setItem('successMessage', response.message);
                         if(register_clicked_button=='register_save_view'){
-                            setTimeout(() => {
+                            
                             window.location.href = "/suppliers/view/"+btoa(response.supplier_id);
-                        }, 5000);
+                       
                     }
                         else{
-                            setTimeout(() => {
-                                window.location.href = "/create-supplier";
-                            }, 5000);
+                          
+                                window.location.reload();
+                           
                         }
                     } 
                     else if (response.status === "error") {
@@ -1095,6 +1094,8 @@ if(login_password.length < 3){
       var table = $('#active_suppliers_table').DataTable({
         processing: true,
         serverSide: true,
+        "order": [] ,
+        "pageLength": 500,
         ajax: "/suppliers/list-active",
        
         columns: [
@@ -1177,12 +1178,9 @@ if(login_password.length < 3){
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    alertify.set('notifier', 'position', 'top-center');
-                        alertify.success('Supplier Edited Succefully');
-                    setTimeout(() => {
+                    sessionStorage.setItem('successMessage', response.message);
                         window.location.reload();
-                    }, 5000);
-                   
+                  
                 } 
                 else if (response.status === "error") {
                     printSupplierErrorMsg(response.message);
@@ -1226,20 +1224,13 @@ $.ajax({
         url: "/supplier/delete/"+supplier_id,
     success: function (response) {
         if (response.status === "success") {
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.success(response.message);
-        setTimeout(() => {
+            sessionStorage.setItem('successMessage', response.message);
             window.location.reload();
-        }, 5000);
-            
-       
     } 
     else if (response.status === "error") {
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.error(response.message);
-        setTimeout(() => {
-            
-        }, 5000);
+        sessionStorage.setItem('errorMessage', response.message);
+        window.location.reload();
+       
     }
     },
     error: function (response) {
@@ -1261,6 +1252,8 @@ $('body').on('click', '#delete_supplier_button',function(e){
 var table = $('#deleted_suppliers_table').DataTable({
     processing: true,
     serverSide: true,
+    "order": [] ,
+    "pageLength": 500,
     ajax: "/suppliers/list-deleted",
    
     columns: [
@@ -1289,21 +1282,13 @@ $.ajax({
         url: "/supplier/activate/"+supplier_id,
     success: function (response) {
         if (response.status === "success") {
-         
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.success('Supplier Activated Succefully');
-        setTimeout(() => {
+            sessionStorage.setItem('successMessage', response.message);
             window.location.reload();
-        }, 5000);
-            
-       
     } 
     else if (response.status === "error") {
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.error(response.message);
-         setTimeout(() => {
+        sessionStorage.setItem('errorMessage', response.message);
             window.location.reload();
-         }, 5000);
+         
     }
     },
     error: function (response) {
@@ -1317,6 +1302,8 @@ $.ajax({
 var table = $('#imported_batches_table').DataTable({
     processing: true,
     serverSide: true,
+    "order": [] ,
+    "pageLength": 500,
     ajax: "/orders/list-imported-batches",
    "order": [] ,
     columns: [
@@ -1334,8 +1321,9 @@ var table = $('#imported_batches_table').DataTable({
 var table = $('#ordered_batches_table').DataTable({
     processing: true,
     serverSide: true,
+    "order": [] ,
+    "pageLength": 500,
     ajax: "/orders/list-ordered-batches",
-   "order": [] ,
     columns: [
         {data: 'send_batch_id', name: 'send_batch_id'},
         {data: 'created_date', name: 'created_date'},
@@ -1384,11 +1372,9 @@ $('#update_batch_button').on('click', function() {
         success: function(response) {
             
             if (response.status === "success") {
-                alertify.set('notifier', 'position', 'top-center');
-                alertify.success(response.message); 
-                setTimeout(() => {
+                sessionStorage.setItem('successMessage', response.message);
                     window.location.href = "/view/batch/"+response.batch_id;
-                }, 5000);
+              
             } else if (response.status === "error") {
                 alertify.set('notifier', 'position', 'top-center');
                 alertify.error(response.message);
@@ -1401,8 +1387,20 @@ $('#update_batch_button').on('click', function() {
     });
 });
 
-
 $('#update_and_make_order_button').on('click', function() {
+          
+    updateAndSend('Yes')
+
+
+});
+
+$('#update_and_make_order_with_no_prices_button').on('click', function() {
+  
+    updateAndSend('No')
+
+});
+
+function updateAndSend(with_prices){
     var batch_details = {
         'batch_id':$('#upload_and_view_batch_id').val(),
         'batch_name':$('#upload_and_view_batch_name').val(),
@@ -1438,11 +1436,13 @@ $('#update_and_make_order_button').on('click', function() {
         success: function(response) {
             
             if (response.status === "success") {
-                alertify.set('notifier', 'position', 'top-center');
-                alertify.success(response.message); 
-                setTimeout(() => {
-                    window.location.href = "/make-orders/"+response.batch_id;
-                }, 5000);
+                sessionStorage.setItem('successMessage', response.message);
+                var url = "/make-orders/" + response.batch_id;
+
+                url += "?Query=" + encodeURIComponent(btoa(with_prices));
+                
+                window.location.href = url;
+               
             } else if (response.status === "error") {
                 alertify.set('notifier', 'position', 'top-center');
                 alertify.error(response.message);
@@ -1453,7 +1453,7 @@ $('#update_and_make_order_button').on('click', function() {
             alertify.error('Something went wrong');
         }
     });
-});
+}
 
 $('body').on('click', '#delete_batch_order_button',function(e){
     e.preventDefault();
@@ -1472,20 +1472,12 @@ $.ajax({
         url: "/order-batch/delete/"+batch_id,
     success: function (response) {
         if (response.status === "success") {
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.success(response.message);
-        setTimeout(() => {
+            sessionStorage.setItem('successMessage', response.message);
             window.location.reload();
-        }, 5000);
-            
-       
     } 
     else if (response.status === "error") {
-        alertify.set('notifier', 'position', 'top-center');
-        alertify.error(response.message);
-        setTimeout(() => {
-            
-        }, 5000);
+        sessionStorage.setItem('errorMessage', response.message);
+        window.location.reload();
     }
     },
     error: function (response) {
@@ -1520,11 +1512,9 @@ $('body').on('click', '#make_order_modal_button', function(e) {
         processData: false,
         success: function(response) {
             if (response.status === "success") {
-                alertify.set('notifier', 'position', 'top-center');
-                alertify.success(response.message);
-                setTimeout(() => {
+                sessionStorage.setItem('successMessage', response.message);
                     window.history.back();
-                }, 5000);
+               
             } else if (response.status === "error") {
                 alertify.set('notifier', 'position', 'top-center');
                 alertify.error(response.message);
@@ -1574,14 +1564,9 @@ $('#update_email_content_form').submit(function(e) {
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    console.log('success')
-                    alertify.set('notifier', 'position', 'top-center');
-                    alertify.success(response.message);
-                    
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 5000);
-                   
+                    sessionStorage.setItem('successMessage', response.message);
+                    window.location.reload();
+                      
                 } 
                 else if (response.status === "error") {
                     alertify.set('notifier', 'position', 'top-center');
@@ -1615,14 +1600,9 @@ $('#update_business_details_form').submit(function(e) {
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    console.log('success')
-                    alertify.set('notifier', 'position', 'top-center');
-                    alertify.success(response.message);
-                    
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 5000);
-                   
+                    sessionStorage.setItem('successMessage', response.message);
+                    window.location.reload();
+                       
                 } 
                 else if (response.status === "error") {
                     alertify.set('notifier', 'position', 'top-center');
@@ -1661,14 +1641,9 @@ $('#update_system_name_form').submit(function(e) {
             processData: false,
             success: function(response) {
                 if (response.status === "success") {
-                    alertify.set('notifier', 'position', 'top-center');
-
-                alertify.success('Edit Successful');
-                    
-                        setTimeout(() => {
+                    sessionStorage.setItem('successMessage', 'Edit Successfull');
                             window.location.reload();
-                        }, 5000);
-                   
+                       
                 } 
                 else if (response.status === "error") {
                     alertify.set('notifier', 'position', 'top-center');
@@ -1872,12 +1847,8 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                                console.log('success');
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
-                                    setTimeout(() => {
+                                sessionStorage.setItem('successMessage', response.message);
                                         window.location.reload();
-                                    }, 5000);
                             } else if (response.status === "error") {
                                 printConfirmPasswordErrorMsg(response.message);
                             }
@@ -1968,12 +1939,8 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                                console.log('success');
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
-                                setTimeout(() => {
+                               
                                     window.location.reload();
-                                }, 5000);
                             } else if (response.status === "error") {
                                 printConfirmPasswordErrorMsg(response.message);
                             }
@@ -2042,12 +2009,8 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                                console.log('success');
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
-                                setTimeout(() => {
+                                sessionStorage.setItem('successMessage', response.message);
                                     window.location.reload();
-                                }, 5000);
                             } else if (response.status === "error") {
                                 alertify.set('notifier', 'position', 'top-center');
                             alertify.error(response.message);
@@ -2073,6 +2036,8 @@ $("#make_order_add_cc").on('click', function(e) {
             var table = $('#list_roles_table').DataTable({
                 processing: true,
                 serverSide: true,
+                "order": [] ,
+                "pageLength": 500,
                 ajax: "/list-roles",
                
                 columns: [
@@ -2098,7 +2063,8 @@ $("#make_order_add_cc").on('click', function(e) {
                     $(selector).addClass('is-invalid');
                     $(selector).next('.invalid-feedback').remove(); // Remove existing error message
                     $(selector).after('<div class="invalid-feedback">' + errorMessage + '</div>');
-    
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(errorMessage);
                     $(selector).on('keyup', function() {
                         $(this).removeClass('is-invalid');
                         $(this).next('.invalid-feedback').remove();
@@ -2132,11 +2098,11 @@ $("#make_order_add_cc").on('click', function(e) {
     
             // Validate each input field
             var isValidName = validateInput("#role_name", "Enter Role Name");
-           
+            var isValidPermissions = validateInput("#register_role_id", "Select Permission Level", validateRole, true);
            
             
             // If all fields are valid, submit the form or perform your desired action
-            if (isValidName) {
+            if (isValidName ) {
                 // All fields are valid, proceed with form submission or other actions
                 let formData = new FormData(this);
         
@@ -2151,16 +2117,13 @@ $("#make_order_add_cc").on('click', function(e) {
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.success(response.message);
+                            sessionStorage.setItem('successMessage', response.message);
+                            window.location.href = "/show-role/"+btoa(response.role_id);
                             
-                                setTimeout(() => {
-                                window.location.href = "/show-role/"+btoa(response.role_id);
-                            }, 5000);
                         } 
                         else if (response.status === "error") {
                            
-                            printSupplierErrorMsg(response.message);
+                            printRolesErrorMsg(response.message);
                             
                         }
                     },
@@ -2283,11 +2246,9 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                                    alertify.set('notifier', 'position', 'top-center');
-                                    alertify.success(response.message);
-                                    setTimeout(() => {
-                                        window.location.reload();
-                                    }, 5000);
+                                sessionStorage.setItem('successMessage', response.message);
+                                window.location.reload();
+                                   
                                
                             } 
                             else if (response.status === "error") {
@@ -2436,12 +2397,9 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                                    alertify.set('notifier', 'position', 'top-center');
-                                    alertify.success(response.message);
-                                    setTimeout(() => {
+                                    
                                     window.location.reload();
-                                }, 5000);
-                                
+                              
                             } 
                             else if (response.status === "error") {
                                
@@ -2468,20 +2426,13 @@ $("#make_order_add_cc").on('click', function(e) {
                     url: "/delete-role/"+role_id,
                 success: function (response) {
                     if (response.status === "success") {
-                    alertify.set('notifier', 'position', 'top-center');
-                    alertify.success(response.message);
-                    setTimeout(() => {
+                        sessionStorage.setItem('successMessage', response.message);
                         window.location.reload();
-                    }, 5000);
-                        
                    
                 } 
                 else if (response.status === "error") {
-                    alertify.set('notifier', 'position', 'top-center');
-                    alertify.error(response.message);
-                    setTimeout(() => {
-                        
-                    }, 5000);
+                    sessionStorage.setItem('errorMessage', response.message);
+                    window.location.reload();
                 }
                 },
                 error: function (response) {
@@ -2556,7 +2507,37 @@ $("#make_order_add_cc").on('click', function(e) {
             handleSwitchToggle(this);
         });
         
-        
+        function  printRolesErrorMsg (msg) {
+           
+            $.each( msg, function( key, value ) {
+                if (isWordPresent(value, 'role')){
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error('Check Role Name');
+                    $("#role_name").addClass('is-invalid');
+                    $("#role_name").next('.invalid-feedback').remove(); 
+                    $("#role_name").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#role_name").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });
+                    
+                } 
+                else if (isWordPresent(value, 'permission')){
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error('Check Permissions');
+                    $("#role_permissions").addClass('is-invalid');
+                    $("#role_permissions").next('.invalid-feedback').remove(); 
+                    $("#role_permissions").after('<div class="invalid-feedback">' + value + '</div>');
+                    $("#role_permissions").on('keyup', function() {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    });}
+                   else{
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(value);
+                }
+            });
+          }
 
 
     });

@@ -33,10 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/employee/register', [RegisteredUserController::class, 'create'])
-    ->name('register')->middleware('permission:Add-Employee');
+    ->name('register')->middleware('permission:add-employee');
     
 
-    Route::post('/employee/register', [RegisteredUserController::class, 'store'])->name('postRegister')->middleware('permission:Add-Employee');
+    Route::post('/employee/register', [RegisteredUserController::class, 'store'])->name('postRegister')->middleware('permission:add-employee');
     // Route::get('/display/users', function () {
     //     return view('admins.displayUsers');
     // });
@@ -110,10 +110,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/create-supplier', function () {
         return view('suppliers.create_supplier');
-    })->name('suppliers.create_supplier')->middleware('permission:Add-Supplier');
+    })->name('suppliers.create_supplier')->middleware('permission:add-supplier');
     
     Route::post('/supplier/create', [SuppliersController::class, 'createSupplier'])
-        ->name('suppliers.createSupplier')->middleware('permission:Add-Supplier');
+        ->name('suppliers.createSupplier')->middleware('permission:add-supplier');
 
         Route::get('/suppliers/list-active', [SuppliersController::class, 'listActiveSuppliers'])
         ->name('suppliers.listActiveSuppliers')->middleware('permission:list-active-supplier');
@@ -122,13 +122,13 @@ Route::middleware('auth')->group(function () {
         ->name('suppliers.listDeletedSuppliers')->middleware('permission:list-deleted-supplier');
 
         Route::get('/suppliers/view/{id}', [suppliersController::class, 'viewSupplier'])
-        ->name('suppliers.viewSupplier')->middleware('permission:View-Supplier');
+        ->name('suppliers.viewSupplier')->middleware('permission:view-supplier');
         
         Route::get('/suppliers/update/{id}', [suppliersController::class, 'editSupplier'])
-        ->name('suppliers.editSupplier')->middleware('permission:Edit-supplier');
+        ->name('suppliers.editSupplier')->middleware('permission:edit-supplier');
 
         Route::post('/supplier/update', [suppliersController::class, 'updateSupplier'])
-        ->name('suppliers.updateSupplier')->middleware('permission:Edit-supplier');
+        ->name('suppliers.updateSupplier')->middleware('permission:edit-supplier');
 
         Route::get('/supplier/delete/{id}', [suppliersController::class, 'deleteSupplier'])
     ->name('suppliers.deleteSupplier')->middleware('permission:destroy-supplier');

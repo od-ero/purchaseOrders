@@ -109,7 +109,8 @@
                 <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_batch_button" href="#">Save and View</a>
                 @if ($batch_details['deleted_at'] == null)
                     @can('send-order')
-                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_button" href="#">Save and Send Order</a>
+                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_button" href="#">Save and Send Order With Prices</a>
+                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_with_no_prices_button" href="#">Save and Send Order With No Prices</a>
                     @endcan
             @endcan
             @can('destroy-order')

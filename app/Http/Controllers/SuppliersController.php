@@ -112,9 +112,9 @@ class SuppliersController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
                     $encodedId = base64_encode($row->id);
-                
+                    if (auth()->user()->can('view-supplier')) {
                     $viewButton = '<a type="button" href="/suppliers/view/' . $encodedId . '" class="btn btn-success">View</a>';
-                
+                    }
                     $editButton = '';
                     if (auth()->user()->can('edit-supplier')) {
                         $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_suppliers_details" href="#">Edit</a></li>';

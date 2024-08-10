@@ -89,13 +89,16 @@
                 </div>
                 <label class="my-3 mx-4">Send with Price</label>
                 <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="with_prices" id="with_prices_yes" value="Yes" checked>
+                <input class="form-check-input" type="radio" name="with_prices" id="with_prices_yes" value="Yes" 
+                @if ($with_prices =='Yes') checked @endif>
                 <label class="form-check-label" for="exampleRadios1">
                 Yes
                 </label>
                 </div>
                 <div class="form-check form-check-inline">
-                <input class="form-check-input " type="radio" name="with_prices" id="with_prices_no" value="No">
+                <input class="form-check-input " type="radio" name="with_prices" id="with_prices_no" value="No"
+                @if ($with_prices == 'No') checked @endif>
+              
                 <label class="form-check-label" for="exampleRadios2">
                     No
                 </label>
