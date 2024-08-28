@@ -26,10 +26,20 @@ use function PHPUnit\Framework\isEmpty;
 class OrdersController extends Controller
 {   public function importView(){
     $suppliers = Supplier::all();
-    return view('orders.import_and_view', ['suppliers' => $suppliers]);
+    if(Session()->has('data')){
+    return view('orders.import_and_view', ['suppliers' => $suppliers]);}
+    return view('orders.import');
 }
 
-
+    public function importBlade(Request $request){
+        $keys = ['data', 'batch_details'];
+        foreach ($keys as $key) {
+            if ($request->session()->has($key)) {
+                $request->session()->forget($key);
+            }
+        }
+        return view('orders.import');
+    }
     public function import(Request $request)
     {
         $request->validate([
@@ -75,7 +85,13 @@ class OrdersController extends Controller
                 }
             }
 
-            
+            if($request->session()->has('data')){
+                $request->session()->forget('data');
+               }
+               if($request->session()->has('batch_details')){
+                $request->session()->forget('batch_details');
+               }
+
             $request->session()->put(['data' => $transformedData, 'batch_details' => $batch_details]);
 
             return response()->json(['status' => 'success' , 'message' => 'Preview The Orders Before Saving or sending']);
@@ -89,6 +105,12 @@ class OrdersController extends Controller
     
     public function importAndView(Request $request): JsonResponse
     {  
+        $keys = ['data', 'batch_details'];
+        foreach ($keys as $key) {
+            if ($request->session()->has($key)) {
+                $request->session()->forget($key);
+            }
+        }
          $imported_data =$request->all();
         $batch_details =  $imported_data['batch_details'];
        $supplier_id = base64_decode($batch_details['supplier_id']);
@@ -116,7 +138,6 @@ class OrdersController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Data submitted successfully!', 'batch_id' => $encoded_batch_id]);
     }
 
-    public function saveAndView() {}
 
     public function viewBatch(Request $request, $encoded_batch_id)
     {
@@ -145,7 +166,13 @@ class OrdersController extends Controller
     }
 
     Public function previewOrderasPdf(Request $request, $encoded_batch_id){
-       
+        $keys = ['data', 'batch_details'];
+        foreach ($keys as $key) {
+            if ($request->session()->has($key)) {
+                $request->session()->forget($key);
+            }
+        }
+
         $batch_id = base64_decode($encoded_batch_id);
        
         $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
@@ -153,7 +180,19 @@ class OrdersController extends Controller
                                     ->select('order_batches.order_no','suppliers.*')
                                     ->where('order_batches.id',$batch_id)
                                     ->first();
-        $pdfContent = OrderPDF::createPDF($batch_items, $batch_details);
+        $with_prices_encoded = request()->query('Query'); 
+        if ($with_prices_encoded) {
+            $with_prices = base64_decode($with_prices_encoded);
+        } else {
+           
+            $with_prices = 'yes'; // Default value if the query parameter is not present
+        }  
+        if( $with_prices == 'no'){
+            $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);
+        } else{
+            $pdfContent = OrderPDF::createPDF($batch_items, $batch_details);
+        }                       
+       
         $pdfContent = base64_encode($pdfContent);
         if ($request->ajax()) {
             return response()->json(['status' => 'success','pdfContent' => $pdfContent]);
@@ -165,6 +204,12 @@ class OrdersController extends Controller
     }
 
     Public function noCostPdf(Request $request, $encoded_batch_id){
+        $keys = ['data', 'batch_details'];
+        foreach ($keys as $key) {
+            if ($request->session()->has($key)) {
+                $request->session()->forget($key);
+            }
+        }
         $batch_id = base64_decode($encoded_batch_id);
        
         $batch_items = OrderBatchItem::where('order_batch_id', $batch_id)->get();
@@ -204,6 +249,12 @@ class OrdersController extends Controller
     }
 
     public function sendOrder(Request $request){
+        $keys = ['data', 'batch_details'];
+        foreach ($keys as $key) {
+            if ($request->session()->has($key)) {
+                $request->session()->forget($key);
+            }
+        }
         $mail_content = $request->all();
         $batch_id = $mail_content['batch_id'];
         DB::beginTransaction();
@@ -324,12 +375,12 @@ class OrdersController extends Controller
                     }
                 
                     $editButton = '';
-                    if (auth()->user()->can('edit-batch')) {
+                    if (auth()->user()->can('edit-order')) {
                         $editButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="update_batch_button" href="/update/batch/' . $encodedId . '">Edit</a></li>';
                     }
                 
                     $deleteButton = '';
-                    if (auth()->user()->can('destroy-batch')) {
+                    if (auth()->user()->can('destroy-order')) {
                         $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_batch_order_button" href="#">Delete</a></li>';
                     }
                 

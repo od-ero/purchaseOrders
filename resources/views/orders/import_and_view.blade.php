@@ -76,43 +76,47 @@
                                    </div>
                                </div>
                            </div>
-                            <table class="table table-bordered data-table" id="purchaseOrdersTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th style="width: 80px;">Quantity</th>
-                    <th>Product Name</th>
-                    <th style="width: 80px;">Cost</th>
-                    <th>Sub Total</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php $total_price=0 ?>
-           
-            <form>
-            @foreach(session('data') as $index => $row)
+                <table class="table table-bordered data-table" id="purchaseOrdersTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th style="width: 80px;">Quantity</th>
+                            <th>Product Name</th>
+                            <th style="width: 80px;">Cost</th>
+                            <th>Sub Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php $total_price=0 ?>
+                
+                        <form>
+                                @foreach(session('data') as $index => $row)
+                                <tr>
+                                    <td class="order-id">{{ $index + 1 }}</td>
+                                    <td  class="quantity"> <input id="quantity" value="{{ $row['quantity'] ?? '0' }}" style="width: 80px;"> </td>
+                                    <td > <input id="product_name" value="{{ $row['product_name'] ?? '0' }}" style="width: 350px;"></td>
+                                    <td class="price text-end"> <input id="price" value="{{ $row['price'] ?? '0' }}" class="text-end" style="width: 80px;"> </td> 
+                                    <td class="subtotal text-end">{{$row['price'] * $row['quantity']}}</td>
+                                </tr>
+                                @endforeach
+                        </form>
+                    </tbody>
+                </table>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a class="btn btn-info btn-sm" id="back_button">
+                        <i class="fa fa-backward"></i>
+                    </a>
+                    
+                    @can('import-excel')
+                    <button id="save_and_view_with_prices" class="btn btn-primary">Save and View With Prices</button>
+                    <button id="save_and_view_with_no_prices" class="btn btn-primary">Save and View PDF With No Prices</button>
+                    @endcan
 
-            <tr>
-                <td class="order-id">{{ $index + 1 }}</td>
-                <td  class="quantity"> <input id="quantity" value="{{ $row['quantity'] ?? '0' }}" style="width: 80px;"> </td>
-                <td > <input id="product_name" value="{{ $row['product_name'] ?? '0' }}" style="width: 350px;"></td>
-                <td class="price text-end"> <input id="price" value="{{ $row['price'] ?? '0' }}" class="text-end" style="width: 80px;"> </td> 
-                <td class="subtotal text-end">{{$row['price'] * $row['quantity']}}</td>
-            </tr>
-           
-            @endforeach
-            </form>
-            </tbody>
-            </table>
-            <a class="btn btn-info btn-sm" id="back_button"
-                          style="color: #fff !important;"><i class="fa fa-backward"></i></a>
-            @can('import-excel')
-            <button id="save_and_view" class="btn btn-primary">Save and View</button>
-            @can('send-order')
-            @endcan
-             <button id="save_and_send" data-id="Yes" class="btn btn-primary">Save and Send Order With Prices</button>
-             <button id="save_and_send_with_no_prices"  data-id="No"class="btn btn-primary">Save and Send Order With No Prices</button>
-            @endcan
+                    @can('send-order')
+                    <button id="save_and_send" data-id="Yes" class="btn btn-primary">Save and Send Order With Prices</button>
+                    <button id="save_and_send_with_no_prices" data-id="No" class="btn btn-primary">Save and Send Order With No Prices</button>
+                    @endcan
+                </div>
             
             </div>
                         </div>

@@ -9,6 +9,11 @@
 
 @section('content')
 @include('orders.make_order_modal')
+<div id="loading_gif" style="display:none; position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.5); z-index: 9999;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        <img src="{{ asset('assets/sending.gif') }}" alt="Sending..." />
+                    </div>
+</div>
 <div class="row justify-content-center" id="pdfPage">
     <div class="col-lg-7 make_orders_page">
         <div class="card shadow-lg border-0 rounded-lg mt-2">

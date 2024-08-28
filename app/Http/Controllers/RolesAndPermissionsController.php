@@ -67,6 +67,9 @@ class RolesAndPermissionsController extends Controller
             if (auth()->user()->can('destroy-role')) {
                 $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_role_button" href="#">Delete</a></li>';
             }
+            if($row->id == 1){
+                 $deleteButton = '';
+            }
         
             return '
             <div class="btn-group">

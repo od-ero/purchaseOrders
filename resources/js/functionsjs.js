@@ -163,7 +163,7 @@ if(login_password.length < 3){
             var isValidPhone = validateInput("#register_phone", "Invalid Phone Number", validatePhone);
             var isValidEmail = validateInput("#register_email", "Invalid Email", validateEmail, false);
             var isValidPassword = validateInput("#register_password", "Check password", validatePassword);
-            var isValidRoleId = validateInput("#register_role_id", "Select Permission Level", validateRole, true);
+            var isValidRoleId = validateInput("#register_role_id", "Select Permission Level 1", validateRole, true);
            
             var isValidSecondPhone = validateInput("#register_second_phone", "Second Phone Number is invalid.", validatePhone, false);
             var isValidPhyAddress = validateInput("#register_phy_address", "Physical Address is required.", null, false);
@@ -453,7 +453,7 @@ if(login_password.length < 3){
                         } 
                         else if (response.status === "error") {
                            
-                            printSupplierErrorMsg(response.message);
+                            printRolesErrorMsg(response.message);
                             
                         }
                     },
@@ -670,6 +670,12 @@ if(login_password.length < 3){
                     type: 'POST',
                     url: '/import-and-view',
                     data: formData,
+                    beforeSend: function(){
+                        $('#loading_gif').show();
+                      },
+                      complete: function(){
+                        $('#loading_gif').hide();
+                      },
                     contentType: false,
                     processData: false,
                     success: function(response) {
@@ -697,62 +703,70 @@ if(login_password.length < 3){
             "pageLength": 500,
         });
 
-            $('#save_and_view').on('click', function() {
+            $('#save_and_view_with_prices').on('click', function() {
                 
-                var batch_details = {
-                    'batch_name':$('#upload_and_view_batch_name').val(),
-                    'supplier_id':$('#upload_and_view_supplier_id').val(),
-                    'order_no':$('#upload_and_view_order_number').val(),
-                };
-                var tableData = [];
-                
-                $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
-                    var rowData = {
-                        
-                        'product_name': $(tr).find('#product_name').val(),
-                        'quantity': $(tr).find('#quantity').val(),
-                        'price': $(tr).find('#price').val(),
-                        
-                        
-                    };
-                    tableData.push(rowData);
-                });
-              
-                // Example AJAX submission
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'POST',
-                    url: '/save-and-view', // Adjust the route as needed
-                    data: {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'data': tableData,
-                        'batch_details':batch_details
-                    },
-                    success: function(response) {
-                        
-                        if (response.status === "success") {
-                            sessionStorage.setItem('successMessage', response.message);
-                             window.location.href = "/orders/pdf/"+response.batch_id;
-                           
-                        } else if (response.status === "error") {
-                            alertify.set('notifier', 'position', 'top-center');
-                            alertify.error(response.message);
-                        }
-                    },
-                    error: function(response) {
-                        alertify.set('notifier', 'position', 'top-center');
-                        alertify.error('Something went wrong');
-                    }
-                });
+              var with_prices = 'yes'; 
+              saveAndView(with_prices)
             });
 
-            $('#save_and_send').on('click', function() {
+            $('#save_and_view_with_no_prices').on('click', function() {
                 
+              var with_prices = 'no'; 
+              saveAndView(with_prices)
+            });
+           function saveAndView(with_prices){
+            var batch_details = {
+                'batch_name':$('#upload_and_view_batch_name').val(),
+                'supplier_id':$('#upload_and_view_supplier_id').val(),
+                'order_no':$('#upload_and_view_order_number').val(),
+            };
+            var tableData = [];
+            
+            $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
+                var rowData = {
+                    
+                    'product_name': $(tr).find('#product_name').val(),
+                    'quantity': $(tr).find('#quantity').val(),
+                    'price': $(tr).find('#price').val(),
+                    
+                    
+                };
+                tableData.push(rowData);
+            });
+          
+            // Example AJAX submission
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: 'POST',
+                url: '/save-and-view', // Adjust the route as needed
+                data: {
+                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                    'data': tableData,
+                    'batch_details':batch_details
+                },
+                success: function(response) {
+                    
+                    if (response.status === "success") {
+                        sessionStorage.setItem('successMessage', response.message);
+                         var url = "/orders/pdf/"+response.batch_id;
+                         url += "?Query=" + encodeURIComponent(btoa(with_prices));
+                         window.location.href = url;
+                    } else if (response.status === "error") {
+                        alertify.set('notifier', 'position', 'top-center');
+                        alertify.error(response.message);
+                    }
+                },
+                error: function(response) {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error('Something went wrong');
+                }
+            });
+
+            }
+            $('#save_and_send').on('click', function() {
                 saveAndSend('Yes')
-
-
             });
 
             $('#save_and_send_with_no_prices').on('click', function() {
@@ -1473,7 +1487,7 @@ $.ajax({
     success: function (response) {
         if (response.status === "success") {
             sessionStorage.setItem('successMessage', response.message);
-            window.location.reload();
+            window.location.href = '/orders/list-imported-batches';
     } 
     else if (response.status === "error") {
         sessionStorage.setItem('errorMessage', response.message);
@@ -1490,10 +1504,8 @@ $.ajax({
  
 $('body').on('click', '#make_order_modal_button', function(e) {
     e.preventDefault();
-
     let form = $('#make_order_form')[0]; // Get the form element
-    let formData = new FormData(form);   // Create FormData from the form element
-
+    let formData = new FormData(form);  
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -1502,11 +1514,10 @@ $('body').on('click', '#make_order_modal_button', function(e) {
         url: '/make-orders',
         data: formData,
         beforeSend: function(){
-            alertify.set('notifier', 'position', 'top-center');
-            alertify.message('Sending....', 0);
+            $('#loading_gif').show();
           },
           complete: function(){
-            alertify.dismissAll();
+            $('#loading_gif').hide();
           },
         contentType: false,
         processData: false,
@@ -1939,7 +1950,7 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                               
+                                sessionStorage.setItem('successMessage', response.message);
                                     window.location.reload();
                             } else if (response.status === "error") {
                                 printConfirmPasswordErrorMsg(response.message);
@@ -2077,32 +2088,12 @@ $("#make_order_add_cc").on('click', function(e) {
                 }
             }
     
-            // Custom validation functions
-            function validatePhone(value) {
-                var phoneRegex = /^[0-9]{6,13}$/;
-                return phoneRegex.test(value);
-            }
-    
-            function validatePassword(value) {
-                return value.length >= 3;
-            }
-    
-            function validateEmail(value) {
-                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(value);
-            }
-    
-            function validateRole(value) {
-                return value !== null && value !== '';
-            }
-    
-            // Validate each input field
+
             var isValidName = validateInput("#role_name", "Enter Role Name");
-            var isValidPermissions = validateInput("#register_role_id", "Select Permission Level", validateRole, true);
            
             
             // If all fields are valid, submit the form or perform your desired action
-            if (isValidName ) {
+            if (isValidName) {
                 // All fields are valid, proceed with form submission or other actions
                 let formData = new FormData(this);
         
@@ -2378,7 +2369,7 @@ $("#make_order_add_cc").on('click', function(e) {
         
                 // Validate each input field
                 var isValidPassword = validateInput("#password", "Check Your password", validatePassword);
-                var isValidPemissionLevel = validateInput("#register_role_id", "Select Permission Level", validateRole, true);
+                var isValidPemissionLevel = validateInput("#register_role_id", "Select Permission Level 3", validateRole, true);
                
                
                 // If all fields are valid, submit the form or perform your desired action

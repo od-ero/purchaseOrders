@@ -66,9 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/save-and-view', function () {
         return view('orders.view');
     })->name('view.table')->middleware('permission:import-excel');
-    Route::get('/import', function () {
-        return view('orders.import');
-    })->name('import')->middleware('permission:import-excel');
+    Route::get('/import', [OrdersController::class, 'importBlade'])
+    ->name('import')->middleware('permission:import-excel');
     // Route::post('/import-and-save', [OrdersController::class, 'importAndView'])
     // ->name('orders.importAndSave');
 
@@ -94,7 +93,7 @@ Route::middleware('auth')->group(function () {
     ->name('orders.listImportedOrders')->middleware('permission:list-imported-batch');
 
     Route::get('/orders/list-ordered-batches', [OrdersController::class, 'listOrderedOrders'])
-    ->name('orders.listOrderedOrders')->middleware('permission:list-send-order');
+    ->name('orders.listOrderedOrders')->middleware('permission:list-send-batch');
 
     Route::get('/update/batch/{id}', [OrdersController::class, 'editBatch'])
     ->name('orders.editBatch')->middleware('permission:edit-order');
@@ -137,10 +136,10 @@ Route::middleware('auth')->group(function () {
     ->name('suppliers.activateSupplier')->middleware('permission:activate-supplier');
 
     Route::get('/business-details', [BusinessDetailsController::class, 'businessDetails'])
-            ->name('business_details.editBusinessDetails')->middleware('permission:edit-latter-head');
+            ->name('business_details.businessDetails')->middleware('permission:view-letter-head');
 
         Route::post('/update/business-details', [BusinessDetailsController::class, 'updateBusinessDetails'])
-        ->name('business_details.updateBusinessDetails')->middleware('permission:edit-latter-head');
+        ->name('business_details.updateBusinessDetails')->middleware('permission:edit-letter-head');
     
         Route::get('/system-name', [BusinessDetailsController::class, 'systemBusinessName'])
         ->name('business_details.systemBusinessName')->middleware('permission:system-name');

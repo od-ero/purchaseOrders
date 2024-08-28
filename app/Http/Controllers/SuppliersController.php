@@ -73,7 +73,7 @@ class SuppliersController extends Controller
                     }
                 
                     $deleteButton = '';
-                    if (auth()->user()->can('delete-supplier')) {
+                    if (auth()->user()->can('destroy-supplier')) {
                         $deleteButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="delete_supplier_button" href="#">Delete</a></li>';
                     }
                 
@@ -121,7 +121,7 @@ class SuppliersController extends Controller
                     }
                 
                     $activateButton = '';
-                    if (auth()->user()->can('destroy-supplier')) {
+                    if (auth()->user()->can('activate-supplier')) {
                         $activateButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="activate_supplier_button" href="#">Activate</a></li>';
                     }
                 
