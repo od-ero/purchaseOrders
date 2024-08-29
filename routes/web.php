@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/save-and-view', function () {
         return view('orders.view');
     })->name('view.table')->middleware('permission:import-excel');
+    
     Route::get('/import', [OrdersController::class, 'importBlade'])
     ->name('import')->middleware('permission:import-excel');
     // Route::post('/import-and-save', [OrdersController::class, 'importAndView'])

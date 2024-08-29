@@ -1,20 +1,13 @@
 $(document).ready(function () {
-    // $(window).load(function(){ 
-    //     //PAGE IS FULLY LOADED 
-    //     //FADE OUT YOUR OVERLAYING DIV
-    //     $('#overlay').fadeOut();
-    //    });
-    
+    let url_query_string = window.location.search;
+    const getPath = window.location.pathname;
+    const view_supplier_path = "/suppliers/view/";
+    if (getPath.startsWith(view_supplier_path)) {
+        var encoded_supplier_id = getPath.substring(view_supplier_path.length);
+    var urlQuery = "?Query=" + encoded_supplier_id;
+    url_query_string = urlQuery;
+    } 
 
-    // $('#loading_alert')
-    // .hide()  
-    // .ajaxStart(function() {
-    //     alertify.notify('custom message.', 'custom', 2, function(){console.log('dismissed');});
-  
-    // })
-    // .ajaxStop(function() {
-    //     $(this).hide();
-    // });
     var submitButton = document.querySelector('button[type="submit"]');
     var adminLoginUrlClickCount = 0;
 
@@ -660,7 +653,7 @@ if(login_password.length < 3){
                     });
                     return false;
                 }
-        
+                $('#loading_gif').show();
                 let formData = new FormData(this);
         
                 $.ajax({
@@ -670,16 +663,17 @@ if(login_password.length < 3){
                     type: 'POST',
                     url: '/import-and-view',
                     data: formData,
-                    beforeSend: function(){
-                        $('#loading_gif').show();
-                      },
-                      complete: function(){
-                        $('#loading_gif').hide();
-                      },
+                    // beforeSend: function(){
+                    //     $('#loading_gif').show();
+                    //   },
+                    //   complete: function(){
+                    //     $('#loading_gif').hide();
+                    //   },
                     contentType: false,
                     processData: false,
                     success: function(response) {
                         if (response.status === "success") {
+                            $('#loading_gif').hide();
                             sessionStorage.setItem('successMessage', response.message);
                             window.location.href = '/import-and-view';
                            
@@ -705,15 +699,20 @@ if(login_password.length < 3){
 
             $('#save_and_view_with_prices').on('click', function() {
                 
-              var with_prices = 'yes'; 
+              var with_prices = 'Yes'; 
               saveAndView(with_prices)
             });
 
             $('#save_and_view_with_no_prices').on('click', function() {
                 
-              var with_prices = 'no'; 
+              var with_prices = 'No'; 
               saveAndView(with_prices)
             });
+
+            $('#save_and_view').on('click', function() {
+                var with_prices = 'Table'; 
+                saveAndView(with_prices)
+              });
            function saveAndView(with_prices){
             var batch_details = {
                 'batch_name':$('#upload_and_view_batch_name').val(),
@@ -750,9 +749,15 @@ if(login_password.length < 3){
                     
                     if (response.status === "success") {
                         sessionStorage.setItem('successMessage', response.message);
-                         var url = "/orders/pdf/"+response.batch_id;
-                         url += "?Query=" + encodeURIComponent(btoa(with_prices));
-                         window.location.href = url;
+                       
+                        if(with_prices == 'Table'){
+                            window.location.href = "/view/batch/" + response.batch_id;
+                        }
+                        else if(with_prices == 'Yes'){
+                            window.location.href =  "/orders/pdf/" + response.batch_id;
+                        }else{
+                            window.location.href = "/orders/no-cost-pdf/" + response.batch_id;
+                        }
                     } else if (response.status === "error") {
                         alertify.set('notifier', 'position', 'top-center');
                         alertify.error(response.message);
@@ -1313,12 +1318,16 @@ $.ajax({
 
 });
 
+var imported_batches_url = "/orders/list-imported-batches";
+ if (url_query_string) {
+    imported_batches_url += url_query_string;
+ }
 var table = $('#imported_batches_table').DataTable({
     processing: true,
     serverSide: true,
     "order": [] ,
     "pageLength": 500,
-    ajax: "/orders/list-imported-batches",
+    ajax: imported_batches_url,
    "order": [] ,
     columns: [
         {data: 'id', name: 'id'},
@@ -1332,12 +1341,16 @@ var table = $('#imported_batches_table').DataTable({
    
 });
 
+var ordered_batches_url = '/orders/list-ordered-batches'
+if (url_query_string) {
+    ordered_batches_url += url_query_string;
+ }
 var table = $('#ordered_batches_table').DataTable({
     processing: true,
     serverSide: true,
     "order": [] ,
     "pageLength": 500,
-    ajax: "/orders/list-ordered-batches",
+    ajax: ordered_batches_url,
     columns: [
         {data: 'send_batch_id', name: 'send_batch_id'},
         {data: 'created_date', name: 'created_date'},
@@ -1351,55 +1364,72 @@ var table = $('#ordered_batches_table').DataTable({
 });
 
 $('#update_batch_button').on('click', function() {
-    var batch_details = {
-        'batch_id':$('#upload_and_view_batch_id').val(),
-        'batch_name':$('#upload_and_view_batch_name').val(),
-        'supplier_id':$('#upload_and_view_supplier_id').val(),
-        'order_no':$('#upload_and_view_order_number').val(),
-    };
-    var tableData = [];
-    
-    $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
-        var rowData = {
-            
-            'product_name': $(tr).find('#product_name').val(),
-            'quantity': $(tr).find('#quantity').val(),
-            'price': $(tr).find('#price').val(),
-            
-            
-        };
-        tableData.push(rowData);
-    });
-  
-    // Example AJAX submission
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        type: 'POST',
-        url: '/orders/update-batch', // Adjust the route as needed
-        data: {
-            '_token': $('meta[name="csrf-token"]').attr('content'),
-            'data': tableData,
-            'batch_details':batch_details
-        },
-        success: function(response) {
-            
-            if (response.status === "success") {
-                sessionStorage.setItem('successMessage', response.message);
-                    window.location.href = "/view/batch/"+response.batch_id;
-              
-            } else if (response.status === "error") {
-                alertify.set('notifier', 'position', 'top-center');
-                alertify.error(response.message);
-            }
-        },
-        error: function(response) {
-            alertify.set('notifier', 'position', 'top-center');
-            alertify.error('Something went wrong');
-        }
-    });
+    updateAndView('Table') 
 });
+$('#update_and_view_with_price').on('click', function() {
+    updateAndView('Yes') 
+});
+$('#update_and_view_no_price').on('click', function() {
+   
+    updateAndView('No') 
+});
+function updateAndView(with_prices){
+        var batch_details = {
+            'batch_id':$('#upload_and_view_batch_id').val(),
+            'batch_name':$('#upload_and_view_batch_name').val(),
+            'supplier_id':$('#upload_and_view_supplier_id').val(),
+            'order_no':$('#upload_and_view_order_number').val(),
+        };
+        var tableData = [];
+        
+        $('#purchaseOrdersTable tbody tr').each(function(row, tr) {
+            var rowData = {
+                'product_name': $(tr).find('#product_name').val(),
+                'quantity': $(tr).find('#quantity').val(),
+                'price': $(tr).find('#price').val(),
+                
+            };
+            tableData.push(rowData);
+        });
+      
+        // Example AJAX submission
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'POST',
+            url: '/orders/update-batch', // Adjust the route as needed
+            data: {
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'data': tableData,
+                'batch_details':batch_details
+            },
+            success: function(response) {
+                
+                if (response.status === "success") {
+                    sessionStorage.setItem('successMessage', response.message);
+
+                    if(with_prices == 'Table'){
+
+                        window.location.href = "/view/batch/" + response.batch_id;
+                         }
+                        else if(with_prices == 'Yes'){
+                            window.location.href =  "/orders/pdf/" + response.batch_id;
+                        }else{
+                            window.location.href = "/orders/no-cost-pdf/" + response.batch_id;
+                        }
+                  
+                } else if (response.status === "error") {
+                    alertify.set('notifier', 'position', 'top-center');
+                    alertify.error(response.message);
+                }
+            },
+            error: function(response) {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.error('Something went wrong');
+            }
+        });
+}
 
 $('#update_and_make_order_button').on('click', function() {
           
@@ -1505,7 +1535,8 @@ $.ajax({
 $('body').on('click', '#make_order_modal_button', function(e) {
     e.preventDefault();
     let form = $('#make_order_form')[0]; // Get the form element
-    let formData = new FormData(form);  
+    let formData = new FormData(form); 
+    $('#loading_gif').show(); 
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -1513,16 +1544,18 @@ $('body').on('click', '#make_order_modal_button', function(e) {
         type: 'POST',
         url: '/make-orders',
         data: formData,
-        beforeSend: function(){
-            $('#loading_gif').show();
-          },
-          complete: function(){
-            $('#loading_gif').hide();
-          },
+        // beforeSend: function(){
+        //     $('#loading_gif').show();
+        //   },
+        // complete: function(){
+        //     $('#make_order_modal').modal('hide');    
+        //     $('#loading_gif').hide();
+        // },
         contentType: false,
         processData: false,
         success: function(response) {
             if (response.status === "success") {
+                $('#loading_gif').hide();
                 sessionStorage.setItem('successMessage', response.message);
                     window.history.back();
                
@@ -1711,7 +1744,8 @@ $("#make_order_add_cc").on('click', function(e) {
                 },
                 error: function(xhr) {
                     console.log('Error:', xhr.responseText);
-                    alert('Fail to generate PDF');
+                    alertify.set('notifier', 'position', 'top-center');
+                        alertify.error('Fail to generate pdf');
                 }
             });
         }

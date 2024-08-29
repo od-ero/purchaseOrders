@@ -15,28 +15,8 @@
                             <li class="breadcrumb-item"><a href="{{route('admins.dashboard')}}">Home</a></li>
                             <li class="breadcrumb-item active">Ordered Batches</li>
                         </ol>
-                        
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                               List Ordered Batches
-                            </div>
-                            <div class="card-body">
-            <table id="ordered_batches_table" class="table table-bordered data-table">
-                <thead>
-                    <tr><th>#</th>
-                     <th>Date</th>
-                        <th>Order Number</th>
-                        <th>Supplier</th>
-                        <th>Items</th>
-                        <th width="100px">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-                        </div>
+                        @include('orders.send_orders_table')
+                             
                     </div>
                     </main
 @endsection                   

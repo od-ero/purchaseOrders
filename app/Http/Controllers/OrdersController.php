@@ -185,9 +185,9 @@ class OrdersController extends Controller
             $with_prices = base64_decode($with_prices_encoded);
         } else {
            
-            $with_prices = 'yes'; // Default value if the query parameter is not present
+            $with_prices = 'Yes'; // Default value if the query parameter is not present
         }  
-        if( $with_prices == 'no'){
+        if( $with_prices == 'No'){
             $pdfContent = OrderPDF::noCostPDF($batch_items, $batch_details);
         } else{
             $pdfContent = OrderPDF::createPDF($batch_items, $batch_details);
@@ -342,9 +342,16 @@ class OrdersController extends Controller
     
             $data = OrderBatches::leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
                                     ->select('order_batches.*', 'suppliers.supplier_name')
-                                    ->where('ordered', NULL)
-                                    ->orderBy('order_batches.id', 'desc')
+                                    ->where('ordered', NULL);
+                    $encoded_supplier_id = request()->query('Query');
+                    if ($encoded_supplier_id) {
+                        $supplier_id = base64_decode($encoded_supplier_id);
+                        $data->where('order_batches.supplier_id', $supplier_id);
+                    }
+
+                     $data = $data ->orderBy('order_batches.id', 'desc')
                                     ->get();
+                                   
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {
                     return Carbon::parse($row->created_at)->isoFormat('DD/MM/YYYY HH:mm');
@@ -359,11 +366,14 @@ class OrdersController extends Controller
                     $viewButton = '<a type="button" href="/view/batch/' . $encodedId . '" class="btn btn-success">View</a>';
                     }
 
-                    $sendOrderButton = '';
+                    $sendOrderWithPriceButton = '';
                     if (auth()->user()->can('send-order')) {
-                        $sendOrderButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" href="/make-orders/' . $encodedId . '">Send Order</a></li>';
+                        $sendOrderWithPriceButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" href="/make-orders/' . $encodedId . '">Send Order With Price</a></li>';
                     }
-                
+                    $sendOrderWithNoPriceButton = '';
+                    if (auth()->user()->can('send-order')) {
+                        $sendOrderWithNoPriceButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" href="/make-orders/' . $encodedId . '?Query=Tm8=">Send Order With No Price</a></li>';
+                    }
                     $pdfWithPricesButton = '';
                     if (auth()->user()->can('view-pdf')) {
                         $pdfWithPricesButton = '<li><a class="dropdown-item" data-id="' . $encodedId . '" id="order_price" href="/orders/pdf/' . $encodedId . '">PDF with Prices</a></li>';
@@ -391,7 +401,8 @@ class OrdersController extends Controller
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu">
-                                ' . $sendOrderButton . '
+                                ' . $sendOrderWithPriceButton . '
+                                ' . $sendOrderWithNoPriceButton . '
                                 ' . $pdfWithPricesButton . '
                                 ' . $pdfNoPricesButton . '
                                 ' . $editButton . '
@@ -413,9 +424,15 @@ class OrdersController extends Controller
     
             $data = SendBatch::leftJoin('order_batches','order_batches.id','=','send_batches.batch_id')
                                  ->leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
-                                ->select('order_batches.*', 'suppliers.supplier_name','send_batches.created_at as send_at' ,'send_batches.with_price' ,'send_batches.id as send_batch_id')
-                                ->orderBy('send_batches.id', 'desc')
-                                ->get();
+                                ->select('order_batches.*', 'suppliers.supplier_name','send_batches.created_at as send_at' ,'send_batches.with_price' ,'send_batches.id as send_batch_id');
+
+    $encoded_supplier_id = request()->query('Query');
+    if ($encoded_supplier_id) {
+        $supplier_id = base64_decode($encoded_supplier_id);
+        $data->where('order_batches.supplier_id', $supplier_id);
+    }
+    $data = $data->orderBy('send_batches.id', 'desc')
+    ->get();
     
             return DataTables::of($data)
                 ->addColumn('created_date', function($row) {

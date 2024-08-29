@@ -108,7 +108,8 @@
                     </a>
                     
                     @can('import-excel')
-                    <button id="save_and_view_with_prices" class="btn btn-primary">Save and View With Prices</button>
+                    <button id="save_and_view" class="btn btn-primary">Save and View </button>
+                    <button id="save_and_view_with_prices" class="btn btn-primary">Save and View PDF With Prices</button>
                     <button id="save_and_view_with_no_prices" class="btn btn-primary">Save and View PDF With No Prices</button>
                     @endcan
 

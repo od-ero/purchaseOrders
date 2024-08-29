@@ -23,13 +23,15 @@
         <a class="btn btn-info btn-sm" id="back_button"
         style="color: #fff !important;"><i class="fa fa-backward"></i></a>        
             </div>
-            @can('send-order')
+           
             <div class="mb-4 col-auto">
-
-                 <a href="/make-orders/{{base64_encode($encoded_product_batch_id)}}?Query={{base64_encode('Yes')}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF With Prices</a>   
-                 <a href="/make-orders/{{base64_encode($encoded_product_batch_id)}}?Query={{base64_encode('No')}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF With No Prices</a>       
+                @can('send-order')
+                    <a href="/make-orders/{{base64_encode($encoded_product_batch_id)}}?Query={{base64_encode('Yes')}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF With Prices</a>   
+                    <a href="/make-orders/{{base64_encode($encoded_product_batch_id)}}?Query={{base64_encode('No')}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">Email PDF With No Prices</a> 
+                @endcan  
+                 <a href="/orders/pdf/{{base64_encode($encoded_product_batch_id)}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">View With Prices</a>   
+                 <a href="/orders/no-cost-pdf/{{base64_encode($encoded_product_batch_id)}}" class="btn btn-outline-secondary btn-sm" tabindex="-1" role="button">View With No Prices</a>      
             </div>
-            @endcan
         </div>
            
 

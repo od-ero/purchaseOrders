@@ -74,10 +74,13 @@
                 <tbody>
                 </tbody>
             </table>
+            <div class="d-flex flex-wrap gap-2 mb-3">
             <a class="btn btn-info btn-sm" id="back_button"
                           style="color: #fff !important;"><i class="fa fa-backward"></i></a>
              
             @if($batch_details['ordered']!=1)  
+            <a href="/orders/pdf/{{$encoded_batch_id}}" class="btn btn-primary btn-sm" tabindex="-1" role="button">View With Prices</a>   
+                 <a href="/orders/no-cost-pdf/{{$encoded_batch_id}}" class="btn btn-primary btn-sm" tabindex="-1" role="button">View With No Prices</a>
                 @can('edit-order')        
                     <a data-id="{{$encoded_batch_id}}" id="update_batch_button" href="/update/batch/{{$encoded_batch_id}}" class="btn btn-primary">Edit</a>
                  @endcan   
@@ -96,6 +99,7 @@
                     @endif
                 @endcan
             @endif
+            </div>
         </div>
                         </div>
                     </div>

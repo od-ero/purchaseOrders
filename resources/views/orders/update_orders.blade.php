@@ -100,28 +100,33 @@
             </form>
             </tbody>
             </table>
-            <a class="btn btn-info btn-sm" id="back_button"
-                          style="color: #fff !important;"><i class="fa fa-backward"></i></a>
-             @can('view-order')             
-            <a data-id="{{$encoded_batch_id}}" href="/view/batch/{{$encoded_batch_id}}" class="btn btn-primary">View</a>
-            @endcan
-            @can('edit-order')
-                <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_batch_button" href="#">Save and View</a>
-                @if ($batch_details['deleted_at'] == null)
-                    @can('send-order')
-                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_button" href="#">Save and Send Order With Prices</a>
-                    <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_with_no_prices_button" href="#">Save and Send Order With No Prices</a>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a class="btn btn-info btn-sm" id="back_button"
+                                style="color: #fff !important;"><i class="fa fa-backward"></i></a>
+                    
+                    @can('edit-order')
+                        <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_batch_button" href="#">Save and View</a>
+                        <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_view_with_price" href="#">Save and View PDF With Prices</a>
+                        <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_view_no_price" href="#">Save and View PDF With No Prices</a>
+                        @if ($batch_details['deleted_at'] == null)
+                            @can('send-order')
+                            <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_button" href="#">Save and Send Order With Prices</a>
+                            <a class="btn btn-primary" data-id="{{$encoded_batch_id}}" id="update_and_make_order_with_no_prices_button" href="#">Save and Send Order With No Prices</a>
+                            @endcan
                     @endcan
-            @endcan
-            @can('destroy-order')
-                <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
-            @endcan    
-            @endif
-            @can('activate-order')
-                @if ($batch_details['deleted_at'])
-                <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="activate_batch_order_button" href="#">Activate</a>
-                @endif
-            @endcan
+                    @can('view-order')             
+                    <a data-id="{{$encoded_batch_id}}" href="/view/batch/{{$encoded_batch_id}}" class="btn btn-primary">View</a>
+                    @endcan
+                    @can('destroy-order')
+                        <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="delete_batch_order_button" href="#">Delete</a>
+                    @endcan    
+                    @endif
+                    @can('activate-order')
+                        @if ($batch_details['deleted_at'])
+                        <a class="btn btn-success" data-id="{{$encoded_batch_id}}" id="activate_batch_order_button" href="#">Activate</a>
+                        @endif
+                    @endcan
+                </div>  
             </div>
                         </div>
                     </div>

@@ -9,6 +9,7 @@ use Spatie\Permission\Models\Role;
 use DB;
 use Yajra\DataTables\DataTables as DataTables;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,9 +41,16 @@ class RolesAndPermissionsController extends Controller
     public function listRoles(Request $request)
     {
         if ($request->ajax()) {
-        
+        $user = Auth::user();
         //$roles = Role::orderBy('id','DESC')->get();
+        $role = $user->roles->first(); // This will get the first role assigned to the user
+            $role_id = 1;
+        
+        if ($role) {
+            $role_id = $role->id;
+        }
         $roles = Role::whereNot('name','super-admin')
+                            ->whereNot('id',$role_id)
                             ->orderBy('id','DESC')
                             ->get();
         return DataTables::of($roles)
@@ -91,9 +99,14 @@ class RolesAndPermissionsController extends Controller
     }
     public function createRoles(): View
     {
-        $permissions = Permission::orderBy('grouping_id','ASC')
-                                ->get()
-                                ->groupBy('grouping_id');
+        $user = Auth::user();
+        if ($user->hasRole('super-admin')) {
+            $permissions = Permission::get();
+        } else {
+            $permissions = $user->getAllPermissions();
+            $permissions = $permissions->where('grouping_id','!=', 'permission');
+        }
+        $permissions = $permissions->groupBy('grouping_id');
                                
         return view('permissions.create_role',compact('permissions'));
     }
@@ -152,9 +165,14 @@ class RolesAndPermissionsController extends Controller
     public function editRole($encoded_role_id): JsonResponse
     { $id = base64_decode($encoded_role_id);
         $role = Role::find($id);
-        $permissions = Permission::orderBy('grouping_id','ASC')
-                        ->get()
-                        ->groupBy('grouping_id');
+        $user = Auth::user();
+        if ($user->hasRole('super-admin')) {
+            $permissions = Permission::get();
+        } else {
+            $permissions = $user->getAllPermissions();
+            $permissions = $permissions->where('grouping_id','!=', 'permission');
+        }
+        $permissions = $permissions->groupBy('grouping_id');
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
