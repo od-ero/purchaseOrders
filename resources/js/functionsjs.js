@@ -672,8 +672,9 @@ if(login_password.length < 3){
                     contentType: false,
                     processData: false,
                     success: function(response) {
+                        $('#loading_gif').hide();
                         if (response.status === "success") {
-                            $('#loading_gif').hide();
+                          
                             sessionStorage.setItem('successMessage', response.message);
                             window.location.href = '/import-and-view';
                            
@@ -1554,8 +1555,9 @@ $('body').on('click', '#make_order_modal_button', function(e) {
         contentType: false,
         processData: false,
         success: function(response) {
+            $('#loading_gif').hide();
             if (response.status === "success") {
-                $('#loading_gif').hide();
+             
                 sessionStorage.setItem('successMessage', response.message);
                     window.history.back();
                

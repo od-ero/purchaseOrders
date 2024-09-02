@@ -85,7 +85,7 @@ View Suppliers
                                       <div class="tab-pane fade show active" id="nav-imported-orders" role="tabpanel" aria-labelledby="nav-imported-orders-tab">
                                         @include('orders.imported_orders_table')
                                       </div>
-                                      <div class="tab-pane fade" id="nav-send-orders" role="tabpanel" aria-labelledby="nav-send-orders-tab">
+                                      <div class="tab-pane fade hide active" id="nav-send-orders" role="tabpanel" aria-labelledby="nav-send-orders-tab">
                                          @include('orders.send_orders_table')
                                       </div>
                                     </div>
