@@ -72,34 +72,36 @@
                                    </div>
                                </div>
                            </div>
-                            <table class="table table-bordered data-table" id="purchaseOrdersTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th style="width: 80px;">Quantity</th>
-                    <th>Product Name</th>
-                    <th style="width: 80px;">Cost</th>
-                    <th>Sub Total</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php $total_price=0 ?>
-           
-            <form>
-            @foreach($batch_items as $index => $row)
+                            <table class="table table-bordered data-table" id="purchaseOrdersTableo">
+                                <thead>
+                                    <tr>
+                                        <th >#</th>
+                                        <th>Quantity</th>
+                                        <th>Product Name</th>
+                                        <th >Cost</th>
+                                        <th>Sub Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $total_price = 0; ?>
+                                    @foreach($batch_items as $index => $row)
+                                    <tr>
+                                        <td class="order-id" style="width: auto; white-space: nowrap;">{{ $index + 1 }}</td>
+                                        <td class="quantity" style="width: auto;">
+                                            <input id="quantity" value="{{ $row['quantity'] ?? '0' }}" style="width: auto; white-space: nowrap;">
+                                        </td>
+                                        <td style="width: 350px;">
+                                            <input id="product_name" value="{{ $row['product_name'] ?? '0' }}" style="width: 350px;">
+                                        </td>
+                                        <td class="price text-end" style="width: auto;">
+                                            <input id="price" value="{{ number_format($row['price_quantity'] ?? '0', 0) }}" class="text-end" style="width: auto; white-space: nowrap;">
+                                        </td>
+                                        <td class="subtotal text-end">{{ number_format($row['price_quantity'] * $row['quantity'], 0) }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
 
-            <tr>
-                <td class="order-id">{{ $index + 1 }}</td>
-                <td  class="quantity"> <input id="quantity" value="{{ $row['quantity'] ?? '0' }}" style="width: 80px;"> </td>
-                <td > <input id="product_name" value="{{ $row['product_name'] ?? '0' }}" style="width: 350px;"></td>
-                <td class="price text-end"> <input id="price" value="{{number_format( $row['price_quantity'] ?? '0', 0) }}" class="text-end" style="width: 80px;"> </td> 
-                <td class="subtotal text-end">{{number_format($row['price_quantity'] * $row['quantity'], 0)}}</td>
-            </tr>
-           
-            @endforeach
-            </form>
-            </tbody>
-            </table>
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     <a class="btn btn-info btn-sm" id="back_button"
                                 style="color: #fff !important;"><i class="fa fa-backward"></i></a>

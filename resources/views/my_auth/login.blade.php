@@ -15,7 +15,23 @@
             <div class="card-body">
                 <form id="login_form">
                     @csrf
-                   
+                  
+                    <div class="row mb-3">
+                        <div class="col-sm-10 pe-0">
+                            <div class="form-floating">
+                            <input type="password" class="form-control" id="password" placeholder="Password">
+                            <label for="password">Password</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 ps-0">
+                            <button class="btn btn-outline-primary w-100 h-100" type="button" id="togglePassword">
+                            <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+
+
                     <div class="form-floating">
                         <select class="form-select mt-3" id="login_userid" name="login_userid" aria-label="Floating label select example">
                         <option value="" disabled selected>Select Username</option>
@@ -51,5 +67,21 @@
     </div>
 </div>
 
-
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordField = document.getElementById('password');
+    const icon = document.getElementById('togglePasswordIcon');
+    
+    // Toggle the input type between password and text
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
+</script>
 @endsection

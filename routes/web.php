@@ -9,6 +9,7 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\BusinessDetailsController;
 use App\Http\Controllers\RolesAndPermissionsController;
+use App\Http\Controllers\WhatsapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -105,8 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-batch/delete/{id}', [OrdersController::class, 'deleteOrderBatch'])
     ->name('orders.deleteOrderBatch')->middleware('permission:destroy-order');
 
-    Route::get('/order-batch/view-order-mail-content/{id}', [OrdersController::class, 'viewOrderMailContent'])
-    ->name('orders.viewOrderMailContent')->middleware('permission:view-email-content');
+    Route::get('/order-batch/view-send-order/{id}', [OrdersController::class, 'viewSendOrder'])
+    ->name('orders.viewSendOrder')->middleware('permission:view-send-order');
+
 
     Route::get('/create-supplier', function () {
         return view('suppliers.create_supplier');
@@ -191,10 +193,10 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/update-permission-level', [RolesAndPermissionsController::class, 'updatePermissionLevel'])
         ->name('r_p.UpdatePermissionLevel')->middleware('permission:edit-employee-role');
-
-
-
-       
+      
+        Route::get('/send-whatsapp', [WhatsapController::class, 'send']);
+        Route::get('/send-whatsapp-message',  [WhatsapController::class, 'sendWhatsAppMessage']);
+      
     
 
 

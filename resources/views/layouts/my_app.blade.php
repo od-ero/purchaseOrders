@@ -9,7 +9,7 @@
         <meta name="author" content="" />
         <title>{{ENV('APP_NAME')}} -@yield('subtitle')</title> 
         
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css'])
 
       
     </head>
@@ -28,10 +28,6 @@
                 
             </div>
         </div>
-
-
-
-
         @vite(['resources/js/app.js'])
         
     </body>

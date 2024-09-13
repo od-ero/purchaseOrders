@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use setasign\Fpdi\Fpdi;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Yajra\DataTables\DataTables as DataTables;
 use Log;
 use Mail;
@@ -27,7 +28,8 @@ class OrdersController extends Controller
 {   public function importView(){
     $suppliers = Supplier::all();
     if(Session()->has('data')){
-    return view('orders.import_and_view', ['suppliers' => $suppliers]);}
+    return view('orders.import_and_view', ['suppliers' => $suppliers]);
+}
     return view('orders.import');
 }
 
@@ -257,6 +259,10 @@ class OrdersController extends Controller
         }
         $mail_content = $request->all();
         $batch_id = $mail_content['batch_id'];
+        $send_batch_count = SendBatch::where('batch_id', $batch_id)->count();
+        if($send_batch_count > 0){
+            return response()->json(['status' => 'error', 'message' => 'Order had already been sent']);
+        }
         DB::beginTransaction();
         try{
            
@@ -290,7 +296,8 @@ class OrdersController extends Controller
            $send_batch= SendBatch::create([
                 'batch_id' => $batch_id,
                 'email_subject' => $mail_content['subject'],
-                'email_body' => $mail_content['email_body'], 
+                'email_body' => $mail_content['email_body'],
+                'with_price' => ($mail_content['with_prices'] == "Yes") ? 1 : 0
             ]);
         
             // Initialize an array to hold CC email addresses
@@ -326,9 +333,15 @@ class OrdersController extends Controller
         
             DB::commit();
              
- return response()->json(['status' => 'success', 'message' => 'Order send']);
+ return response()->json(['status' => 'success', 'message' => 'Order send', 'batch_id' => base64_encode( $send_batch['id'])]);
 
-    } catch (\Exception $ex) {
+    } catch (TransportException $e) {
+    
+    Log::error('Mail sending error: ' . $e->getMessage());
+
+    
+    return response()->json(['status' => 'error', 'message' => 'There was a problem sending your order check internet connection']);
+}  catch (\Exception $ex) {
         DB::rollBack();
         Log::error($ex);
         return response()->json(['status' => 'error', 'message' => 'Some thing went wrong']);
@@ -451,8 +464,8 @@ class OrdersController extends Controller
                         : '/orders/no-cost-pdf/' . $encoded_batch_Id;
                 
                     $viewButton = '';
-                    if (auth()->user()->can('view-email-content')) {
-                        $viewButton = '<a type="button" href="/order-batch/view-order-mail-content/' . $encodedId . '" class="btn btn-success">View</a>';
+                    if (auth()->user()->can('view-send-order')) {
+                        $viewButton = '<a type="button" href="/order-batch/view-send-order/' . $encodedId . '" class="btn btn-success">View</a>';
                     }
                 
                     $pdfButton = '';
@@ -564,7 +577,7 @@ class OrdersController extends Controller
     }                          
     }
     
-    public function viewOrderMailContent($send_batch_id){
+    public function viewSendOrder($send_batch_id){
         $send_batch_id = base64_decode($send_batch_id);
         
         $data = SendBatch::leftJoin('order_batches','order_batches.id','=','send_batches.batch_id')
@@ -576,7 +589,23 @@ class OrdersController extends Controller
         $cc_details = CcSendBatch::where('send_batch_id', $send_batch_id)
                                     ->get();
                 
-        return view('orders.view_order_mail_content',['send_mail_details' => $data , 'cc_details'=> $cc_details]);
+        return view('orders.view_send_order',['send_mail_details' => $data , 'cc_details'=> $cc_details]);
+
+    }
+
+    public function viewSendOrderData($send_batch_id){
+        
+        $send_batch_id = base64_decode($send_batch_id);
+        $data = SendBatch::leftJoin('order_batches','order_batches.id','=','send_batches.batch_id')
+                            ->leftJoin('suppliers', 'suppliers.id', '=', 'order_batches.supplier_id')
+                            ->where('send_batches.id',$send_batch_id)
+                        ->select('suppliers.supplier_name','suppliers.supplier_email', 'send_batches.*')
+                        ->first();
+        
+        $cc_details = CcSendBatch::where('send_batch_id', $send_batch_id)
+                                    ->get();
+                
+        return response()->json(['send_mail_details' => $data , 'cc_details'=> $cc_details]);
 
     }
 }

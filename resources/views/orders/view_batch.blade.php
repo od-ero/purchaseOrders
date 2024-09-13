@@ -66,7 +66,7 @@
                 <tr>
                     <th>#</th>
                     <th>Quantity</th>
-                    <th>Product Name</th>
+                    <th>Product Names</th>
                     <th>Cost</th>
                     <th>Subtotal</th>
                 </tr>
@@ -104,4 +104,5 @@
                         </div>
                     </div>
                     </main
+                    
 @endsection                   

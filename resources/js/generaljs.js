@@ -1,6 +1,9 @@
+// import $ from 'jquery';
 
-$(document).ready(function() {
-  $('.appselect2').select2();
+	$(document).ready(function() {
+  
+
+ // $('.appselect2').select2();
 
  
 $('input').on('keyup change', function() {
@@ -16,6 +19,7 @@ $(this).next('.invalid-feedback').remove();
 
 
 });
+
 
 
 

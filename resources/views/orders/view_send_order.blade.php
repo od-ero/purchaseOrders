@@ -1,18 +1,19 @@
 @extends('layouts.my_app')
 @section('subtitle')
-View Order Mail Content
+View Send Order
 @endsection
 
 @section('contentheader_title')
-  View Order Mail Content
+  View Send Order
 @endsection
 
+
 @section('content')
-<div class="row justify-content-center">
-<input type="text" name="saved_batch_id" value="{{base64_encode($send_mail_details['batch_id'])}}" id="saved_batch_id" hidden>
+    <div class="row justify-content-center">
+      <input type="text" name="saved_batch_id" value="{{base64_encode($send_mail_details['batch_id'])}}" id="saved_batch_id" hidden>
                 <div class="col-lg-7">
                     <div class="card shadow-lg border-0 rounded-lg mt-2">
-                        <div class="card-header"><h3 class="text-center font-weight-light my-4">Order Mail Content</h3></div>
+                        <div class="card-header"><h3 class="text-center font-weight-light my-4">View Sent Order</h3></div>
                         <div class="card-body">
                         @include('suppliers.updateSupplier')
                     <table  class="table table-bordered data-table">

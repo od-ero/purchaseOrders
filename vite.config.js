@@ -11,4 +11,12 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    resolve: {
+        alias: {
+            '$':  'jQuery',
+        },
+    },
+    build: {
+        chunkSizeWarningLimit: 160000,
+      },
 });

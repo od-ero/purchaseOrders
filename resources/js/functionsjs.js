@@ -1,4 +1,8 @@
-$(document).ready(function () {
+import $ from 'jquery';
+window.$ = window.jQuery = $; 
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+$(function() {
     let url_query_string = window.location.search;
     const getPath = window.location.pathname;
     const view_supplier_path = "/suppliers/view/";
@@ -7,6 +11,8 @@ $(document).ready(function () {
     var urlQuery = "?Query=" + encoded_supplier_id;
     url_query_string = urlQuery;
     } 
+    const getIdURL = window.location.href;
+    const url_batch_id =getIdURL.split('/').pop();
 
     var submitButton = document.querySelector('button[type="submit"]');
     var adminLoginUrlClickCount = 0;
@@ -293,8 +299,7 @@ if(login_password.length < 3){
             }
         });
 
-    
-    
+       
             var table = $('#active_employees_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -552,7 +557,7 @@ if(login_password.length < 3){
                     success: function (response) {
                         if (response.status === "success") {
                             sessionStorage.setItem('successMessage', response.message);
-                                window.location.reload();
+                             window.location.reload();
                     } 
                     else if (response.status === "error") {
                         alertify.set('notifier', 'position', 'top-center');
@@ -663,12 +668,7 @@ if(login_password.length < 3){
                     type: 'POST',
                     url: '/import-and-view',
                     data: formData,
-                    // beforeSend: function(){
-                    //     $('#loading_gif').show();
-                    //   },
-                    //   complete: function(){
-                    //     $('#loading_gif').hide();
-                    //   },
+                    
                     contentType: false,
                     processData: false,
                     success: function(response) {
@@ -857,31 +857,42 @@ if(login_password.length < 3){
                             });
                             return json.data;
                         }
+                       
                     },
                     columns: [
-                        { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                        { data: 'quantity', name: 'quantity' },
-                        { data: 'product_name', name: 'product_name' },
-                        { data: 'price_quantity', name: 'price_quantity', createdCell: function (td, cellData, rowData, row, col) {
-                            $(td).addClass('text-end');
-                        }},
-
+                        { data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            className: 'text-nowrap',
+                            width: '50px', },
+                        { 
+                            data: 'quantity', 
+                            name: 'quantity',
+                            className: 'text-nowrap',
+                            width: '100px',
+                        },
+                        { 
+                            data: 'product_name', 
+                            name: 'product_name',
+                            className: 'text-wrap w-auto',
+                            
+                        },
+                        { 
+                            data: 'price_quantity', 
+                            name: 'price_quantity',
+                            className: 'text-end text-nowrap',
+                            width: '100px',
+                        },
                         {
                             data: 'sub_total',
                             name: 'sub_total',
-                            createdCell: function (td, cellData, rowData, row, col) {
-                                $(td).addClass('text-end');
-                            },
+                            className: 'text-end',
+                            width: '100px',
                             render: $.fn.dataTable.render.number(',', '.', 0, '')
                         }
-                        
-
                     ],
-                    initComplete: function() {
-                       
-                    }
+                   
                 });
-
+            
                 var table = $('#view_batch_table_no_cost').DataTable({
                     processing: true,
                     serverSide: true,
@@ -902,11 +913,10 @@ if(login_password.length < 3){
                    
                 });
             
-            
                 function appendTotalRowPurchaseOrdersTable() {
                     const totalRow = `
                         <tr>
-                            <td class="no-border"></td> 
+                            <td class="no-border" style="width: 25px;"></td> 
                             <td class="no-border"></td> 
                             <td class="no-border"></td> 
                             <td><b>Total(KSH)</b></td> 
@@ -939,12 +949,10 @@ if(login_password.length < 3){
                     const formattedTotal = total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
                     $('#total').html(  formattedTotal );
                 }
-                
        
-        appendTotalRowPurchaseOrdersTable();
-
+           appendTotalRowPurchaseOrdersTable();
         
-        updateTotalPurchaseOrdersTable();
+           updateTotalPurchaseOrdersTable();
 
 
        $('#purchaseOrdersTable').on('keyup', 'input', function () {
@@ -1545,26 +1553,24 @@ $('body').on('click', '#make_order_modal_button', function(e) {
         type: 'POST',
         url: '/make-orders',
         data: formData,
-        // beforeSend: function(){
-        //     $('#loading_gif').show();
-        //   },
-        // complete: function(){
-        //     $('#make_order_modal').modal('hide');    
-        //     $('#loading_gif').hide();
-        // },
+       
         contentType: false,
         processData: false,
         success: function(response) {
-            $('#loading_gif').hide();
+
             if (response.status === "success") {
-             
                 sessionStorage.setItem('successMessage', response.message);
-                    window.history.back();
-               
+                window.location.href = '/order-batch/view-send-order/' + response.batch_id;                
+               $('#loading_gif').hide();
             } else if (response.status === "error") {
+
+            $('#loading_gif').hide();
                 alertify.set('notifier', 'position', 'top-center');
                 alertify.error(response.message);
+
             }
+
+
         },
         error: function(response) {
             alertify.set('notifier', 'position', 'top-center');
@@ -1581,6 +1587,7 @@ $('body').on('click', '#make_order',function(e){
   $('#make_order_modal').modal('show');
   $('#delete_batch_id').val(order_batch_id);
 });
+
 
 
 $('#update_business_details_button').on('click',function(e){

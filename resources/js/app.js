@@ -1,17 +1,24 @@
 
-import '../bootstrap/jquery-3.7.1.min';
-import '../bootstrap/bootstrap.bundle.min';
-import '../fontawesome/font-awesome_6.4.2_js_all.min';
-import '../alertifyjs/alertify.min';
-import '../select2/select2.min';
-import '../datatable/dataTables.min';
+import $ from 'jquery';
+window.$ = $;
+ window.jQuery = $; 
 
-import './generaljs';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@fortawesome/fontawesome-free/js/all.js';
+
+
+
+import alertify from 'alertifyjs';
+window.alertify = alertify;  
+
+
+
+import 'select2';
+
+
+import 'datatables.net-bs5';
+
+
+ import './generaljs';
 import './functionsjs';
-
-
-// import Alpine from 'alpinejs';
-
-// window.Alpine = Alpine;
-
-// Alpine.start();
