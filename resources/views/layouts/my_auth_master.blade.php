@@ -7,8 +7,8 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>{{ENV('APP_NAME')}} -@yield('subtitle')</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        @vite(['resources/css/app.css','resources/js/app.js'])
+       
+        @include('layouts.partials.imported_styles')
     </head>
     <body class="bg-primary">
         <div id="layoutAuthentication">
@@ -17,7 +17,7 @@
                     <div class="container">
                        
                             @yield('content')
-                           
+                            @include('layouts.partials.scripts')
                     </div>
                 </main>
             </div>
@@ -25,6 +25,6 @@
                  @include('layouts.partials.footer')
             </div>
         </div>
-        
+       
     </body>
 </html>

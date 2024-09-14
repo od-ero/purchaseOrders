@@ -15,22 +15,6 @@
             <div class="card-body">
                 <form id="login_form">
                     @csrf
-                  
-                    <div class="row mb-3">
-                        <div class="col-sm-10 pe-0">
-                            <div class="form-floating">
-                            <input type="password" class="form-control" id="password" placeholder="Password">
-                            <label for="password">Password</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-2 ps-0">
-                            <button class="btn btn-outline-primary w-100 h-100" type="button" id="togglePassword">
-                            <i class="fas fa-eye" id="togglePasswordIcon"></i>
-                            </button>
-                        </div>
-                    </div>
-
-
 
                     <div class="form-floating">
                         <select class="form-select mt-3" id="login_userid" name="login_userid" aria-label="Floating label select example">
@@ -41,14 +25,27 @@
                         </select>
                         <label for="floatingSelectGrid">Username <strong class="text-danger">*</strong></label>
                         </div>
-                    <div class="form-floating login_form_password my-3">
-                        <input class="form-control" id="login_password" type="password" name="login_password" autocomplete="new-password" placeholder="Password" />
+                    <!-- <div class="form-floating login_form_password my-3">
+                        <input class="form-control" id="login_password_rr" type="password" name="login_password" autocomplete="new-password" placeholder="Password" />
                         <label for="login_password">Password <strong class="text-danger">*</strong></label>
                         @if ($errors->has('password'))
                             <div class="text-danger mt-2">
                                 {{ $errors->first('password') }}
                             </div>
                         @endif
+                    </div> -->
+                    <div class="row mb-3">
+                        <div class="col-sm-10 pe-0">
+                            <div class="form-floating login_form_password my-3">
+                                <input class="form-control" id="login_password" type="password" name="login_password" autocomplete="new-password" placeholder="Password" />
+                                <label for="login_password">Password <strong class="text-danger">*</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 ps-0 my-3">
+                            <button class="btn btn-outline-secondary w-100 h-100" type="button" id="togglePassword">
+                            <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="remember_me_class" class="form-check mb-3">
                         <input class="form-check-input" id="inputRememberPassword" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} autocomplete='off'/>
@@ -69,7 +66,7 @@
 
 <script>
     document.getElementById('togglePassword').addEventListener('click', function () {
-    const passwordField = document.getElementById('password');
+    const passwordField = document.getElementById('login_password');
     const icon = document.getElementById('togglePasswordIcon');
     
     // Toggle the input type between password and text

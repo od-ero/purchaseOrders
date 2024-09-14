@@ -1,41 +1,13 @@
-
-<script> 
-   
-
-window.addEventListener('DOMContentLoaded', event => {
-
-// Toggle the side navigation
-const sidebarToggle = document.body.querySelector('#sidebarToggle');
-if (sidebarToggle) {
-    // Uncomment Below to persist sidebar toggle between refreshes
-    // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-    //     document.body.classList.toggle('sb-sidenav-toggled');
-    // }
-    sidebarToggle.addEventListener('click', event => {
-        event.preventDefault();
-        document.body.classList.toggle('sb-sidenav-toggled');
-        localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-    });
-}
-
-});
-
-</script>
 <script>
-    window.addEventListener('DOMContentLoaded', event => {
-    // Simple-DataTables
-    // https://github.com/fiduswriter/Simple-DataTables/wiki
-
-    const datatablesSimple = document.getElementById('datatablesSimple');
-    if (datatablesSimple) {
-        new simpleDatatables.DataTable(datatablesSimple);
-    }
-});
 
 </script>
-
-<script>
-    $(document).ready(function() {
-     $('#dataTable').DataTable();
-     });
-</script>
+<script type="text/javascript" src="{{ asset('/assets/bootstrap/jquery-3.7.1.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/fontawesome/font-awesome_6.4.2_js_all.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/alertifyjs/alertify.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/select2/select2.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/datatable/dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/moment/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/daterangepicker/daterangepicker.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/custom_files/generaljs.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/assets/custom_files/functionsjs.js') }}"></script>

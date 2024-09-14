@@ -1,7 +1,6 @@
-import $ from 'jquery';
-window.$ = window.jQuery = $; 
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import $ from 'jquery';
+// window.$ = window.jQuery = $; 
+
 $(function() {
     let url_query_string = window.location.search;
     const getPath = window.location.pathname;
@@ -2431,7 +2430,7 @@ $("#make_order_add_cc").on('click', function(e) {
                         processData: false,
                         success: function(response) {
                             if (response.status === "success") {
-                                    
+                                sessionStorage.setItem('successMessage', response.message);
                                     window.location.reload();
                               
                             } 
